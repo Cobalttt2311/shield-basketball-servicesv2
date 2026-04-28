@@ -8,6 +8,7 @@ interface ICriteriaRepository
     public function createCriteria(array $data);
     public function createSubCriteria(array $data);
     public function findCriteriaById(int $id);
+    public function findSubCriteriaWithCriteria(int $id);
     public function checkCriteriaExists(string $name, int $groupId): bool;
     public function checkSubCriteriaExists(string $name, int $criteriaId): bool;
 }

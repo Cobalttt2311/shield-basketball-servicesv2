@@ -22,22 +22,22 @@ class EvaluationController extends Controller
     public function store(Request $request)
     {
         try {
-            $coach = Auth::user()->coach;
+            $user = Auth::user();
 
-            if (!$coach) {
+            if ($user->role !== 'coach' || !$user->coach) {
                 return response()->json(
                     (new BaseResponse(false, ErrorMessages::COACH_NOT_FOUND))->toArray(),
                     404
                 );
             }
 
-            $data = $request->only([
-                'title',
-                'date',
-                'scores'
-            ]);
+            $coach = $user->coach;
 
-            if (empty($data['scores'])) {
+            // dd($request->all());
+
+            $data = $request->all();
+
+            if (empty($data['scores']) || !is_array($data['scores'])) {
                 return response()->json(
                     (new BaseResponse(false, ErrorMessages::EVALUATION_EMPTY_SCORES))->toArray(),
                     400
@@ -45,6 +45,14 @@ class EvaluationController extends Controller
             }
 
             foreach ($data['scores'] as $score) {
+
+                if (!isset($score['score'])) {
+                    return response()->json(
+                        (new BaseResponse(false, 'Score field missing'))->toArray(),
+                        400
+                    );
+                }
+
                 if ($score['score'] < 0 || $score['score'] > 100) {
                     return response()->json(
                         (new BaseResponse(false, ErrorMessages::EVALUATION_INVALID_SCORE))->toArray(),

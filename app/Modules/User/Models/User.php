@@ -7,6 +7,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
+use App\Modules\Admin\Models\Coach;
+use App\Modules\Admin\Models\Player;
+
 class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
@@ -31,6 +34,16 @@ class User extends Authenticatable implements JWTSubject
         return [
             'password' => 'hashed',
         ];
+    }
+
+    public function coach()
+    {
+        return $this->hasOne(Coach::class, 'user_id');
+    }
+
+    public function player()
+    {
+        return $this->hasOne(Player::class, 'user_id');
     }
 
     public function getJWTIdentifier()

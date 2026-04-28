@@ -5,29 +5,35 @@ namespace App\Modules\Coaches\Services;
 use Illuminate\Support\Facades\DB;
 use App\Modules\Coaches\Services\Interfaces\IEvaluationService;
 use App\Modules\Coaches\Repositories\Interfaces\IEvaluationRepository;
-use App\Modules\Admin\Models\Coach;
-use App\Modules\Admin\Models\Player;
-use App\Modules\Coaches\Models\SubCriteria;
+use App\Modules\Coaches\Repositories\Interfaces\ICriteriaRepository;
+use App\Modules\Admin\Repositories\Interfaces\IManagementDataRepository;
 
 class EvaluationService implements IEvaluationService
 {
-    protected IEvaluationRepository $repo;
+    protected IEvaluationRepository $evaluationRepo;
+    protected IManagementDataRepository $managementRepo;
+    protected ICriteriaRepository $criteriaRepo;
 
-    public function __construct(IEvaluationRepository $repo)
-    {
-        $this->repo = $repo;
+    public function __construct(
+        IEvaluationRepository $evaluationRepo,
+        IManagementDataRepository $managementRepo,
+        ICriteriaRepository $criteriaRepo
+    ) {
+        $this->evaluationRepo = $evaluationRepo;
+        $this->managementRepo = $managementRepo;
+        $this->criteriaRepo = $criteriaRepo;
     }
 
     public function createEvaluation(array $data, int $coachId)
     {
         return DB::transaction(function () use ($data, $coachId) {
 
-            $coach = Coach::find($coachId);
+            $coach = $this->managementRepo->findCoachById($coachId);
             if (!$coach) {
                 throw new \Exception('Coach not found');
             }
 
-            $evaluation = $this->repo->createEvaluation([
+            $evaluation = $this->evaluationRepo->createEvaluation([
                 'title' => $data['title'],
                 'date' => $data['date'],
                 'coach_id' => $coachId
@@ -37,13 +43,13 @@ class EvaluationService implements IEvaluationService
 
             foreach ($data['scores'] as $item) {
 
-                $player = Player::find($item['player_id']);
+                $player = $this->managementRepo->findPlayerById($item['player_id']);
                 if (!$player || $player->group_id != $coach->group_id) {
                     throw new \Exception('Invalid player');
                 }
 
-                $sub = SubCriteria::find($item['sub_criteria_id']);
-                if (!$sub || $sub->group_id != $coach->group_id) {
+                $sub = $this->criteriaRepo->findSubCriteriaWithCriteria($item['sub_criteria_id']);
+                if (!$sub || !$sub->criteria || $sub->criteria->group_id != $player->group_id) {
                     throw new \Exception('Invalid sub criteria');
                 }
 
@@ -61,7 +67,7 @@ class EvaluationService implements IEvaluationService
                 ];
             }
 
-            $this->repo->insertScores($scores);
+            $this->evaluationRepo->insertScores($scores);
 
             return $evaluation->load('scores');
         });

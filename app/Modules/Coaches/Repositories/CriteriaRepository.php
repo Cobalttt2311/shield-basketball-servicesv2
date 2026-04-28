@@ -30,6 +30,12 @@ class CriteriaRepository implements ICriteriaRepository
         return Criteria::find($id);
     }
 
+    // ✅ pindahan dari EvaluationRepository
+    public function findSubCriteriaWithCriteria(int $id)
+    {
+        return SubCriteria::with('criteria')->find($id);
+    }
+
     public function checkCriteriaExists(string $name, int $groupId): bool
     {
         return Criteria::where('name', $name)
