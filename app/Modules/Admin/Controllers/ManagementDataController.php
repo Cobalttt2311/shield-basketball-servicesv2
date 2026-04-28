@@ -1,0 +1,198 @@
+<?php
+
+namespace App\Modules\Admin\Controllers;
+
+use Illuminate\Routing\Controller;
+use Illuminate\Http\Request;
+use App\Modules\Admin\Services\Interfaces\IManagementDataService;
+use App\Utils\Responses\BaseResponse;
+use App\Utils\Messages\SuccessMessages\SuccessMessages;
+use App\Utils\Messages\ErrorMessages\ErrorMessages;
+
+class ManagementDataController extends Controller
+{
+    protected IManagementDataService $service;
+
+    public function __construct(IManagementDataService $service)
+    {
+        $this->service = $service;
+    }
+
+    public function getCoaches()
+    {
+        try {
+            $data = $this->service->getAllCoaches();
+            return response()->json(
+                (new BaseResponse(true, SuccessMessages::COACH_GET, $data))->toArray()
+            );
+        } catch (\Throwable $e) {
+            return response()->json(
+                (new BaseResponse(false, $e->getMessage(), null, $e->getMessage()))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function storeCoach(Request $request)
+    {
+        try {
+            $data = $request->only([
+                'name',
+                'email',
+                'birth_date',
+                'group_id',
+                'position',
+                'license',
+                'phone_number',
+            ]);
+
+            $result = $this->service->createCoach($data);
+            return response()->json(
+                (new BaseResponse(true, SuccessMessages::COACH_CREATED, $result))->toArray(),
+                201
+            );
+        } catch (\Throwable $e) {
+            return response()->json(
+                (new BaseResponse(false, $e->getMessage(), null, $e->getMessage()))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function updateCoach(Request $request, $id)
+    {
+        try {
+            $data = $request->only([
+                'name',
+                'birth_date',
+                'group_id',
+                'position',
+                'license',
+                'phone_number',
+                'email',
+            ]);
+
+            $result = $this->service->updateCoach($id, $data);
+            return response()->json(
+                (new BaseResponse(true, SuccessMessages::COACH_UPDATED, $result))->toArray()
+            );
+        } catch (\Throwable $e) {
+            return response()->json(
+                (new BaseResponse(false, $e->getMessage(), null, $e->getMessage()))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function deleteCoach($id)
+    {
+        try {
+            $success = $this->service->deleteCoach($id);
+            if (!$success) {
+                return response()->json(
+                    (new BaseResponse(false, ErrorMessages::COACH_NOT_FOUND))->toArray(),
+                    404
+                );
+            }
+            return response()->json(
+                (new BaseResponse(true, SuccessMessages::COACH_DELETED))->toArray()
+            );
+        } catch (\Throwable $e) {
+            return response()->json(
+                (new BaseResponse(false, $e->getMessage(), null, $e->getMessage()))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function getPlayers()
+    {
+        try {
+            $data = $this->service->getAllPlayers();
+            return response()->json(
+                (new BaseResponse(true, SuccessMessages::PLAYER_GET, $data))->toArray()
+            );
+        } catch (\Throwable $e) {
+            return response()->json(
+                (new BaseResponse(false, $e->getMessage(), null, $e->getMessage()))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function storePlayer(Request $request)
+    {
+        try {
+            $data = $request->only([
+                'name',
+                'email',
+                'birth_date',
+                'group_id',
+                'phone_number',
+                'height',
+                'weight',
+                'parent_name',
+                'parent_phone',
+            ]);
+
+            $result = $this->service->createPlayer($data);
+            return response()->json(
+                (new BaseResponse(true, SuccessMessages::PLAYER_CREATED, $result))->toArray(),
+                201
+            );
+        } catch (\Throwable $e) {
+            return response()->json(
+                (new BaseResponse(false, $e->getMessage(), null, $e->getMessage()))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function updatePlayer(Request $request, $id)
+    {
+        try {
+            $data = $request->only([
+                'name',
+                'birth_date',
+                'group_id',
+                'phone_number',
+                'email',
+                'height',
+                'weight',
+                'parent_name',
+                'parent_phone',
+            ]);
+
+            $result = $this->service->updatePlayer($id, $data);
+            return response()->json(
+                (new BaseResponse(true, SuccessMessages::PLAYER_UPDATED, $result))->toArray()
+            );
+        } catch (\Throwable $e) {
+            return response()->json(
+                (new BaseResponse(false, $e->getMessage(), null, $e->getMessage()))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function deletePlayer($id)
+    {
+        try {
+            $success = $this->service->deletePlayer($id);
+            if (!$success) {
+                return response()->json(
+                    (new BaseResponse(false, ErrorMessages::PLAYER_NOT_FOUND))->toArray(),
+                    404
+                );
+            }
+            return response()->json(
+                (new BaseResponse(true, SuccessMessages::PLAYER_DELETED))->toArray()
+            );
+        } catch (\Throwable $e) {
+            return response()->json(
+                (new BaseResponse(false, $e->getMessage(), null, $e->getMessage()))->toArray(),
+                500
+            );
+        }
+    }
+}
