@@ -10,6 +10,7 @@ interface IManagementDataRepository
     public function createCoach(array $data);
     public function updateCoach(int $id, array $data);
     public function deleteCoach(int $id);
+    public function findCoachByUserId(int $userId);
 
     // PLAYER
     public function getAllPlayers();

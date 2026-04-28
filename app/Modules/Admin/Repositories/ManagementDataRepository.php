@@ -36,6 +36,11 @@ class ManagementDataRepository implements IManagementDataRepository
         return Coach::findOrFail($id)->delete();
     }
 
+    public function findCoachByUserId(int $userId)
+    {
+        return Coach::where('user_id', $userId)->first();
+    }
+
     // PLAYER
     public function getAllPlayers()
     {
@@ -63,4 +68,6 @@ class ManagementDataRepository implements IManagementDataRepository
     {
         return Player::findOrFail($id)->delete();
     }
+
+    
 }

@@ -4,28 +4,27 @@ namespace App\Modules\Coaches\Services;
 
 use App\Modules\Coaches\Services\Interfaces\ICriteriaService;
 use App\Modules\Coaches\Repositories\Interfaces\ICriteriaRepository;
-use App\Modules\Admin\Models\Coach;
+use App\Modules\Admin\Repositories\Interfaces\IManagementDataRepository;
 use Illuminate\Support\Facades\Auth;
 use Exception;
 
 class CriteriaService implements ICriteriaService
 {
     protected ICriteriaRepository $repo;
+    protected IManagementDataRepository $managementRepo;
 
-    public function __construct(ICriteriaRepository $repo)
-    {
+    public function __construct(
+        ICriteriaRepository $repo,
+        IManagementDataRepository $managementRepo
+    ) {
         $this->repo = $repo;
-    }
-
-    private function getMyCoach()
-    {
-        $user = Auth::user();
-        return Coach::where('user_id', $user->id)->first();
+        $this->managementRepo = $managementRepo;
     }
 
     public function getMyCriteria()
     {
-        $coach = $this->getMyCoach();
+        $user = Auth::user();
+        $coach = $this->managementRepo->findCoachByUserId($user->id);
 
         if (!$coach) {
             throw new Exception('Coach not found');
@@ -36,7 +35,8 @@ class CriteriaService implements ICriteriaService
 
     public function createCriteria(array $data)
     {
-        $coach = $this->getMyCoach();
+        $user = Auth::user();
+        $coach = $this->managementRepo->findCoachByUserId($user->id);
 
         if (!$coach) {
             throw new Exception('Coach not found');
@@ -54,7 +54,8 @@ class CriteriaService implements ICriteriaService
 
     public function createSubCriteria(array $data)
     {
-        $coach = $this->getMyCoach();
+        $user = Auth::user();
+        $coach = $this->managementRepo->findCoachByUserId($user->id);
 
         if (!$coach) {
             throw new Exception('Coach not found');
