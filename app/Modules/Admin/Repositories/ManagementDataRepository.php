@@ -8,16 +8,21 @@ use App\Modules\Admin\Repositories\Interfaces\IManagementDataRepository;
 
 class ManagementDataRepository implements IManagementDataRepository
 {
-    // COACH
+    
     public function getAllCoaches($groupId = null)
     {
-        $query = Coach::with(['group', 'user']);
+        $query = Coach::query();
 
         if ($groupId) {
             $query->where('group_id', $groupId);
         }
 
         return $query->get();
+    }
+
+    public function getCoachDetail(int $id)
+    {
+        return Coach::with(['group', 'user'])->find($id);
     }
 
     public function findCoachById(int $id)
@@ -47,16 +52,21 @@ class ManagementDataRepository implements IManagementDataRepository
         return Coach::where('user_id', $userId)->first();
     }
 
-    // PLAYER
     public function getAllPlayers($groupId = null)
     {
-        $query = Player::with(['group', 'user']);
+        $query = Player::query();
 
         if ($groupId) {
             $query->where('group_id', $groupId);
         }
 
         return $query->get();
+    }
+
+    public function getPlayerDetail(int $id)
+    {
+        // Eager load hanya dilakukan saat request detail
+        return Player::with(['group', 'user'])->find($id);
     }
 
     public function findPlayerById(int $id)
@@ -80,6 +90,4 @@ class ManagementDataRepository implements IManagementDataRepository
     {
         return Player::findOrFail($id)->delete();
     }
-
-    
 }

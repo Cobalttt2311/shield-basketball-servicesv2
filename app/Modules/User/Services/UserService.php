@@ -3,6 +3,7 @@
 namespace App\Modules\User\Services;
 
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use App\Modules\User\Services\Interfaces\IUserService;
 use App\Modules\User\Repositories\Interfaces\IUserRepository;
 use App\Modules\User\Models\User;
@@ -74,5 +75,29 @@ class UserService implements IUserService
     public function deleteUser(int $id): bool
     {
         return $this->userRepository->delete($id);
+    }
+
+     public function sendResetLinkEmail(string $email): string
+    {
+        $user = $this->userRepository->findByEmail($email);
+        if (!$user) {
+            return Password::INVALID_USER;
+        }
+
+        // Kirim link reset ke email user
+        return Password::sendResetLink(['email' => $user->email]);
+    }
+
+    public function resetPassword(array $credentials): string
+    {
+        return Password::reset(
+            $credentials,
+            function (User $user, string $password) {
+                // Update password
+                $this->userRepository->update($user->id, [
+                    'password' => Hash::make($password),
+                ]);
+            }
+        );
     }
 }

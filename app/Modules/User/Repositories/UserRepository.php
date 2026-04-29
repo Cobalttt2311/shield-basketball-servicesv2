@@ -40,4 +40,9 @@ class UserRepository implements IUserRepository
 
         return $user->delete();
     }
+
+    public function findByEmail(string $email): ?User
+    {
+        return User::where('email', $email)->first();
+    }
 }

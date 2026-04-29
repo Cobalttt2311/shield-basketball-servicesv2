@@ -28,6 +28,7 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::prefix('coaches')->group(function () {
             Route::get('/', [ManagementDataController::class, 'getCoaches']);
+            Route::get('/detail/{id}', [ManagementDataController::class, 'getCoachDetail']); 
             Route::post('/', [ManagementDataController::class, 'storeCoach']);
             Route::put('/{id}', [ManagementDataController::class, 'updateCoach']);
             Route::delete('/{id}', [ManagementDataController::class, 'deleteCoach']);
@@ -35,6 +36,7 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::prefix('players')->group(function () {
             Route::get('/', [ManagementDataController::class, 'getPlayers']);
+            Route::get('/detail/{id}', [ManagementDataController::class, 'getPlayerDetail']); 
             Route::post('/', [ManagementDataController::class, 'storePlayer']);
             Route::put('/{id}', [ManagementDataController::class, 'updatePlayer']);
             Route::delete('/{id}', [ManagementDataController::class, 'deletePlayer']);

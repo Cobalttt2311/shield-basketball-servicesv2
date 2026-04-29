@@ -9,10 +9,11 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 use App\Modules\Admin\Models\Coach;
 use App\Modules\Admin\Models\Player;
+use Illuminate\Auth\Passwords\CanResetPassword;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, CanResetPassword;
 
     protected $table = 'users';
 

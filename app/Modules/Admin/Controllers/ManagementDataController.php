@@ -36,6 +36,29 @@ class ManagementDataController extends Controller
         }
     }
 
+    public function getCoachDetail($id)
+    {
+        try {
+            $data = $this->service->getCoachDetail($id);
+
+            if (!$data) {
+                return response()->json(
+                    (new BaseResponse(false, ErrorMessages::COACH_NOT_FOUND))->toArray(),
+                    404
+                );
+            }
+
+            return response()->json(
+                (new BaseResponse(true, SuccessMessages::COACH_GET, $data))->toArray()
+            );
+        } catch (\Throwable $e) {
+            return response()->json(
+                (new BaseResponse(false, $e->getMessage(), null, $e->getMessage()))->toArray(),
+                500
+            );
+        }
+    }
+
     public function storeCoach(Request $request)
     {
         try {
@@ -50,6 +73,7 @@ class ManagementDataController extends Controller
             ]);
 
             $result = $this->service->createCoach($data);
+            
             return response()->json(
                 (new BaseResponse(true, SuccessMessages::COACH_CREATED, $result))->toArray(),
                 201
@@ -76,6 +100,7 @@ class ManagementDataController extends Controller
             ]);
 
             $result = $this->service->updateCoach($id, $data);
+            
             return response()->json(
                 (new BaseResponse(true, SuccessMessages::COACH_UPDATED, $result))->toArray()
             );
@@ -126,6 +151,29 @@ class ManagementDataController extends Controller
         }
     }
 
+    public function getPlayerDetail($id)
+    {
+        try {
+            $data = $this->service->getPlayerDetail($id);
+
+            if (!$data) {
+                return response()->json(
+                    (new BaseResponse(false, ErrorMessages::PLAYER_NOT_FOUND))->toArray(),
+                    404
+                );
+            }
+
+            return response()->json(
+                (new BaseResponse(true, SuccessMessages::PLAYER_GET, $data))->toArray()
+            );
+        } catch (\Throwable $e) {
+            return response()->json(
+                (new BaseResponse(false, $e->getMessage(), null, $e->getMessage()))->toArray(),
+                500
+            );
+        }
+    }
+
     public function storePlayer(Request $request)
     {
         try {
@@ -142,6 +190,7 @@ class ManagementDataController extends Controller
             ]);
 
             $result = $this->service->createPlayer($data);
+            
             return response()->json(
                 (new BaseResponse(true, SuccessMessages::PLAYER_CREATED, $result))->toArray(),
                 201
@@ -170,6 +219,7 @@ class ManagementDataController extends Controller
             ]);
 
             $result = $this->service->updatePlayer($id, $data);
+            
             return response()->json(
                 (new BaseResponse(true, SuccessMessages::PLAYER_UPDATED, $result))->toArray()
             );

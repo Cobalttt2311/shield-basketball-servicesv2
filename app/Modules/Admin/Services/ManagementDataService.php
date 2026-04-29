@@ -22,28 +22,32 @@ class ManagementDataService implements IManagementDataService
 
     public function getAllCoaches($groupId = null)
     {
-        $coaches = $this->repo->getAllCoaches($groupId);
+        return $this->repo->getAllCoaches($groupId);
+    }
 
-        return $coaches->map(function ($coach) {
+    public function getCoachDetail(int $id)
+    {
+        $coach = $this->repo->getCoachDetail($id);
 
-            if (!$coach->user) {
-                return $coach;
-            }
+        if (!$coach) return null;
 
+        if ($coach->user) {
+            // Buat properti custom
             $coach->user_data = [
                 'id' => $coach->user->id,
                 'username' => $coach->user->username,
                 'default_password' => '*ShieldCoach' . $coach->user->id . '#'
             ];
+            // Sembunyikan relasi asli 'user' agar tidak ikut di-render ke JSON
+            $coach->makeHidden('user');
+        }
 
-            return $coach;
-        });
+        return $coach;
     }
 
     public function createCoach(array $data)
     {
         return DB::transaction(function () use ($data) {
-
             $userData = $this->userService->createUser([
                 'name'       => $data['name'],
                 'email'      => $data['email'],
@@ -96,30 +100,33 @@ class ManagementDataService implements IManagementDataService
             return true;
         });
     }
+
     public function getAllPlayers($groupId = null)
     {
-        $players = $this->repo->getAllPlayers($groupId);
+        return $this->repo->getAllPlayers($groupId);
+    }
 
-        return $players->map(function ($player) {
+    public function getPlayerDetail(int $id)
+    {
+        $player = $this->repo->getPlayerDetail($id);
 
-            if (!$player->user) {
-                return $player;
-            }
+        if (!$player) return null;
 
+        if ($player->user) {
             $player->user_data = [
                 'id' => $player->user->id,
                 'username' => $player->user->username,
                 'default_password' => '*ShieldPlayer' . $player->user->id . '#'
             ];
+            $player->makeHidden('user');
+        }
 
-            return $player;
-        });
+        return $player;
     }
 
     public function createPlayer(array $data)
     {
         return DB::transaction(function () use ($data) {
-
             $userData = $this->userService->createUser([
                 'name'       => $data['name'],
                 'email'      => $data['email'],
