@@ -9,6 +9,9 @@ class ErrorMessages
     const AUTH_TOKEN_INVALID       = 'Token is invalid';
     const AUTH_TOKEN_EXPIRED       = 'Token has expired';
     const AUTH_TOKEN_NOT_PROVIDED  = 'Token not provided';
+    const TOO_MANY_ATTEMPTS         = 'Terlalu banyak percobaan, silakan coba lagi nanti.';
+    const INVALID_RESET_TOKEN       = 'Token reset password tidak valid atau sudah kadaluarsa.';
+    const AUTH_UNKNOWN_ERROR        = 'Terjadi kesalahan, silakan coba lagi.';
 
     const USER_NOT_FOUND   = 'User not found';
     const COACH_NOT_FOUND  = 'Coach not found';

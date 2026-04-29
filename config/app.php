@@ -97,6 +97,8 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+    'frontend_url' => env('FRONTEND_URL', 'http://localhost:3000'),
+
     'key' => env('APP_KEY'),
 
     'previous_keys' => [

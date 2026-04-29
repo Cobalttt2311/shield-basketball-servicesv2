@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Notifications\ResetPasswordNotification;
 
 use App\Modules\Admin\Models\Coach;
 use App\Modules\Admin\Models\Player;
@@ -57,5 +58,10 @@ class User extends Authenticatable implements JWTSubject
         return [
             'role' => $this->role,
         ];
+    }
+  
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPasswordNotification($token));
     }
 }
