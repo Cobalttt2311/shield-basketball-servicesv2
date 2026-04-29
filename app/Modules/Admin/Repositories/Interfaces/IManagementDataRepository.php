@@ -5,7 +5,7 @@ namespace App\Modules\Admin\Repositories\Interfaces;
 interface IManagementDataRepository
 {
     // COACH
-    public function getAllCoaches();
+    public function getAllCoaches($groupId = null);
     public function findCoachById(int $id);
     public function createCoach(array $data);
     public function updateCoach(int $id, array $data);
@@ -13,7 +13,7 @@ interface IManagementDataRepository
     public function findCoachByUserId(int $userId);
 
     // PLAYER
-    public function getAllPlayers();
+    public function getAllPlayers($groupId = null);
     public function findPlayerById(int $id);
     public function createPlayer(array $data);
     public function updatePlayer(int $id, array $data);

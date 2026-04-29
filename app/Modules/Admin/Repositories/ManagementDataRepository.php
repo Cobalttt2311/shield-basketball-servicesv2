@@ -9,9 +9,15 @@ use App\Modules\Admin\Repositories\Interfaces\IManagementDataRepository;
 class ManagementDataRepository implements IManagementDataRepository
 {
     // COACH
-    public function getAllCoaches()
+    public function getAllCoaches($groupId = null)
     {
-        return Coach::with(['group', 'user'])->get();
+        $query = Coach::with(['group', 'user']);
+
+        if ($groupId) {
+            $query->where('group_id', $groupId);
+        }
+
+        return $query->get();
     }
 
     public function findCoachById(int $id)
@@ -42,9 +48,15 @@ class ManagementDataRepository implements IManagementDataRepository
     }
 
     // PLAYER
-    public function getAllPlayers()
+    public function getAllPlayers($groupId = null)
     {
-        return Player::with(['group', 'user'])->get();
+        $query = Player::with(['group', 'user']);
+
+        if ($groupId) {
+            $query->where('group_id', $groupId);
+        }
+
+        return $query->get();
     }
 
     public function findPlayerById(int $id)

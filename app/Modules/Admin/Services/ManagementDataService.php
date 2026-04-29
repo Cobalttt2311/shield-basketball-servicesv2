@@ -20,9 +20,11 @@ class ManagementDataService implements IManagementDataService
         $this->userService = $userService;
     }
 
-    public function getAllCoaches()
+    public function getAllCoaches($groupId = null)
     {
-        return $this->repo->getAllCoaches()->map(function ($coach) {
+        $coaches = $this->repo->getAllCoaches($groupId);
+
+        return $coaches->map(function ($coach) {
 
             if (!$coach->user) {
                 return $coach;
@@ -94,9 +96,11 @@ class ManagementDataService implements IManagementDataService
             return true;
         });
     }
-    public function getAllPlayers()
+    public function getAllPlayers($groupId = null)
     {
-        return $this->repo->getAllPlayers()->map(function ($player) {
+        $players = $this->repo->getAllPlayers($groupId);
+
+        return $players->map(function ($player) {
 
             if (!$player->user) {
                 return $player;

@@ -18,10 +18,13 @@ class ManagementDataController extends Controller
         $this->service = $service;
     }
 
-    public function getCoaches()
+    public function getCoaches(Request $request)
     {
         try {
-            $data = $this->service->getAllCoaches();
+            $groupId = $request->query('group_id');
+
+            $data = $this->service->getAllCoaches($groupId);
+
             return response()->json(
                 (new BaseResponse(true, SuccessMessages::COACH_GET, $data))->toArray()
             );
@@ -105,10 +108,13 @@ class ManagementDataController extends Controller
         }
     }
 
-    public function getPlayers()
+    public function getPlayers(Request $request)
     {
         try {
-            $data = $this->service->getAllPlayers();
+            $groupId = $request->query('group_id');
+
+            $data = $this->service->getAllPlayers($groupId);
+
             return response()->json(
                 (new BaseResponse(true, SuccessMessages::PLAYER_GET, $data))->toArray()
             );
