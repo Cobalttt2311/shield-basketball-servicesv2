@@ -19,18 +19,18 @@ class GroupService implements IGroupService
         return $this->repo->getAll();
     }
 
-    public function create(array $data)
+    public function createGroup(array $data)
     {
-        return $this->repo->create($data);
+        return $this->repo->createGroup($data);
     }
 
-    public function update(int $id, array $data)
+    public function updateGroup(int $id, array $data)
     {
-        return $this->repo->update($id, $data);
+        return $this->repo->updateGroup($id, $data);
     }
 
-    public function delete(int $id)
+    public function deleteGroup(int $id)
     {
-        return $this->repo->delete($id);
+        return $this->repo->deleteGroup($id);
     }
 }

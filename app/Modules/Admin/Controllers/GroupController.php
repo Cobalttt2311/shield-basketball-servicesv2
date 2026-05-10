@@ -23,9 +23,9 @@ class GroupController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function createGroup(Request $request)
     {
-        $data = $this->service->create($request->all());
+        $data = $this->service->createGroup($request->all());
 
         return response()->json([
             'success' => true,
@@ -34,9 +34,9 @@ class GroupController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
+    public function updateGroup(Request $request, $id)
     {
-        $data = $this->service->update($id, $request->all());
+        $data = $this->service->updateGroup($id, $request->all());
 
         return response()->json([
             'success' => true,
@@ -45,9 +45,9 @@ class GroupController extends Controller
         ]);
     }
 
-    public function destroy($id)
+    public function deleteGroup($id)
     {
-        $this->service->delete($id);
+        $this->service->deleteGroup($id);
 
         return response()->json([
             'success' => true,

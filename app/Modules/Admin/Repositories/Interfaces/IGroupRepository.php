@@ -8,7 +8,7 @@ interface IGroupRepository
 {
     public function getAll();
     public function findById(int $id): ?Group;
-    public function create(array $data): Group;
-    public function update(int $id, array $data): ?Group;
-    public function delete(int $id): bool;
+    public function createGroup(array $data): Group;
+    public function updateGroup(int $id, array $data): ?Group;
+    public function deleteGroup(int $id): bool;
 }

@@ -5,7 +5,7 @@ namespace App\Modules\Admin\Services\Interfaces;
 interface IGroupService
 {
     public function getAll();
-    public function create(array $data);
-    public function update(int $id, array $data);
-    public function delete(int $id);
+    public function createGroup(array $data);
+    public function updateGroup(int $id, array $data);
+    public function deleteGroup(int $id);
 }

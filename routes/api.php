@@ -24,9 +24,9 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::prefix('groups')->group(function () {
             Route::get('/', [GroupController::class, 'index']);
-            Route::post('/', [GroupController::class, 'store']);
-            Route::put('/{id}', [GroupController::class, 'update']);
-            Route::delete('/{id}', [GroupController::class, 'destroy']);
+            Route::post('/', [GroupController::class, 'createGroup']);
+            Route::put('/{id}', [GroupController::class, 'updateGroup']);
+            Route::delete('/{id}', [GroupController::class, 'deleteGroup']);
         });
 
         Route::prefix('coaches')->group(function () {
@@ -51,12 +51,12 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::prefix('criteria')->group(function () {
             Route::get('/me', [CriteriaController::class, 'getMyCriteria']);
-            Route::post('/', [CriteriaController::class, 'storeCriteria']);
-            Route::post('/sub', [CriteriaController::class, 'storeSubCriteria']);
+            Route::post('/', [CriteriaController::class, 'createCriteria']);
+            Route::post('/sub', [CriteriaController::class, 'createSubCriteria']);
         });
 
         Route::prefix('evaluations')->group(function () {
-            Route::post('/', [EvaluationController::class, 'store']);
+            Route::post('/', [EvaluationController::class, 'createEvaluation']);
         });
     });
 

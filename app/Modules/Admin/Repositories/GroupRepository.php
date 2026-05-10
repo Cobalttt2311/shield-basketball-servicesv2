@@ -17,12 +17,12 @@ class GroupRepository implements IGroupRepository
         return Group::find($id);
     }
 
-    public function create(array $data): Group
+    public function createGroup(array $data): Group
     {
         return Group::create($data);
     }
 
-    public function update(int $id, array $data): ?Group
+    public function updateGroup(int $id, array $data): ?Group
     {
         $group = $this->findById($id);
         if (!$group) return null;
@@ -31,7 +31,7 @@ class GroupRepository implements IGroupRepository
         return $group;
     }
 
-    public function delete(int $id): bool
+    public function deleteGroup(int $id): bool
     {
         $group = $this->findById($id);
         if (!$group) return false;

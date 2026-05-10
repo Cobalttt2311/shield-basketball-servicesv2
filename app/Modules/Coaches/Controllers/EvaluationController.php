@@ -19,7 +19,7 @@ class EvaluationController extends Controller
         $this->service = $service;
     }
 
-    public function store(Request $request)
+    public function createEvaluation(Request $request)
     {
         try {
             $user = Auth::user();

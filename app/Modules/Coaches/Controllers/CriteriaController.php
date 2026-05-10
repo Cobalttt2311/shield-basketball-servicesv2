@@ -34,7 +34,7 @@ class CriteriaController extends Controller
         }
     }
 
-    public function storeCriteria(Request $request)
+    public function createCriteria(Request $request)
     {
         try {
             $data = $request->only(['name']);
@@ -53,7 +53,7 @@ class CriteriaController extends Controller
         }
     }
 
-    public function storeSubCriteria(Request $request)
+    public function createSubCriteria(Request $request)
     {
         try {
             $data = $request->only([
