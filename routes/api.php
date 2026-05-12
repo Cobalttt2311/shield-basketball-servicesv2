@@ -50,13 +50,36 @@ Route::middleware(['auth:api'])->group(function () {
     Route::middleware(['role:coach'])->group(function () {
 
         Route::prefix('criteria')->group(function () {
+
             Route::get('/me', [CriteriaController::class, 'getMyCriteria']);
+
+            Route::get('/group/{groupId}', [CriteriaController::class, 'getCriteriaByGroupId']);
+
+            Route::get('/{id}', [CriteriaController::class, 'getCriteriaById']);
+
             Route::post('/', [CriteriaController::class, 'createCriteria']);
+
+            Route::put('/{id}', [CriteriaController::class, 'updateCriteria']);
+
+            Route::delete('/{id}', [CriteriaController::class, 'deleteCriteria']);
+
+            Route::get('/sub/all', [CriteriaController::class, 'getAllSubCriteria']);
+
+            Route::get('/sub/criteria/{criteriaId}', [CriteriaController::class, 'getSubCriteriaByCriteria']);
+
             Route::post('/sub', [CriteriaController::class, 'createSubCriteria']);
+
+            Route::put('/sub/{id}', [CriteriaController::class, 'updateSubCriteria']);
+
+            Route::delete('/sub/{id}', [CriteriaController::class, 'deleteSubCriteria']);
         });
 
         Route::prefix('evaluations')->group(function () {
             Route::post('/', [EvaluationController::class, 'createEvaluation']);
+            Route::get('/all',[EvaluationController::class,'getAllEvaluations']);
+            Route::get('/{id}', [EvaluationController::class, 'getEvaluationById']);
+            Route::put('/{id}', [EvaluationController::class, 'updateEvaluation']);
+            Route::delete('/{id}', [EvaluationController::class, 'deleteEvaluation']);
         });
     });
 

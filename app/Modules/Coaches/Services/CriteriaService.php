@@ -2,11 +2,11 @@
 
 namespace App\Modules\Coaches\Services;
 
+use Exception;
+use Illuminate\Support\Facades\Auth;
 use App\Modules\Coaches\Services\Interfaces\ICriteriaService;
 use App\Modules\Coaches\Repositories\Interfaces\ICriteriaRepository;
 use App\Modules\Admin\Repositories\Interfaces\IManagementDataRepository;
-use Illuminate\Support\Facades\Auth;
-use Exception;
 
 class CriteriaService implements ICriteriaService
 {
@@ -24,6 +24,7 @@ class CriteriaService implements ICriteriaService
     public function getMyCriteria()
     {
         $user = Auth::user();
+
         $coach = $this->managementRepo->findCoachByUserId($user->id);
 
         if (!$coach) {
@@ -33,9 +34,26 @@ class CriteriaService implements ICriteriaService
         return $this->repo->getByGroup($coach->group_id);
     }
 
+    public function getCriteriaById(int $id)
+    {
+        $criteria = $this->repo->findCriteriaById($id);
+
+        if (!$criteria) {
+            throw new Exception('Criteria not found');
+        }
+
+        return $criteria;
+    }
+
+    public function getCriteriaByGroupId(int $groupId)
+    {
+        return $this->repo->getCriteriaByGroupId($groupId);
+    }
+
     public function createCriteria(array $data)
     {
         $user = Auth::user();
+
         $coach = $this->managementRepo->findCoachByUserId($user->id);
 
         if (!$coach) {
@@ -52,9 +70,50 @@ class CriteriaService implements ICriteriaService
         ]);
     }
 
+    public function updateCriteria(int $id, array $data)
+    {
+        $criteria = $this->repo->findCriteriaById($id);
+
+        if (!$criteria) {
+            throw new Exception('Criteria not found');
+        }
+
+        $user = Auth::user();
+
+        $coach = $this->managementRepo->findCoachByUserId($user->id);
+
+        if ($criteria->group_id != $coach->group_id) {
+            throw new Exception('Forbidden: different group');
+        }
+
+        return $this->repo->updateCriteria($id, [
+            'name' => $data['name']
+        ]);
+    }
+
+    public function deleteCriteria(int $id)
+    {
+        $criteria = $this->repo->findCriteriaById($id);
+
+        if (!$criteria) {
+            throw new Exception('Criteria not found');
+        }
+
+        $user = Auth::user();
+
+        $coach = $this->managementRepo->findCoachByUserId($user->id);
+
+        if ($criteria->group_id != $coach->group_id) {
+            throw new Exception('Forbidden: different group');
+        }
+
+        return $this->repo->deleteCriteria($id);
+    }
+
     public function createSubCriteria(array $data)
     {
         $user = Auth::user();
+
         $coach = $this->managementRepo->findCoachByUserId($user->id);
 
         if (!$coach) {
@@ -71,7 +130,10 @@ class CriteriaService implements ICriteriaService
             throw new Exception('Forbidden: different group');
         }
 
-        if ($this->repo->checkSubCriteriaExists($data['name'], $data['criteria_id'])) {
+        if ($this->repo->checkSubCriteriaExists(
+            $data['name'],
+            $data['criteria_id']
+        )) {
             throw new Exception('Sub criteria already exists');
         }
 
@@ -79,5 +141,39 @@ class CriteriaService implements ICriteriaService
             'criteria_id' => $data['criteria_id'],
             'name' => $data['name']
         ]);
+    }
+
+    public function getAllSubCriteria()
+    {
+        return $this->repo->getAllSubCriteria();
+    }
+
+    public function getSubCriteriaByCriteria(int $criteriaId)
+    {
+        return $this->repo->getSubCriteriaByCriteria($criteriaId);
+    }
+
+    public function updateSubCriteria(int $id, array $data)
+    {
+        $sub = $this->repo->findSubCriteriaById($id);
+
+        if (!$sub) {
+            throw new Exception('Sub criteria not found');
+        }
+
+        return $this->repo->updateSubCriteria($id, [
+            'name' => $data['name']
+        ]);
+    }
+
+    public function deleteSubCriteria(int $id)
+    {
+        $sub = $this->repo->findSubCriteriaById($id);
+
+        if (!$sub) {
+            throw new Exception('Sub criteria not found');
+        }
+
+        return $this->repo->deleteSubCriteria($id);
     }
 }

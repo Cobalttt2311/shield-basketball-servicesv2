@@ -2,12 +2,12 @@
 
 namespace App\Modules\Coaches\Controllers;
 
-use Illuminate\Routing\Controller;
+use Throwable;
 use Illuminate\Http\Request;
-use App\Modules\Coaches\Services\Interfaces\ICriteriaService;
+use Illuminate\Routing\Controller;
 use App\Utils\Responses\BaseResponse;
 use App\Utils\Messages\SuccessMessages\SuccessMessages;
-use App\Utils\Messages\ErrorMessages\ErrorMessages;
+use App\Modules\Coaches\Services\Interfaces\ICriteriaService;
 
 class CriteriaController extends Controller
 {
@@ -24,11 +24,70 @@ class CriteriaController extends Controller
             $data = $this->service->getMyCriteria();
 
             return response()->json(
-                (new BaseResponse(true, SuccessMessages::CRITERIA_GET, $data))->toArray()
+                (new BaseResponse(
+                    true,
+                    SuccessMessages::CRITERIA_GET,
+                    $data
+                ))->toArray()
             );
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return response()->json(
-                (new BaseResponse(false, $e->getMessage(), null, $e->getMessage()))->toArray(),
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function getCriteriaById($id)
+    {
+        try {
+            $data = $this->service->getCriteriaById($id);
+
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    SuccessMessages::CRITERIA_GET,
+                    $data
+                ))->toArray()
+            );
+        } catch (Throwable $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function getCriteriaByGroupId($groupId)
+    {
+        try {
+            $data = $this->service->getCriteriaByGroupId($groupId);
+
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    SuccessMessages::CRITERIA_GET,
+                    $data
+                ))->toArray()
+            );
+        } catch (Throwable $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
                 500
             );
         }
@@ -37,17 +96,77 @@ class CriteriaController extends Controller
     public function createCriteria(Request $request)
     {
         try {
-            $data = $request->only(['name']);
-
-            $result = $this->service->createCriteria($data);
+            $result = $this->service->createCriteria([
+                'name' => $request->name
+            ]);
 
             return response()->json(
-                (new BaseResponse(true, SuccessMessages::CRITERIA_CREATED, $result))->toArray(),
+                (new BaseResponse(
+                    true,
+                    SuccessMessages::CRITERIA_CREATED,
+                    $result
+                ))->toArray(),
                 201
             );
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return response()->json(
-                (new BaseResponse(false, $e->getMessage(), null, $e->getMessage()))->toArray(),
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function updateCriteria(Request $request, $id)
+    {
+        try {
+            $result = $this->service->updateCriteria($id, [
+                'name' => $request->name
+            ]);
+
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    SuccessMessages::CRITERIA_UPDATED,
+                    $result
+                ))->toArray()
+            );
+        } catch (Throwable $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function deleteCriteria($id)
+    {
+        try {
+            $this->service->deleteCriteria($id);
+
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    SuccessMessages::CRITERIA_DELETED
+                ))->toArray()
+            );
+        } catch (Throwable $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
                 500
             );
         }
@@ -56,20 +175,128 @@ class CriteriaController extends Controller
     public function createSubCriteria(Request $request)
     {
         try {
-            $data = $request->only([
-                'criteria_id',
-                'name'
+            $result = $this->service->createSubCriteria([
+                'criteria_id' => $request->criteria_id,
+                'name' => $request->name
             ]);
 
-            $result = $this->service->createSubCriteria($data);
-
             return response()->json(
-                (new BaseResponse(true, SuccessMessages::SUBCRITERIA_CREATED, $result))->toArray(),
+                (new BaseResponse(
+                    true,
+                    SuccessMessages::SUBCRITERIA_CREATED,
+                    $result
+                ))->toArray(),
                 201
             );
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return response()->json(
-                (new BaseResponse(false, $e->getMessage(), null, $e->getMessage()))->toArray(),
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function getAllSubCriteria()
+    {
+        try {
+            $data = $this->service->getAllSubCriteria();
+
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    SuccessMessages::CRITERIA_GET,
+                    $data
+                ))->toArray()
+            );
+        } catch (Throwable $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function getSubCriteriaByCriteria($criteriaId)
+    {
+        try {
+            $data = $this->service->getSubCriteriaByCriteria($criteriaId);
+
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    SuccessMessages::CRITERIA_GET,
+                    $data
+                ))->toArray()
+            );
+        } catch (Throwable $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function updateSubCriteria(Request $request, $id)
+    {
+        try {
+            $result = $this->service->updateSubCriteria($id, [
+                'name' => $request->name
+            ]);
+
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    SuccessMessages::SUBCRITERIA_UPDATED,
+                    $result
+                ))->toArray()
+            );
+        } catch (Throwable $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function deleteSubCriteria($id)
+    {
+        try {
+            $this->service->deleteSubCriteria($id);
+
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    SuccessMessages::SUBCRITERIA_DELETED
+                ))->toArray()
+            );
+        } catch (Throwable $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
                 500
             );
         }

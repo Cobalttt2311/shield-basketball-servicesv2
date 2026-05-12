@@ -24,4 +24,5 @@ class ErrorMessages
     const CRITERIA_FORBIDDEN_GROUP = 'You cannot access criteria from another group';
     const EVALUATION_INVALID_SCORE = 'Score must be between 0 and 100';
     const EVALUATION_EMPTY_SCORES = 'Scores cannot be empty';
+    const EVALUATION_NOT_FOUND = 'Evaluation not found';
 }

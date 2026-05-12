@@ -2,38 +2,28 @@
 
 namespace App\Modules\Coaches\Services;
 
+use Exception;
 use Illuminate\Support\Facades\DB;
 use App\Modules\Coaches\Services\Interfaces\IEvaluationService;
 use App\Modules\Coaches\Repositories\Interfaces\IEvaluationRepository;
-use App\Modules\Coaches\Repositories\Interfaces\ICriteriaRepository;
-use App\Modules\Admin\Repositories\Interfaces\IManagementDataRepository;
+use App\Utils\Messages\ErrorMessages\ErrorMessages;
 
 class EvaluationService implements IEvaluationService
 {
-    protected IEvaluationRepository $evaluationRepo;
-    protected IManagementDataRepository $managementRepo;
-    protected ICriteriaRepository $criteriaRepo;
+    protected IEvaluationRepository $repo;
 
-    public function __construct(
-        IEvaluationRepository $evaluationRepo,
-        IManagementDataRepository $managementRepo,
-        ICriteriaRepository $criteriaRepo
-    ) {
-        $this->evaluationRepo = $evaluationRepo;
-        $this->managementRepo = $managementRepo;
-        $this->criteriaRepo = $criteriaRepo;
+    public function __construct(IEvaluationRepository $repo)
+    {
+        $this->repo = $repo;
     }
 
     public function createEvaluation(array $data, int $coachId)
     {
-        return DB::transaction(function () use ($data, $coachId) {
+        DB::beginTransaction();
 
-            $coach = $this->managementRepo->findCoachById($coachId);
-            if (!$coach) {
-                throw new \Exception('Coach not found');
-            }
+        try {
 
-            $evaluation = $this->evaluationRepo->createEvaluation([
+            $evaluation = $this->repo->createEvaluation([
                 'title' => $data['title'],
                 'date' => $data['date'],
                 'coach_id' => $coachId
@@ -41,35 +31,122 @@ class EvaluationService implements IEvaluationService
 
             $scores = [];
 
-            foreach ($data['scores'] as $item) {
+            foreach ($data['scores'] as $score) {
 
-                $player = $this->managementRepo->findPlayerById($item['player_id']);
-                if (!$player || $player->group_id != $coach->group_id) {
-                    throw new \Exception('Invalid player');
-                }
+                $subCriteria = $this->repo
+                    ->findSubCriteriaWithCriteria($score['sub_criteria_id']);
 
-                $sub = $this->criteriaRepo->findSubCriteriaWithCriteria($item['sub_criteria_id']);
-                if (!$sub || !$sub->criteria || $sub->criteria->group_id != $player->group_id) {
-                    throw new \Exception('Invalid sub criteria');
-                }
-
-                if ($item['score'] < 0 || $item['score'] > 100) {
-                    throw new \Exception('Score must be 0-100');
+                if (!$subCriteria) {
+                    throw new Exception('Sub criteria not found');
                 }
 
                 $scores[] = [
                     'evaluation_id' => $evaluation->id,
-                    'player_id' => $item['player_id'],
-                    'sub_criteria_id' => $item['sub_criteria_id'],
-                    'score' => $item['score'],
+                    'player_id' => $score['player_id'],
+                    'sub_criteria_id' => $score['sub_criteria_id'],
+                    'score' => $score['score'],
                     'created_at' => now(),
                     'updated_at' => now()
                 ];
             }
 
-            $this->evaluationRepo->insertScores($scores);
+            $this->repo->insertScores($scores);
 
-            return $evaluation->load('scores');
-        });
+            DB::commit();
+
+            return $this->repo->getEvaluationById($evaluation->id);
+
+        } catch (Exception $e) {
+
+            DB::rollBack();
+
+            throw $e;
+        }
+    }
+
+    public function getAllEvaluations()
+    {
+        return $this->repo->getAllEvaluations();
+    }
+
+    public function getEvaluationById(int $id)
+    {
+        $evaluation = $this->repo->getEvaluationById($id);
+
+        if (!$evaluation) {
+            throw new Exception('Evaluation not found');
+        }
+
+        return $evaluation;
+    }
+
+    public function updateEvaluation(int $id, array $data)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $evaluation = $this->repo->getEvaluationById($id);
+
+            if (!$evaluation) {
+                throw new Exception('Evaluation not found');
+            }
+
+            $updatedEvaluation = $this->repo->updateEvaluation($id, [
+                'title' => $data['title'],
+                'date' => $data['date']
+            ]);
+
+            if (isset($data['scores']) && is_array($data['scores'])) {
+
+                $this->repo->deleteScoresByEvaluation($id);
+
+                $scores = [];
+
+                foreach ($data['scores'] as $score) {
+
+                    $subCriteria = $this->repo
+                        ->findSubCriteriaWithCriteria(
+                            $score['sub_criteria_id']
+                        );
+
+                    if (!$subCriteria) {
+                        throw new Exception('Sub criteria not found');
+                    }
+
+                    $scores[] = [
+                        'evaluation_id' => $id,
+                        'player_id' => $score['player_id'],
+                        'sub_criteria_id' => $score['sub_criteria_id'],
+                        'score' => $score['score'],
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ];
+                }
+
+                $this->repo->insertScores($scores);
+            }
+
+            DB::commit();
+
+            return $this->repo->getEvaluationById($id);
+
+        } catch (Exception $e) {
+
+            DB::rollBack();
+
+            throw $e;
+        }
+    }
+
+    public function deleteEvaluation(int $id)
+    {
+        $evaluation = $this->repo->getEvaluationById($id);
+
+        if (!$evaluation) {
+            throw new Exception(ErrorMessages::EVALUATION_NOT_FOUND);
+        }
+
+        return $this->repo->deleteEvaluation($id);
     }
 }

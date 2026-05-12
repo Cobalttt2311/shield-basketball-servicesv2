@@ -15,9 +15,41 @@ class CriteriaRepository implements ICriteriaRepository
             ->get();
     }
 
+    public function getCriteriaByGroupId(int $groupId)
+    {
+        /** @var Criteria|null $criteria */
+        $criteria = Criteria::with('subCriteria')
+            ->where('group_id', $groupId)
+            ->get();
+    }
+
     public function createCriteria(array $data)
     {
         return Criteria::create($data);
+    }
+
+    public function updateCriteria(int $id, array $data)
+    {
+        /** @var Criteria|null $criteria */
+        $criteria = Criteria::find($id);
+
+        if (!$criteria) {
+            return null;
+        }
+
+        $criteria->update($data);
+
+        return $criteria;
+    }
+
+    public function deleteCriteria(int $id)
+    {
+        return Criteria::destroy($id);
+    }
+
+    public function findCriteriaById(int $id)
+    {
+        return Criteria::with('subCriteria')->find($id);
     }
 
     public function createSubCriteria(array $data)
@@ -25,12 +57,42 @@ class CriteriaRepository implements ICriteriaRepository
         return SubCriteria::create($data);
     }
 
-    public function findCriteriaById(int $id)
+    public function getAllSubCriteria()
     {
-        return Criteria::find($id);
+        return SubCriteria::with('criteria')->get();
     }
 
-    // ✅ pindahan dari EvaluationRepository
+    public function getSubCriteriaByCriteria(int $criteriaId)
+    {
+        return SubCriteria::where('criteria_id', $criteriaId)
+            ->with('criteria')
+            ->get();
+    }
+
+    public function findSubCriteriaById(int $id)
+    {
+        return SubCriteria::with('criteria')->find($id);
+    }
+
+    public function updateSubCriteria(int $id, array $data)
+    {
+        /** @var SubCriteria|null $sub */
+        $sub = SubCriteria::find($id);
+
+        if (!$sub) {
+            return null;
+        }
+
+        $sub->update($data);
+
+        return $sub;
+    }
+
+    public function deleteSubCriteria(int $id)
+    {
+        return SubCriteria::destroy($id);
+    }
+
     public function findSubCriteriaWithCriteria(int $id)
     {
         return SubCriteria::with('criteria')->find($id);
