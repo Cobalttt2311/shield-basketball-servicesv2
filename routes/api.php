@@ -76,11 +76,16 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::prefix('evaluations')->group(function () {
             Route::post('/', [EvaluationController::class, 'createEvaluation']);
-            Route::get('/all',[EvaluationController::class,'getAllEvaluations']);
+            Route::get('/all', [EvaluationController::class, 'getAllEvaluations']);
             Route::get('/{id}', [EvaluationController::class, 'getEvaluationById']);
             Route::put('/{id}', [EvaluationController::class, 'updateEvaluation']);
             Route::delete('/{id}', [EvaluationController::class, 'deleteEvaluation']);
         });
-    });
 
+        Route::prefix('evaluation-scores')->group(function () {
+            Route::post('/', [EvaluationController::class, 'createEvaluationScores']);
+            Route::patch('/{id}', [EvaluationController::class, 'updateEvaluationScore']);
+            Route::delete('/{id}', [EvaluationController::class, 'deleteEvaluationScore']);
+        });
+    });
 });

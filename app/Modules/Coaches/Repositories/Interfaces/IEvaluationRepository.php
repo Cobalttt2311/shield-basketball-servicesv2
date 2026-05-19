@@ -14,8 +14,19 @@ interface IEvaluationRepository
 
     public function getEvaluationById(int $id);
 
-    public function updateEvaluation(int $id, array $data);
+    public function updateEvaluation(
+        int $id,
+        array $data
+    );
 
     public function deleteEvaluation(int $id);
-    public function deleteScoresByEvaluation(int $evaluationId);
+
+    public function findScoreById(int $id);
+
+    public function updateScore(
+        int $id,
+        array $data
+    );
+
+    public function deleteScore(int $id);
 }

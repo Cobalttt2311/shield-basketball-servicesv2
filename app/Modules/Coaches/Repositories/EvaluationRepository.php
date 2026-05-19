@@ -2,8 +2,8 @@
 
 namespace App\Modules\Coaches\Repositories;
 
-use App\Modules\Coaches\Models\Evaluation;
 use App\Modules\Coaches\Models\SubCriteria;
+use App\Modules\Coaches\Models\Evaluation;
 use App\Modules\Coaches\Models\EvaluationScore;
 use App\Modules\Coaches\Repositories\Interfaces\IEvaluationRepository;
 
@@ -40,8 +40,11 @@ class EvaluationRepository implements IEvaluationRepository
         ])->find($id);
     }
 
-    public function updateEvaluation(int $id, array $data)
-    {
+    public function updateEvaluation(
+        int $id,
+        array $data
+    ) {
+
         /** @var Evaluation|null $evaluation */
         $evaluation = Evaluation::find($id);
 
@@ -61,11 +64,31 @@ class EvaluationRepository implements IEvaluationRepository
     {
         return Evaluation::destroy($id);
     }
-    public function deleteScoresByEvaluation(int $evaluationId)
+
+    public function findScoreById(int $id)
     {
-        return EvaluationScore::where(
-            'evaluation_id',
-            $evaluationId
-        )->delete();
+        return EvaluationScore::find($id);
+    }
+
+    public function updateScore(
+        int $id,
+        array $data
+    ) {
+
+        /** @var EvaluationScore|null $score */
+        $score = EvaluationScore::find($id);
+
+        if (!$score) {
+            return null;
+        }
+
+        $score->update($data);
+
+        return $score;
+    }
+
+    public function deleteScore(int $id)
+    {
+        return EvaluationScore::destroy($id);
     }
 }

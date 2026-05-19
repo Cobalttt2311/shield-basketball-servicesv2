@@ -15,8 +15,9 @@ class EvaluationController extends Controller
 {
     protected IEvaluationService $service;
 
-    public function __construct(IEvaluationService $service)
-    {
+    public function __construct(
+        IEvaluationService $service
+    ) {
         $this->service = $service;
     }
 
@@ -26,7 +27,10 @@ class EvaluationController extends Controller
 
             $user = Auth::user();
 
-            if ($user->role !== 'coach' || !$user->coach) {
+            if (
+                $user->role !== 'coach' ||
+                !$user->coach
+            ) {
                 return response()->json(
                     (new BaseResponse(
                         false,
@@ -38,45 +42,14 @@ class EvaluationController extends Controller
 
             $coach = $user->coach;
 
-            $data = $request->all();
-
-            if (empty($data['scores']) || !is_array($data['scores'])) {
-                return response()->json(
-                    (new BaseResponse(
-                        false,
-                        ErrorMessages::EVALUATION_EMPTY_SCORES
-                    ))->toArray(),
-                    400
+            $result = $this->service
+                ->createEvaluation(
+                    [
+                        'title' => $request->title,
+                        'date' => $request->date
+                    ],
+                    $coach->id
                 );
-            }
-
-            foreach ($data['scores'] as $score) {
-
-                if (!isset($score['score'])) {
-                    return response()->json(
-                        (new BaseResponse(
-                            false,
-                            ErrorMessages::EVALUATION_INVALID_SCORE
-                        ))->toArray(),
-                        400
-                    );
-                }
-
-                if ($score['score'] < 0 || $score['score'] > 100) {
-                    return response()->json(
-                        (new BaseResponse(
-                            false,
-                            ErrorMessages::EVALUATION_INVALID_SCORE
-                        ))->toArray(),
-                        400
-                    );
-                }
-            }
-
-            $result = $this->service->createEvaluation(
-                $data,
-                $coach->id
-            );
 
             return response()->json(
                 (new BaseResponse(
@@ -105,7 +78,8 @@ class EvaluationController extends Controller
     {
         try {
 
-            $result = $this->service->getAllEvaluations();
+            $result = $this->service
+                ->getAllEvaluations();
 
             return response()->json(
                 (new BaseResponse(
@@ -133,7 +107,8 @@ class EvaluationController extends Controller
     {
         try {
 
-            $result = $this->service->getEvaluationById($id);
+            $result = $this->service
+                ->getEvaluationById($id);
 
             return response()->json(
                 (new BaseResponse(
@@ -157,52 +132,84 @@ class EvaluationController extends Controller
         }
     }
 
-    public function updateEvaluation(Request $request, $id)
-    {
+    public function updateEvaluation(
+        Request $request,
+        $id
+    ) {
         try {
 
-            $data = $request->all();
+            $result = $this->service
+                ->updateEvaluation(
+                    $id,
+                    $request->all()
+                );
 
-            if (isset($data['scores'])) {
-
-                if (!is_array($data['scores'])) {
-                    return response()->json(
-                        (new BaseResponse(
-                            false,
-                            ErrorMessages::EVALUATION_EMPTY_SCORES
-                        ))->toArray(),
-                        400
-                    );
-                }
-
-                foreach ($data['scores'] as $score) {
-
-                    if (!isset($score['score'])) {
-                        return response()->json(
-                            (new BaseResponse(
-                                false,
-                                ErrorMessages::EVALUATION_INVALID_SCORE
-                            ))->toArray(),
-                            400
-                        );
-                    }
-
-                    if ($score['score'] < 0 || $score['score'] > 100) {
-                        return response()->json(
-                            (new BaseResponse(
-                                false,
-                                ErrorMessages::EVALUATION_INVALID_SCORE
-                            ))->toArray(),
-                            400
-                        );
-                    }
-                }
-            }
-
-            $result = $this->service->updateEvaluation(
-                $id,
-                $data
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    SuccessMessages::EVALUATION_UPDATED,
+                    $result
+                ))->toArray()
             );
+
+        } catch (Throwable $e) {
+
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function createEvaluationScores(
+        Request $request
+    ) {
+        try {
+
+            $result = $this->service
+                ->createEvaluationScores(
+                    $request->all()
+                );
+
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    SuccessMessages::EVALUATION_CREATED,
+                    $result
+                ))->toArray(),
+                201
+            );
+
+        } catch (Throwable $e) {
+
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function updateEvaluationScore(
+        Request $request,
+        $id
+    ) {
+        try {
+
+            $result = $this->service
+                ->updateEvaluationScore(
+                    $id,
+                    $request->all()
+                );
 
             return response()->json(
                 (new BaseResponse(
@@ -230,7 +237,36 @@ class EvaluationController extends Controller
     {
         try {
 
-            $this->service->deleteEvaluation($id);
+            $this->service
+                ->deleteEvaluation($id);
+
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    SuccessMessages::EVALUATION_DELETED
+                ))->toArray()
+            );
+
+        } catch (Throwable $e) {
+
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function deleteEvaluationScore($id)
+    {
+        try {
+
+            $this->service
+                ->deleteEvaluationScore($id);
 
             return response()->json(
                 (new BaseResponse(
