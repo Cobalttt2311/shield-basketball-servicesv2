@@ -9,8 +9,7 @@ class SubCriteria extends Model
     protected $table = 'sub_criteria';
     protected $fillable = [
         'criteria_id',
-        'name',
-        'group_id'
+        'name'
     ];
 
     public function criteria()
