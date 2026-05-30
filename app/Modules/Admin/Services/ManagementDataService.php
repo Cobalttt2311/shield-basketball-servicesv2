@@ -38,7 +38,6 @@ class ManagementDataService implements IManagementDataService
                 'username' => $coach->user->username,
                 'default_password' => '*ShieldCoach' . $coach->user->id . '#'
             ];
-            // Sembunyikan relasi asli 'user' agar tidak ikut di-render ke JSON
             $coach->makeHidden('user');
         }
 
