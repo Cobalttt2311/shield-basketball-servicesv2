@@ -9,11 +9,18 @@ class PairwiseCriteria extends Model
     protected $table = 'pairwise_criteria';
 
     protected $fillable = [
-        'group_id',
+        'position_id',
         'criteria_first_id',
         'criteria_second_id',
         'value'
     ];
+
+    public function position()
+    {
+        return $this->belongsTo(
+            Position::class
+        );
+    }
 
     public function firstCriteria()
     {

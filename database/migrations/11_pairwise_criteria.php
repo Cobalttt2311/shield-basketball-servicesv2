@@ -1,8 +1,3 @@
-// ======================================================
-// MIGRATION
-// create_pairwise_criteria_table.php
-// ======================================================
-
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -17,27 +12,28 @@ return new class extends Migration
 
             $table->id();
 
-            $table->foreignId('group_id')
-                ->constrained('groups')
-                ->onDelete('cascade');
+            $table->foreignId('position_id')
+                ->constrained('positions')
+                ->cascadeOnDelete();
 
             $table->foreignId('criteria_first_id')
                 ->constrained('criteria')
-                ->onDelete('cascade');
+                ->cascadeOnDelete();
 
             $table->foreignId('criteria_second_id')
                 ->constrained('criteria')
-                ->onDelete('cascade');
+                ->cascadeOnDelete();
 
-            $table->double('value')->nullable();
+            $table->decimal('value', 10, 4)
+                ->nullable();
 
             $table->timestamps();
 
             $table->unique([
-                'group_id',
+                'position_id',
                 'criteria_first_id',
                 'criteria_second_id'
-            ]);
+            ], 'pairwise_criteria_unique');
         });
     }
 

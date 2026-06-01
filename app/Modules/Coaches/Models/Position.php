@@ -4,9 +4,9 @@ namespace App\Modules\Coaches\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Criteria extends Model
+class Position extends Model
 {
-    protected $table = 'criteria';
+    protected $table = 'positions';
 
     protected $fillable = [
         'group_id',
@@ -18,33 +18,31 @@ class Criteria extends Model
         return $this->belongsTo(Group::class);
     }
 
-    public function subCriteria()
+    public function pairwiseCriteria()
     {
         return $this->hasMany(
-            SubCriteria::class
+            PairwiseCriteria::class
         );
     }
 
-    public function firstPairwise()
+    public function pairwiseSubCriteria()
     {
         return $this->hasMany(
-            PairwiseCriteria::class,
-            'criteria_first_id'
+            PairwiseSubCriteria::class
         );
     }
 
-    public function secondPairwise()
-    {
-        return $this->hasMany(
-            PairwiseCriteria::class,
-            'criteria_second_id'
-        );
-    }
-
-    public function weights()
+    public function criteriaWeights()
     {
         return $this->hasMany(
             CriteriaWeight::class
+        );
+    }
+
+    public function subCriteriaWeights()
+    {
+        return $this->hasMany(
+            SubCriteriaWeight::class
         );
     }
 }

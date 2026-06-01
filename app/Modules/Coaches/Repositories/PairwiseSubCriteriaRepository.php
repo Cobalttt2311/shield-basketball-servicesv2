@@ -7,63 +7,115 @@ use App\Modules\Coaches\Models\PairwiseSubCriteria;
 
 class PairwiseSubCriteriaRepository
 {
-    public function getSubCriteria(
-        $criteriaId
-    ) {
+    public function getSubCriteriaByCriteria(
+        int $criteriaId
+    )
+    {
         return SubCriteria::where(
             'criteria_id',
             $criteriaId
-        )->get();
+        )
+        ->orderBy('id')
+        ->get();
     }
 
-    public function truncate(
-        $criteriaId
-    ) {
+    public function deleteByPositionAndCriteria(
+        int $positionId,
+        int $criteriaId
+    )
+    {
         return PairwiseSubCriteria::where(
+            'position_id',
+            $positionId
+        )
+        ->where(
             'criteria_id',
             $criteriaId
-        )->delete();
+        )
+        ->delete();
     }
 
-    public function insertMany($data)
+    public function insertMany(
+        array $data
+    )
     {
-        return PairwiseSubCriteria::insert($data);
+        return PairwiseSubCriteria::insert(
+            $data
+        );
+    }
+
+    public function getValue(
+        int $positionId,
+        int $criteriaId,
+        int $firstId,
+        int $secondId
+    )
+    {
+        return PairwiseSubCriteria::where(
+            'position_id',
+            $positionId
+        )
+        ->where(
+            'criteria_id',
+            $criteriaId
+        )
+        ->where(
+            'sub_criteria_first_id',
+            $firstId
+        )
+        ->where(
+            'sub_criteria_second_id',
+            $secondId
+        )
+        ->first();
     }
 
     public function updateValue(
-        $criteriaId,
-        $firstId,
-        $secondId,
-        $value
-    ) {
+        int $positionId,
+        int $criteriaId,
+        int $firstId,
+        int $secondId,
+        float $value
+    )
+    {
         return PairwiseSubCriteria::where(
+            'position_id',
+            $positionId
+        )
+        ->where(
             'criteria_id',
             $criteriaId
-        )->where(
+        )
+        ->where(
             'sub_criteria_first_id',
             $firstId
-        )->where(
+        )
+        ->where(
             'sub_criteria_second_id',
             $secondId
-        )->update([
+        )
+        ->update([
             'value' => $value
         ]);
     }
 
-    public function getValue(
-        $criteriaId,
-        $firstId,
-        $secondId
-    ) {
+    public function getByPositionAndCriteria(
+        int $positionId,
+        int $criteriaId
+    )
+    {
         return PairwiseSubCriteria::where(
+            'position_id',
+            $positionId
+        )
+        ->where(
             'criteria_id',
             $criteriaId
-        )->where(
-            'sub_criteria_first_id',
-            $firstId
-        )->where(
-            'sub_criteria_second_id',
-            $secondId
-        )->first();
+        )
+        ->with([
+            'firstSubCriteria',
+            'secondSubCriteria'
+        ])
+        ->get();
     }
 }

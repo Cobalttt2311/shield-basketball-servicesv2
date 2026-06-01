@@ -7,69 +7,94 @@ use App\Modules\Coaches\Models\PairwiseCriteria;
 
 class PairwiseCriteriaRepository
 {
-    public function getCriteriaByGroup($groupId)
+    public function getCriteriaByGroup(
+        int $groupId
+    )
     {
         return Criteria::where(
             'group_id',
             $groupId
-        )->get();
+        )
+        ->orderBy('id')
+        ->get();
     }
 
-    public function truncateByGroup($groupId)
+    public function deleteByPosition(
+        int $positionId
+    )
     {
         return PairwiseCriteria::where(
-            'group_id',
-            $groupId
+            'position_id',
+            $positionId
         )->delete();
     }
 
-    public function insertMany($data)
+    public function insertMany(
+        array $data
+    )
     {
-        return PairwiseCriteria::insert($data);
+        return PairwiseCriteria::insert(
+            $data
+        );
     }
 
-    public function updateValue(
-        $groupId,
-        $firstId,
-        $secondId,
-        $value
-    ) {
+    public function getByPosition(
+        int $positionId
+    )
+    {
         return PairwiseCriteria::where(
-            'group_id',
-            $groupId
-        )->where(
-            'criteria_first_id',
-            $firstId
-        )->where(
-            'criteria_second_id',
-            $secondId
-        )->update([
-            'value' => $value
-        ]);
+            'position_id',
+            $positionId
+        )
+        ->with([
+            'firstCriteria',
+            'secondCriteria'
+        ])
+        ->get();
     }
 
     public function getValue(
-        $groupId,
-        $firstId,
-        $secondId
-    ) {
-        return PairwiseCriteria::where(
-            'group_id',
-            $groupId
-        )->where(
-            'criteria_first_id',
-            $firstId
-        )->where(
-            'criteria_second_id',
-            $secondId
-        )->first();
-    }
-
-    public function getAllByGroup($groupId)
+        int $positionId,
+        int $firstId,
+        int $secondId
+    )
     {
         return PairwiseCriteria::where(
-            'group_id',
-            $groupId
-        )->get();
+            'position_id',
+            $positionId
+        )
+        ->where(
+            'criteria_first_id',
+            $firstId
+        )
+        ->where(
+            'criteria_second_id',
+            $secondId
+        )
+        ->first();
+    }
+
+    public function updateValue(
+        int $positionId,
+        int $firstId,
+        int $secondId,
+        float $value
+    )
+    {
+        return PairwiseCriteria::where(
+            'position_id',
+            $positionId
+        )
+        ->where(
+            'criteria_first_id',
+            $firstId
+        )
+        ->where(
+            'criteria_second_id',
+            $secondId
+        )
+        ->update([
+            'value' => $value
+        ]);
     }
 }

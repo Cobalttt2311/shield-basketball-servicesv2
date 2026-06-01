@@ -6,6 +6,9 @@ use App\Modules\Admin\Controllers\GroupController;
 use App\Modules\Admin\Controllers\ManagementDataController;
 use App\Modules\Coaches\Controllers\CriteriaController;
 use App\Modules\Coaches\Controllers\EvaluationController;
+use App\Modules\Coaches\Controllers\PositionController;
+use App\Modules\Coaches\Controllers\PairwiseCriteriaController;
+use App\Modules\Coaches\Controllers\PairwiseSubCriteriaController;
 
 Route::prefix('auth')->group(function () {
     Route::post('/login', [UserController::class, 'login']);
@@ -37,6 +40,15 @@ Route::middleware(['auth:api'])->group(function () {
             Route::delete('/{id}', [ManagementDataController::class, 'deleteCoach']);
         });
 
+        Route::prefix('positions')->group(function () {
+            Route::get('/',[PositionController::class, 'index']);
+            Route::get('/group/{groupId}',[PositionController::class, 'getByGroup']);
+            Route::get('/{id}',[PositionController::class, 'show']);
+            Route::post('/',[PositionController::class, 'store']);
+            Route::put('/{id}',[PositionController::class, 'update']);
+            Route::delete('/{id}',[PositionController::class, 'destroy']);
+        });
+
     });
 
     Route::middleware(['role:coach,admin'])->group(function (){
@@ -53,27 +65,16 @@ Route::middleware(['auth:api'])->group(function () {
     Route::middleware(['role:coach'])->group(function () {
 
         Route::prefix('criteria')->group(function () {
-
             Route::get('/me', [CriteriaController::class, 'getMyCriteria']);
-
             Route::get('/group/{groupId}', [CriteriaController::class, 'getCriteriaByGroupId']);
-
             Route::get('/{id}', [CriteriaController::class, 'getCriteriaById']);
-
             Route::post('/', [CriteriaController::class, 'createCriteria']);
-
             Route::put('/{id}', [CriteriaController::class, 'updateCriteria']);
-
             Route::delete('/{id}', [CriteriaController::class, 'deleteCriteria']);
-
             Route::get('/sub/all', [CriteriaController::class, 'getAllSubCriteria']);
-
             Route::get('/sub/criteria/{criteriaId}', [CriteriaController::class, 'getSubCriteriaByCriteria']);
-
             Route::post('/sub', [CriteriaController::class, 'createSubCriteria']);
-
             Route::put('/sub/{id}', [CriteriaController::class, 'updateSubCriteria']);
-
             Route::delete('/sub/{id}', [CriteriaController::class, 'deleteSubCriteria']);
         });
 
@@ -89,6 +90,23 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('/', [EvaluationController::class, 'createEvaluationScores']);
             Route::patch('/{id}', [EvaluationController::class, 'updateEvaluationScore']);
             Route::delete('/{id}', [EvaluationController::class, 'deleteEvaluationScore']);
+        });
+        Route::prefix('pairwise-criteria')->group(function () {
+            Route::post('/generate/{groupId}/{positionId}',[PairwiseCriteriaController::class, 'generate']);
+            Route::put('/update',[PairwiseCriteriaController::class, 'update']);
+            Route::get('/matrix/{groupId}/{positionId}',[PairwiseCriteriaController::class, 'matrix']);
+            Route::get('/weights/{groupId}/{positionId}',[PairwiseCriteriaController::class, 'weights']);
+            Route::post('/save-weight/{groupId}/{positionId}',[PairwiseCriteriaController::class, 'saveWeights']);
+            Route::get('/consistency/{groupId}/{positionId}',[PairwiseCriteriaController::class, 'consistency']);
+        });
+
+        Route::prefix('pairwise-subcriteria')->group(function () {
+            Route::post('/generate/{positionId}/{criteriaId}',[PairwiseSubCriteriaController::class, 'generate']);
+            Route::put('/update',[PairwiseSubCriteriaController::class, 'update']);
+            Route::get('/matrix/{positionId}/{criteriaId}',[PairwiseSubCriteriaController::class, 'matrix']);
+            Route::get('/weights/{positionId}/{criteriaId}',[PairwiseSubCriteriaController::class, 'weights']);
+            Route::post('/save-weight/{positionId}/{criteriaId}',[PairwiseSubCriteriaController::class, 'saveWeights']);
+            Route::get('/consistency/{positionId}/{criteriaId}',[PairwiseSubCriteriaController::class, 'consistency']);
         });
     });
 });

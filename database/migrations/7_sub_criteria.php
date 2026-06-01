@@ -13,6 +13,10 @@ return new class extends Migration
             $table->foreignId('criteria_id')->constrained('criteria')->cascadeOnDelete();
             $table->string('name');
             $table->timestamps();
+            $table->unique([
+                'criteria_id',
+                'name'
+            ]);
         });
     }
 
