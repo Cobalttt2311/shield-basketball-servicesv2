@@ -26,7 +26,7 @@ return new class extends Migration
 
             $table->unique([
                 'position_id',
-                'sub_criteria_id'
+                'sub_criteria_id',
             ], 'subcriteria_weight_unique');
         });
     }

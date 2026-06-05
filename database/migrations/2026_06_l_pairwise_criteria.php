@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('criteria_weights', function (Blueprint $table) {
+        Schema::create('pairwise_criteria', function (Blueprint $table) {
 
             $table->id();
 
@@ -16,23 +16,29 @@ return new class extends Migration
                 ->constrained('positions')
                 ->cascadeOnDelete();
 
-            $table->foreignId('criteria_id')
+            $table->foreignId('criteria_first_id')
                 ->constrained('criteria')
                 ->cascadeOnDelete();
 
-            $table->decimal('weight', 12, 8);
+            $table->foreignId('criteria_second_id')
+                ->constrained('criteria')
+                ->cascadeOnDelete();
+
+            $table->decimal('value', 10, 4)
+                ->nullable();
 
             $table->timestamps();
 
             $table->unique([
                 'position_id',
-                'criteria_id'
-            ], 'criteria_weight_unique');
+                'criteria_first_id',
+                'criteria_second_id',
+            ], 'pairwise_criteria_unique');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('criteria_weights');
+        Schema::dropIfExists('pairwise_criteria');
     }
 };
