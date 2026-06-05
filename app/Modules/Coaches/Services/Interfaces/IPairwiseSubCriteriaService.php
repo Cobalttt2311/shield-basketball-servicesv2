@@ -9,9 +9,9 @@ interface IPairwiseSubCriteriaService
         int $criteriaId
     );
 
-    public function updateValue(
+    public function saveValue(
         array $data
-    );
+    ): void;
 
     public function generateMatrix(
         int $positionId,

@@ -5,6 +5,8 @@ namespace App\Modules\Coaches\Services;
 use App\Modules\Coaches\Repositories\Interfaces\IPairwiseCriteriaRepository;
 use App\Modules\Coaches\Repositories\Interfaces\ICriteriaWeightRepository;
 use App\Modules\Coaches\Services\Interfaces\IPairwiseCriteriaService;
+use Illuminate\Support\Facades\DB;
+
 
 class PairwiseCriteriaService implements IPairwiseCriteriaService
 {
@@ -65,16 +67,39 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
     /**
      * Update Value
      */
-    public function updateValue(
+    public function saveValue(
         array $data
-    ) {
-        return $this->pairwiseRepository
-            ->updateValue(
-                $data['position_id'],
-                $data['criteria_first_id'],
-                $data['criteria_second_id'],
-                $data['value']
-            );
+    ):void 
+    {
+        DB::transaction(function () use ($data) {
+            foreach($data as $item) {
+                $firstId =
+                    $item['criteria_first_id'];
+
+                $secondId =
+                    $item['criteria_second_id'];
+
+                $value =
+                    $item['value'];
+
+                // NORMALISASI
+                if ($firstId > $secondId) {
+
+                    [$firstId, $secondId] =
+                        [$secondId, $firstId];
+
+                    $value = 1 / $value;
+                }
+
+                $this->pairwiseRepository
+                    ->saveValue(
+                        $item['position_id'],
+                        $firstId,
+                        $secondId,
+                        $value
+                    );
+            }
+        });
     }
 
     /**

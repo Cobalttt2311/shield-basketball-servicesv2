@@ -5,11 +5,12 @@ namespace App\Modules\Coaches\Services;
 use App\Modules\Coaches\Repositories\Interfaces\IPairwiseSubCriteriaRepository;
 use App\Modules\Coaches\Repositories\Interfaces\ISubCriteriaWeightRepository;
 use App\Modules\Coaches\Services\Interfaces\IPairwiseSubCriteriaService;
+use Illuminate\Support\Facades\DB;
 
-class PairwiseSubCriteriaService
-    implements IPairwiseSubCriteriaService
+class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
 {
     protected $pairwiseRepository;
+
     protected $weightRepository;
 
     public function __construct(
@@ -52,22 +53,20 @@ class PairwiseSubCriteriaService
 
                     'criteria_id' => $criteriaId,
 
-                    'sub_criteria_first_id' =>
-                        $subCriteria[$i]->id,
+                    'sub_criteria_first_id' => $subCriteria[$i]->id,
 
-                    'sub_criteria_second_id' =>
-                        $subCriteria[$j]->id,
+                    'sub_criteria_second_id' => $subCriteria[$j]->id,
 
                     'value' => null,
 
                     'created_at' => now(),
 
-                    'updated_at' => now()
+                    'updated_at' => now(),
                 ];
             }
         }
 
-        if (!empty($data)) {
+        if (! empty($data)) {
 
             $this->pairwiseRepository
                 ->insertMany($data);
@@ -79,17 +78,21 @@ class PairwiseSubCriteriaService
     /**
      * Update Pairwise Value
      */
-    public function updateValue(
+    public function saveValue(
         array $data
-    ) {
-        return $this->pairwiseRepository
-            ->updateValue(
-                $data['position_id'],
-                $data['criteria_id'],
-                $data['sub_criteria_first_id'],
-                $data['sub_criteria_second_id'],
-                $data['value']
-            );
+    ): void {
+        DB::transaction(function () use ($data) {
+            foreach ($data as $item) {
+                $this->pairwiseRepository
+                    ->saveValue(
+                        $item['position_id'],
+                        $item['criteria_id'],
+                        $item['sub_criteria_first_id'],
+                        $item['sub_criteria_second_id'],
+                        $item['value']
+                    );
+            }
+        });
     }
 
     /**
@@ -117,9 +120,7 @@ class PairwiseSubCriteriaService
                 if ($i === $j) {
 
                     $matrix[$i][$j] = 1;
-                }
-
-                elseif ($i < $j) {
+                } elseif ($i < $j) {
 
                     $pairwise =
                         $this->pairwiseRepository
@@ -132,9 +133,7 @@ class PairwiseSubCriteriaService
 
                     $matrix[$i][$j] =
                         $pairwise?->value ?? 0;
-                }
-
-                else {
+                } else {
 
                     $pairwise =
                         $this->pairwiseRepository
@@ -159,7 +158,7 @@ class PairwiseSubCriteriaService
 
         return [
             'sub_criteria' => $subCriteria,
-            'matrix' => $matrix
+            'matrix' => $matrix,
         ];
     }
 
@@ -216,14 +215,12 @@ class PairwiseSubCriteriaService
 
             $weights[] = [
 
-                'sub_criteria_id' =>
-                    $subCriteria[$index]->id,
+                'sub_criteria_id' => $subCriteria[$index]->id,
 
-                'weight' =>
-                    round(
-                        $gm / $totalGM,
-                        8
-                    )
+                'weight' => round(
+                    $gm / $totalGM,
+                    8
+                ),
             ];
         }
 
@@ -333,7 +330,7 @@ class PairwiseSubCriteriaService
             7 => 1.32,
             8 => 1.41,
             9 => 1.45,
-            10 => 1.49
+            10 => 1.49,
         ];
 
         $ri =
@@ -345,17 +342,13 @@ class PairwiseSubCriteriaService
             : $ci / $ri;
 
         return [
-            'lambda_max' =>
-                round($lambdaMax, 6),
+            'lambda_max' => round($lambdaMax, 6),
 
-            'ci' =>
-                round($ci, 6),
+            'ci' => round($ci, 6),
 
-            'cr' =>
-                round($cr, 6),
+            'cr' => round($cr, 6),
 
-            'is_consistent' =>
-                $cr < 0.1
+            'is_consistent' => $cr < 0.1,
         ];
     }
 }

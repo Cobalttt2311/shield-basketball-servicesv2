@@ -2,16 +2,16 @@
 
 namespace App\Modules\User\Controllers;
 
-use Illuminate\Routing\Controller;
-use App\Utils\Requests\LoginRequest;
-use App\Utils\Requests\ForgotPasswordRequest;
-use App\Utils\Requests\ResetPasswordRequest;
 use App\Modules\User\Services\Interfaces\IUserService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Password;
-use App\Utils\Messages\SuccessMessages\SuccessMessages;
 use App\Utils\Messages\ErrorMessages\ErrorMessages;
+use App\Utils\Messages\SuccessMessages\SuccessMessages;
+use App\Utils\Requests\ForgotPasswordRequest;
+use App\Utils\Requests\LoginRequest;
+use App\Utils\Requests\ResetPasswordRequest;
 use App\Utils\Responses\BaseResponse;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Password;
 
 class UserController extends Controller
 {
@@ -29,7 +29,7 @@ class UserController extends Controller
             $request->password
         );
 
-        if (!$result) {
+        if (! $result) {
             $response = new BaseResponse(
                 false,
                 ErrorMessages::AUTH_INVALID_CREDENTIALS,
@@ -44,7 +44,7 @@ class UserController extends Controller
             true,
             SuccessMessages::LOGIN_SUCCESS,
             [
-                'user'  => $result['user'],
+                'user' => $result['user'],
                 'token' => $result['token'],
             ]
         );
@@ -76,9 +76,9 @@ class UserController extends Controller
         }
 
         $error = match ($status) {
-            Password::INVALID_USER   => ErrorMessages::USER_NOT_FOUND,
+            Password::INVALID_USER => ErrorMessages::USER_NOT_FOUND,
             Password::RESET_THROTTLED => ErrorMessages::TOO_MANY_ATTEMPTS,
-            default                   => ErrorMessages::AUTH_UNKNOWN_ERROR,
+            default => ErrorMessages::AUTH_UNKNOWN_ERROR,
         };
 
         return response()->json(
@@ -102,13 +102,18 @@ class UserController extends Controller
 
         $error = match ($status) {
             Password::INVALID_TOKEN => ErrorMessages::INVALID_RESET_TOKEN,
-            Password::INVALID_USER  => ErrorMessages::USER_NOT_FOUND,
-            default                 => ErrorMessages::AUTH_UNKNOWN_ERROR,
+            Password::INVALID_USER => ErrorMessages::USER_NOT_FOUND,
+            default => ErrorMessages::AUTH_UNKNOWN_ERROR,
         };
 
         return response()->json(
             (new BaseResponse(false, $error, null, 'RESET_PASSWORD_FAILED'))->toArray(),
             400
         );
+    }
+
+    public function test()
+    {
+        return response()->json('Success');
     }
 }
