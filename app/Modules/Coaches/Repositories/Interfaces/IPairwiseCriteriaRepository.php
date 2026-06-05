@@ -26,7 +26,7 @@ interface IPairwiseCriteriaRepository
         int $secondId
     );
 
-    public function updateValue(
+    public function saveValue(
         int $positionId,
         int $firstId,
         int $secondId,
