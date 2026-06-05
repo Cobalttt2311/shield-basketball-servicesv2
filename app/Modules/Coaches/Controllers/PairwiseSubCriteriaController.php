@@ -3,8 +3,8 @@
 namespace App\Modules\Coaches\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Modules\Coaches\Services\PairwiseSubCriteriaService;
+use Illuminate\Http\Request;
 
 class PairwiseSubCriteriaController extends Controller
 {
@@ -27,41 +27,34 @@ class PairwiseSubCriteriaController extends Controller
             );
 
         return response()->json([
-            'message' =>
-                'Pairwise sub criteria generated'
+            'message' => 'Pairwise sub criteria generated',
         ]);
     }
 
-    public function update(
+    public function save(
         Request $request
     ) {
         $validated =
             $request->validate([
 
-                'position_id' =>
-                    'required|exists:positions,id',
+                '*.position_id' => 'required|exists:positions,id',
 
-                'criteria_id' =>
-                    'required|exists:criteria,id',
+                '*.criteria_id' => 'required|exists:criteria,id',
 
-                'sub_criteria_first_id' =>
-                    'required|exists:sub_criteria,id',
+                '*.sub_criteria_first_id' => 'required|exists:sub_criteria,id',
 
-                'sub_criteria_second_id' =>
-                    'required|exists:sub_criteria,id',
+                '*.sub_criteria_second_id' => 'required|exists:sub_criteria,id',
 
-                'value' =>
-                    'required|numeric|min:0.111|max:9'
+                '*.value' => 'required|numeric|min:0.111|max:9',
             ]);
 
         $this->service
-            ->updateValue(
+            ->saveValue(
                 $validated
             );
 
         return response()->json([
-            'message' =>
-                'Pairwise sub criteria updated'
+            'message' => 'Pairwise sub criteria updated',
         ]);
     }
 
@@ -102,8 +95,7 @@ class PairwiseSubCriteriaController extends Controller
             );
 
         return response()->json([
-            'message' =>
-                'Sub criteria weights saved'
+            'message' => 'Sub criteria weights saved',
         ]);
     }
 

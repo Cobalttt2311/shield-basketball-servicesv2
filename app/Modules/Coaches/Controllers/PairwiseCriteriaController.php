@@ -3,8 +3,8 @@
 namespace App\Modules\Coaches\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Modules\Coaches\Services\PairwiseCriteriaService;
+use Illuminate\Http\Request;
 
 class PairwiseCriteriaController extends Controller
 {
@@ -27,38 +27,32 @@ class PairwiseCriteriaController extends Controller
             );
 
         return response()->json([
-            'message' =>
-                'Pairwise generated successfully'
+            'message' => 'Pairwise generated successfully',
         ]);
     }
 
-    public function update(
+    public function save(
         Request $request
     ) {
         $validated =
             $request->validate([
 
-                'position_id' =>
-                    'required|exists:positions,id',
+                '*.position_id' => 'required|exists:positions,id',
 
-                'criteria_first_id' =>
-                    'required|exists:criteria,id',
+                '*.criteria_first_id' => 'required|exists:criteria,id',
 
-                'criteria_second_id' =>
-                    'required|exists:criteria,id',
+                '*.criteria_second_id' => 'required|exists:criteria,id',
 
-                'value' =>
-                    'required|numeric|min:0.111|max:9'
+                '*.value' => 'required|numeric|min:0.111|max:9',
             ]);
 
         $this->service
-            ->updateValue(
+            ->saveValue(
                 $validated
             );
 
         return response()->json([
-            'message' =>
-                'Pairwise updated successfully'
+            'message' => 'Pairwise updated successfully',
         ]);
     }
 
@@ -99,8 +93,7 @@ class PairwiseCriteriaController extends Controller
             );
 
         return response()->json([
-            'message' =>
-                'Weights saved successfully'
+            'message' => 'Weights saved successfully',
         ]);
     }
 
