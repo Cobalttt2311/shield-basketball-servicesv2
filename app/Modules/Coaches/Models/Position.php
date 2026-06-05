@@ -2,6 +2,7 @@
 
 namespace App\Modules\Coaches\Models;
 
+use App\Modules\Admin\Models\Group;
 use Illuminate\Database\Eloquent\Model;
 
 class Position extends Model
@@ -10,7 +11,7 @@ class Position extends Model
 
     protected $fillable = [
         'group_id',
-        'name'
+        'name',
     ];
 
     public function group()
