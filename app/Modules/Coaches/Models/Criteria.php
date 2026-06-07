@@ -3,6 +3,10 @@
 namespace App\Modules\Coaches\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Modules\Coaches\Models\SubCriteria;
+use App\Modules\Coaches\Models\PairwiseCriteria;
+use App\Modules\Coaches\Models\CriteriaWeight;
+use App\Modules\Admin\Models\Group;
 
 class Criteria extends Model
 {
