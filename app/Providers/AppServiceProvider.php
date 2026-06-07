@@ -39,6 +39,8 @@ use App\Modules\User\Repositories\UserRepository;
 use App\Modules\User\Services\Interfaces\IUserService;
 use App\Modules\User\Services\UserService;
 use Illuminate\Support\ServiceProvider;
+use App\Modules\Coaches\Services\AhpCalculationService;
+use App\Modules\Coaches\Services\Interfaces\IAhpCalculationService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -73,6 +75,9 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(IPairwiseCriteriaRepository::class, PairwiseCriteriaRepository::class);
         $this->app->bind(IPairwiseCriteriaService::class, PairwiseCriteriaService::class);
+
+        $this->app->bind(IAhpCalculationService::class, AhpCalculationService::class);
+        
     }
 
     /**
