@@ -20,10 +20,12 @@ use App\Modules\Coaches\Repositories\Interfaces\IPairwiseCriteriaRepository;
 use App\Modules\Coaches\Repositories\Interfaces\IPairwiseSubCriteriaRepository;
 use App\Modules\Coaches\Repositories\Interfaces\IPositionRepository;
 use App\Modules\Coaches\Repositories\Interfaces\ISubCriteriaWeightRepository;
+use App\Modules\Coaches\Repositories\Interfaces\IPlayerScoreMappingRepository;
 use App\Modules\Coaches\Repositories\PairwiseCriteriaRepository;
 use App\Modules\Coaches\Repositories\PairwiseSubCriteriaRepository;
 use App\Modules\Coaches\Repositories\PositionRepository;
 use App\Modules\Coaches\Repositories\SubCriteriaWeightRepository;
+use App\Modules\Coaches\Repositories\PlayerScoreMappingRepository;
 use App\Modules\Coaches\Services\CriteriaService;
 use App\Modules\Coaches\Services\EvaluationService;
 use App\Modules\Coaches\Services\Interfaces\ICriteriaService;
@@ -41,6 +43,8 @@ use App\Modules\User\Services\UserService;
 use Illuminate\Support\ServiceProvider;
 use App\Modules\Coaches\Services\AhpCalculationService;
 use App\Modules\Coaches\Services\Interfaces\IAhpCalculationService;
+use App\Modules\Coaches\Services\Interfaces\IPlayerScoreMappingService;
+use App\Modules\Coaches\Services\PlayerScoreMappingService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -77,7 +81,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IPairwiseCriteriaService::class, PairwiseCriteriaService::class);
 
         $this->app->bind(IAhpCalculationService::class, AhpCalculationService::class);
-        
+        $this->app->bind(IPlayerScoreMappingRepository::class, PlayerScoreMappingRepository::class);
+        $this->app->bind(IPlayerScoreMappingService::class, PlayerScoreMappingService::class);
+
     }
 
     /**
