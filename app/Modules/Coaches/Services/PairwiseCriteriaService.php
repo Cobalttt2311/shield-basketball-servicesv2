@@ -5,6 +5,7 @@ namespace App\Modules\Coaches\Services;
 use App\Modules\Coaches\Repositories\Interfaces\IPairwiseCriteriaRepository;
 use App\Modules\Coaches\Repositories\Interfaces\ICriteriaWeightRepository;
 use App\Modules\Coaches\Services\Interfaces\IPairwiseCriteriaService;
+use App\Modules\Coaches\Services\Interfaces\IAhpCalculationService;
 use Illuminate\Support\Facades\DB;
 
 
@@ -12,13 +13,17 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
 {
     protected $pairwiseRepository;
     protected $weightRepository;
+    protected $ahpService;
 
     public function __construct(
         IPairwiseCriteriaRepository $pairwiseRepository,
-        ICriteriaWeightRepository $weightRepository
+        ICriteriaWeightRepository $weightRepository,
+        IAhpCalculationService $ahpService
     ) {
         $this->pairwiseRepository = $pairwiseRepository;
         $this->weightRepository = $weightRepository;
+        $this->ahpService = $ahpService;
+
     }
 
     /**
@@ -72,31 +77,20 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
     ):void 
     {
         DB::transaction(function () use ($data) {
-            foreach($data as $item) {
-                $firstId =
-                    $item['criteria_first_id'];
-
-                $secondId =
-                    $item['criteria_second_id'];
-
-                $value =
-                    $item['value'];
-
-                // NORMALISASI
-                if ($firstId > $secondId) {
-
-                    [$firstId, $secondId] =
-                        [$secondId, $firstId];
-
-                    $value = 1 / $value;
-                }
-
+            foreach ($data as $item) {
+                $normalized =
+                    $this->ahpService
+                        ->normalizeReciprocal(
+                            $item['criteria_first_id'],
+                            $item['criteria_second_id'],
+                            $item['value']
+                        );
                 $this->pairwiseRepository
                     ->saveValue(
                         $item['position_id'],
-                        $firstId,
-                        $secondId,
-                        $value
+                        $normalized['first_id'],
+                        $normalized['second_id'],
+                        $normalized['value']
                     );
             }
         });
@@ -184,46 +178,24 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
         $criteria =
             $generated['criteria'];
 
-        $size = count($matrix);
-
-        $geometricMeans = [];
-
-        for ($i = 0; $i < $size; $i++) {
-
-            $product = 1;
-
-            for ($j = 0; $j < $size; $j++) {
-
-                $product *= $matrix[$i][$j];
-            }
-
-            $geometricMeans[$i] =
-                pow(
-                    $product,
-                    1 / $size
+        $weightVector =
+            $this->ahpService
+                ->calculateEigenVector(
+                    $matrix
                 );
-        }
-
-        $totalGM =
-            array_sum(
-                $geometricMeans
-            );
 
         $weights = [];
 
         foreach (
-            $geometricMeans as $index => $gm
+            $weightVector as $index => $weight
         ) {
 
             $weights[] = [
+
                 'criteria_id' =>
                     $criteria[$index]->id,
 
-                'weight' =>
-                    round(
-                        $gm / $totalGM,
-                        8
-                    )
+                'weight' => $weight
             ];
         }
 
@@ -278,84 +250,17 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
                 $positionId
             );
 
-        $size = count($matrix);
-
         $weightVector =
             array_column(
                 $weights,
                 'weight'
             );
 
-        $weightedSum = [];
-
-        for ($i = 0; $i < $size; $i++) {
-
-            $sum = 0;
-
-            for ($j = 0; $j < $size; $j++) {
-
-                $sum +=
-                    $matrix[$i][$j]
-                    *
-                    $weightVector[$j];
-            }
-
-            $weightedSum[$i] = $sum;
-        }
-
-        $lambda = [];
-
-        for ($i = 0; $i < $size; $i++) {
-
-            $lambda[] =
-                $weightedSum[$i]
-                /
-                $weightVector[$i];
-        }
-
-        $lambdaMax =
-            array_sum($lambda)
-            /
-            $size;
-
-        $ci =
-            ($lambdaMax - $size)
-            /
-            ($size - 1);
-
-        $riTable = [
-            1 => 0,
-            2 => 0,
-            3 => 0.58,
-            4 => 0.90,
-            5 => 1.12,
-            6 => 1.24,
-            7 => 1.32,
-            8 => 1.41,
-            9 => 1.45,
-            10 => 1.49
-        ];
-
-        $ri =
-            $riTable[$size] ?? 1.49;
-
-        $cr =
-            $ri == 0
-            ? 0
-            : $ci / $ri;
-
-        return [
-            'lambda_max' =>
-                round($lambdaMax, 6),
-
-            'ci' =>
-                round($ci, 6),
-
-            'cr' =>
-                round($cr, 6),
-
-            'is_consistent' =>
-                $cr < 0.1
-        ];
+        return
+            $this->ahpService
+                ->calculateConsistency(
+                    $matrix,
+                    $weightVector
+                );
     }
 }
