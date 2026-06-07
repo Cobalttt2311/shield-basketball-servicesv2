@@ -8,6 +8,7 @@ use App\Modules\Coaches\Controllers\PairwiseCriteriaController;
 use App\Modules\Coaches\Controllers\PairwiseSubCriteriaController;
 use App\Modules\Coaches\Controllers\PositionController;
 use App\Modules\User\Controllers\UserController;
+use App\Modules\Coaches\Controllers\PlayerScoreMappingController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -39,6 +40,7 @@ Route::prefix('pairwise-subcriteria')->group(function () {
     Route::post('/save-weight/{positionId}/{criteriaId}', [PairwiseSubCriteriaController::class, 'saveWeights']);
     Route::get('/consistency/{positionId}/{criteriaId}', [PairwiseSubCriteriaController::class, 'consistency']);
 });
+Route::get('/alternative-weight/{evaluationId}/{subCriteriaId}',[PlayerScoreMappingController::class, 'calculate']);
 
 Route::post('forgot-password', [UserController::class, 'forgotPassword']);
 Route::post('reset-password', [UserController::class, 'resetPassword']);
