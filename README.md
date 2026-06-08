@@ -32,8 +32,8 @@ Shield Basketball Services uses the following technologies:
 ### Installation Steps
 1. Clone the repository:
     ```console
-    git clone https://github.com/your-repo/shield-basketball-services.git
-    cd shield-basketball-services
+    git clone https://github.com/your-repo/shield-basketball-servicesv2.git
+    cd shield-basketball-servicesv2
     ```
 
 2. Install dependencies:
