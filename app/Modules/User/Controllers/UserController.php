@@ -2,12 +2,10 @@
 
 namespace App\Modules\User\Controllers;
 
-use App\Modules\User\Services\Interfaces\IUserService;
 use App\Utils\Messages\ErrorMessages\ErrorMessages;
 use App\Utils\Messages\SuccessMessages\SuccessMessages;
 use App\Utils\Requests\ForgotPasswordRequest;
 use App\Utils\Requests\LoginRequest;
-use App\Utils\Requests\ResetPasswordRequest;
 use App\Utils\Responses\BaseResponse;
 use App\Utils\Requests\ResetPasswordRequest;  
 use App\Modules\User\Services\Interfaces\IUserService;
