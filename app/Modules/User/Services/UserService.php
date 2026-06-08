@@ -77,7 +77,7 @@ class UserService implements IUserService
         return $this->userRepository->delete($id);
     }
 
-     public function sendResetLinkEmail(string $email): string
+    public function sendResetLinkEmail(string $email): string
     {
         $user = $this->userRepository->findByEmail($email);
         if (!$user) {
@@ -90,10 +90,15 @@ class UserService implements IUserService
 
     public function resetPassword(array $credentials): string
     {
+        // Pastikan user dengan email tersebut ada
+        $user = $this->userRepository->findByEmail($credentials['email']);
+        if (!$user) {
+            return Password::INVALID_USER;
+        }
+
         return Password::reset(
             $credentials,
-            function (User $user, string $password) {
-                // Update password
+            function ($user, $password) {
                 $this->userRepository->update($user->id, [
                     'password' => Hash::make($password),
                 ]);
