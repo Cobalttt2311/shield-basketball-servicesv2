@@ -8,17 +8,20 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('evaluations', function (Blueprint $table) {
+        Schema::create('criteria', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->date('date');
-            $table->foreignId('coach_id')->constrained('coaches')->cascadeOnDelete();
+            $table->foreignId('group_id')->constrained('groups')->cascadeOnDelete();
+            $table->string('name');
             $table->timestamps();
+            $table->unique([
+                'group_id',
+                'name',
+            ]);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('evaluations');
+        Schema::dropIfExists('criteria');
     }
 };

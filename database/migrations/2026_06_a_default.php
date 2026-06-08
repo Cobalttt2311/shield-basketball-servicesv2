@@ -18,7 +18,7 @@ return new class extends Migration
         });
 
         Schema::create('cache_locks', function (Blueprint $table) {
-            $table->string('key')->primary();
+            $table->string('cache_lock_key');
             $table->string('owner');
             $table->bigInteger('expiration')->index();
         });
