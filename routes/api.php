@@ -23,6 +23,7 @@ Route::prefix('positions')->group(function () {
     Route::put('/{id}', [PositionController::class, 'update']);
     Route::delete('/{id}', [PositionController::class, 'destroy']);
 });
+
 Route::prefix('pairwise-criteria')->group(function () {
     Route::post('/generate/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'generate']);
     Route::put('/save', [PairwiseCriteriaController::class, 'save']);
@@ -40,8 +41,8 @@ Route::prefix('pairwise-subcriteria')->group(function () {
     Route::post('/save-weight/{positionId}/{criteriaId}', [PairwiseSubCriteriaController::class, 'saveWeights']);
     Route::get('/consistency/{positionId}/{criteriaId}', [PairwiseSubCriteriaController::class, 'consistency']);
 });
-Route::get('/alternative-weight/{evaluationId}/{subCriteriaId}',[PlayerScoreMappingController::class, 'calculate']);
 
+Route::get('/alternative-weight/{evaluationId}/{subCriteriaId}',[PlayerScoreMappingController::class, 'calculate']);
 Route::post('forgot-password', [UserController::class, 'forgotPassword']);
 Route::post('reset-password', [UserController::class, 'resetPassword']);
 
@@ -67,16 +68,6 @@ Route::middleware(['auth:api'])->group(function () {
             Route::put('/{id}', [ManagementDataController::class, 'updateCoach']);
             Route::delete('/{id}', [ManagementDataController::class, 'deleteCoach']);
         });
-
-        // Route::prefix('positions')->group(function () {
-        //     Route::get('/',[PositionController::class, 'index']);
-        //     Route::get('/group/{groupId}',[PositionController::class, 'getByGroup']);
-        //     Route::get('/{id}',[PositionController::class, 'show']);
-        //     Route::post('/',[PositionController::class, 'store']);
-        //     Route::put('/{id}',[PositionController::class, 'update']);
-        //     Route::delete('/{id}',[PositionController::class, 'destroy']);
-        // });
-
     });
 
     Route::middleware(['role:coach,admin'])->group(function () {
@@ -118,24 +109,5 @@ Route::middleware(['auth:api'])->group(function () {
             Route::patch('/{id}', [EvaluationController::class, 'updateEvaluationScore']);
             Route::delete('/{id}', [EvaluationController::class, 'deleteEvaluationScore']);
         });
-        // Route::prefix('pairwise-criteria')->group(function () {
-        //     Route::post('/generate/{groupId}/{positionId}',[PairwiseCriteriaController::class, 'generate']);
-        //     Route::put('/update',[PairwiseCriteriaController::class, 'update']);
-        //     Route::get('/matrix/{groupId}/{positionId}',[PairwiseCriteriaController::class, 'matrix']);
-        //     Route::get('/weights/{groupId}/{positionId}',[PairwiseCriteriaController::class, 'weights']);
-        //     Route::post('/save-weight/{groupId}/{positionId}',[PairwiseCriteriaController::class, 'saveWeights']);
-        //     Route::get('/consistency/{groupId}/{positionId}',[PairwiseCriteriaController::class, 'consistency']);
-        // });
-
-        // Route::prefix('pairwise-subcriteria')->group(function () {
-        //     Route::post('/generate/{positionId}/{criteriaId}',[PairwiseSubCriteriaController::class, 'generate']);
-        //     Route::put('/update',[PairwiseSubCriteriaController::class, 'update']);
-        //     Route::get('/matrix/{positionId}/{criteriaId}',[PairwiseSubCriteriaController::class, 'matrix']);
-        //     Route::get('/weights/{positionId}/{criteriaId}',[PairwiseSubCriteriaController::class, 'weights']);
-        //     Route::post('/save-weight/{positionId}/{criteriaId}',[PairwiseSubCriteriaController::class, 'saveWeights']);
-        //     Route::get('/consistency/{positionId}/{criteriaId}',[PairwiseSubCriteriaController::class, 'consistency']);
-        // });
     });
 });
-
-Route::get('/test', [UserController::class, 'test']);

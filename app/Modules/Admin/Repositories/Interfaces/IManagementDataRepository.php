@@ -20,4 +20,5 @@ interface IManagementDataRepository
     public function createPlayer(array $data);
     public function updatePlayer(int $id, array $data);
     public function deletePlayer(int $id);
+    public function findPlayerByUserId(int $userId);    
 }
