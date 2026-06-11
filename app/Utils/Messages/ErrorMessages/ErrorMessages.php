@@ -9,14 +9,12 @@ class ErrorMessages
     const AUTH_TOKEN_INVALID       = 'Token is invalid';
     const AUTH_TOKEN_EXPIRED       = 'Token has expired';
     const AUTH_TOKEN_NOT_PROVIDED  = 'Token not provided';
-    const TOO_MANY_ATTEMPTS         = 'Terlalu banyak percobaan, silakan coba lagi nanti.';
-    const INVALID_RESET_TOKEN       = 'Token reset password tidak valid atau sudah kadaluarsa.';
-    const AUTH_UNKNOWN_ERROR        = 'Terjadi kesalahan, silakan coba lagi.';
-
+    const TOO_MANY_ATTEMPTS   = 'Too many attempts, please try again later.';
+    const INVALID_RESET_TOKEN = 'The password reset token is invalid or has expired.';
+    const AUTH_UNKNOWN_ERROR  = 'An error occurred, please try again.';
     const USER_NOT_FOUND   = 'User not found';
     const COACH_NOT_FOUND  = 'Coach not found';
     const PLAYER_NOT_FOUND = 'Player not found';
-
     const CRITERIA_NOT_FOUND = 'Criteria not found';
     const SUBCRITERIA_NOT_FOUND = 'Sub criteria not found';
     const CRITERIA_DUPLICATE = 'Criteria already exists in this group';

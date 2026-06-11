@@ -65,7 +65,6 @@ class ManagementDataRepository implements IManagementDataRepository
 
     public function getPlayerDetail(int $id)
     {
-        // Eager load hanya dilakukan saat request detail
         return Player::with(['group', 'user'])->find($id);
     }
 

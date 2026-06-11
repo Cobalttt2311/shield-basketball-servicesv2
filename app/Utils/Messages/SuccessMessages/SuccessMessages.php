@@ -6,9 +6,8 @@ class SuccessMessages
 {
     const LOGIN_SUCCESS  = 'Login successful';
     const LOGOUT_SUCCESS = 'Logout successful';
-    const RESET_LINK_SENT  = 'Link reset password telah dikirim ke email Anda.';
-    const PASSWORD_RESET   = 'Password berhasil direset, silakan login dengan password baru.';
-
+    const RESET_LINK_SENT = 'The password reset link has been sent to your email.';
+    const PASSWORD_RESET  = 'Password has been reset successfully, please log in with your new password.';
     const USER_GET = 'User retrieved successfully';
 
     const COACH_GET     = 'Coaches retrieved successfully';
