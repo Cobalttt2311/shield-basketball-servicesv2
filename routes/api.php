@@ -9,6 +9,7 @@ use App\Modules\Coaches\Controllers\PairwiseSubCriteriaController;
 use App\Modules\Coaches\Controllers\PositionController;
 use App\Modules\User\Controllers\UserController;
 use App\Modules\Coaches\Controllers\PlayerScoreMappingController;
+use App\Modules\Upload\Controllers\UploadController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -110,4 +111,12 @@ Route::middleware(['auth:api'])->group(function () {
             Route::delete('/{id}', [EvaluationController::class, 'deleteEvaluationScore']);
         });
     });
+});
+
+
+Route::prefix('uploads')->group(function () {
+    Route::post('/', [UploadController::class, 'upload']);
+    Route::get('/', [UploadController::class, 'getAll']);
+    Route::get('/{id}', [UploadController::class, 'getById']);
+    Route::delete('/{id}', [UploadController::class, 'delete']);
 });
