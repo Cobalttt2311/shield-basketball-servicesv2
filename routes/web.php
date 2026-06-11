@@ -29,3 +29,4 @@ Route::get('/reset-password', [UserController::class, 'showResetPasswordForm'])
 
 Route::post('/reset-password', [UserController::class, 'resetPassword'])
     ->name('password.reset.submit');
+

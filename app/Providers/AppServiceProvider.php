@@ -45,6 +45,10 @@ use App\Modules\Coaches\Services\AhpCalculationService;
 use App\Modules\Coaches\Services\Interfaces\IAhpCalculationService;
 use App\Modules\Coaches\Services\Interfaces\IPlayerScoreMappingService;
 use App\Modules\Coaches\Services\PlayerScoreMappingService;
+use App\Modules\Upload\Repositories\Interfaces\IUploadRepository;
+use App\Modules\Upload\Repositories\UploadRepository;
+use App\Modules\Upload\Services\Interfaces\IUploadService;
+use App\Modules\Upload\Services\UploadService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -84,6 +88,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IPlayerScoreMappingRepository::class, PlayerScoreMappingRepository::class);
         $this->app->bind(IPlayerScoreMappingService::class, PlayerScoreMappingService::class);
 
+        $this->app->bind(IUploadRepository::class, UploadRepository::class);
+        $this->app->bind(IUploadService::class, UploadService::class);
     }
 
     /**
