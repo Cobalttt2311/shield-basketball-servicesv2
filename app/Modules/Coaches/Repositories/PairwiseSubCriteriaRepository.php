@@ -74,6 +74,27 @@ class PairwiseSubCriteriaRepository implements IPairwiseSubCriteriaRepository
         int $secondId,
         float $value
     ) {
+        // $query = PairwiseSubCriteria::where(
+        //     'position_id',
+        //     $positionId
+        // )
+        // ->where(
+        //     'criteria_id',
+        //     $criteriaId
+        // )
+        // ->where(
+        //     'sub_criteria_first_id',
+        //     $firstId
+        // )
+        // ->where(
+        //     'sub_criteria_second_id',
+        //     $secondId
+        // );
+
+        // dd(
+        //     $query->first()
+        // );
+
         return PairwiseSubCriteria::where(
             'position_id',
             $positionId
@@ -90,7 +111,7 @@ class PairwiseSubCriteriaRepository implements IPairwiseSubCriteriaRepository
                 'sub_criteria_second_id',
                 $secondId
             )
-            ->saveValue([
+            ->update([
                 'value' => $value,
             ]);
     }

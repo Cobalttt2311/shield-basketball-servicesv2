@@ -34,6 +34,7 @@ class PairwiseCriteriaController extends Controller
     public function save(
         Request $request
     ) {
+
         $validated =
             $request->validate([
 
