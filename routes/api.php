@@ -68,6 +68,8 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('/', [ManagementDataController::class, 'storeCoach']);
             Route::put('/{id}', [ManagementDataController::class, 'updateCoach']);
             Route::delete('/{id}', [ManagementDataController::class, 'deleteCoach']);
+            Route::get('/profile', [UserController::class, 'getProfile']);
+            
         });
     });
 
