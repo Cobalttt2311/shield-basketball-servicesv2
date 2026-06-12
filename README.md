@@ -39,6 +39,35 @@ composer require laravel/boost --dev
 php artisan boost:install
 ```
 
+## 🔗 Akses Aplikasi
+
+Aplikasi sisi klien (*Frontend*) yang terintegrasi dan mengonsumsi layanan API dari repositori ini dapat diakses secara langsung melalui tautan *live deployment* berikut:
+**[Akses Portal Shield Basketball Camp](https://ahp-frontend.thankfulfield-aee3897d.eastasia.azurecontainerapps.io/)**
+
+## 🏗️ Struktur Direktori Utama
+
+Proyek ini dibangun menggunakan kerangka kerja Laravel. Berikut adalah penjelasan struktur direktori utama yang digunakan untuk memisahkan logika bisnis dan pengolahan data:
+
+```text
+shield-basketball-servicesv2/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/   # Menangani HTTP request dari Frontend dan mengembalikan response JSON
+│   │   ├── Requests/      # Validasi form request untuk input data evaluasi dan kriteria
+│   │   └── Middleware/    # Filter HTTP request, termasuk autentikasi JWT/Sanctum untuk pelatih
+│   ├── Models/            # Representasi entitas tabel database (Pemain, Kriteria, NilaiTes, dll)
+│   └── Services/          # [PENTING] Memuat logika bisnis inti, termasuk kalkulasi algoritma Pure AHP
+├── bootstrap/             # Skrip inisialisasi aplikasi Laravel
+├── config/                # Berkas konfigurasi aplikasi (Database, CORS, dll)
+├── database/
+│   ├── migrations/        # Skema tabel untuk database PostgreSQL (Supabase)
+│   └── seeders/           # Data dummy/awal untuk akun pelatih dan data kriteria dasar
+├── routes/
+│   ├── api.php            # [PENTING] Definisi rute API yang akan dipanggil oleh aplikasi Frontend Next.js
+│   └── web.php            # Rute web default (tidak banyak digunakan karena aplikasi berbasis API)
+├── storage/               # Penyimpanan log sistem dan file cache
+└── tests/                 # Unit test dan feature test untuk menguji keakuratan perhitungan AHP
+
 Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
 
 ## Contributing
