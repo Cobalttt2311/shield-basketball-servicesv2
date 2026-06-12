@@ -69,7 +69,8 @@ Route::middleware(['auth:api'])->group(function () {
             Route::put('/{id}', [ManagementDataController::class, 'updateCoach']);
             Route::delete('/{id}', [ManagementDataController::class, 'deleteCoach']);
             Route::get('/profile', [UserController::class, 'getProfile']);
-            
+            Route::put('/profile', [UserController::class, 'updateProfile']);   
+            Route::post('/change-password', [UserController::class, 'updatePassword']);   
         });
     });
 
@@ -114,7 +115,6 @@ Route::middleware(['auth:api'])->group(function () {
         });
     });
 });
-
 
 Route::prefix('uploads')->group(function () {
     Route::post('/', [UploadController::class, 'upload']);
