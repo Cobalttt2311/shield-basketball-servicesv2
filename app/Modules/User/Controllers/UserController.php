@@ -2,26 +2,28 @@
 
 namespace App\Modules\User\Controllers;
 
-use App\Modules\User\Services\Interfaces\IUserService;
 use App\Utils\Messages\ErrorMessages\ErrorMessages;
 use App\Utils\Messages\SuccessMessages\SuccessMessages;
 use App\Utils\Requests\ForgotPasswordRequest;
 use App\Utils\Requests\LoginRequest;
-use App\Utils\Requests\ResetPasswordRequest;
 use App\Utils\Responses\BaseResponse;
 use App\Utils\Requests\ResetPasswordRequest;  
 use App\Modules\User\Services\Interfaces\IUserService;
+use App\Modules\Admin\Services\Interfaces\IManagementDataService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Password;
 
+
 class UserController extends Controller
 {
     protected IUserService $userService;
+    protected IManagementDataService $managementDataService;
 
-    public function __construct(IUserService $userService)
+    public function __construct(IUserService $userService, IManagementDataService $managementDataService)
     {
         $this->userService = $userService;
+        $this->managementDataService = $managementDataService;
     }
 
     public function login(LoginRequest $request)
@@ -131,8 +133,59 @@ class UserController extends Controller
         ]);
     }
 
-    public function test()
+    public function getProfile(Request $request)
     {
-        return response()->json('Success');
+        $profile = $this->userService->getProfile(
+            $request->user()
+        );
+
+        return response()->json(
+            new BaseResponse(
+                true,
+                'Profile retrieved successfully',
+                $profile
+            )
+        );
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $profile = $this->userService->updateProfile(
+            $request->user(),
+            $request->all()
+        );
+
+        return response()->json(
+            new BaseResponse(
+                true,
+                'Profile updated successfully',
+                $profile
+            )
+        );
+    }
+    public function updatePassword(Request $request)
+    {
+        $result = $this->userService->updatePassword(
+            $request->user(),
+            $request->old_password,
+            $request->password
+        );
+
+        if (!$result) {
+            return response()->json(
+                new BaseResponse(
+                    false,
+                    'Old password is incorrect'
+                ),
+                400
+            );
+        }
+
+        return response()->json(
+            new BaseResponse(
+                true,
+                'Password updated successfully'
+            )
+        );
     }
 }
