@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Storage;
 use App\Modules\Upload\Services\Interfaces\IUploadService;
 use App\Modules\Upload\Repositories\Interfaces\IUploadRepository;
 
+use MicrosoftAzure\Storage\Blob\BlobRestProxy;
+use MicrosoftAzure\Storage\Common\Exceptions\ServiceException;
+
 class UploadService implements IUploadService
 {
     protected IUploadRepository $repo;
@@ -66,18 +69,37 @@ class UploadService implements IUploadService
             );
         }
 
-        $path = $file->store(
-            'uploads',
-            'public'
+        $blobClient = BlobRestProxy::createBlobService(
+            sprintf(
+                "DefaultEndpointsProtocol=https;AccountName=%s;AccountKey=%s",
+                env('AZURE_STORAGE_NAME'),
+                env('AZURE_STORAGE_KEY')
+            )
         );
 
-        $url = asset(
-            'storage/' . $path
+        $fileName = time() . '_' . $file->getClientOriginalName();
+
+        $content = fopen(
+            $file->getRealPath(),
+            'r'
+        );
+
+        $blobClient->createBlockBlob(
+            env('AZURE_STORAGE_CONTAINER'),
+            $fileName,
+            $content
+        );
+
+        $url = sprintf(
+            'https://%s.blob.core.windows.net/%s/%s',
+            env('AZURE_STORAGE_NAME'),
+            env('AZURE_STORAGE_CONTAINER'),
+            $fileName
         );
 
         return $this->repo->create([
             'file_name' => $file->getClientOriginalName(),
-            'file_path' => $path,
+            'file_path' => $fileName,
             'file_url'  => $url,
             'file_type' => $type
         ]);
@@ -117,16 +139,24 @@ class UploadService implements IUploadService
             );
         }
 
+        $blobClient = BlobRestProxy::createBlobService(
+            sprintf(
+                "DefaultEndpointsProtocol=https;AccountName=%s;AccountKey=%s",
+                env('AZURE_STORAGE_NAME'),
+                env('AZURE_STORAGE_KEY')
+            )
+        );
+
         if (
             !empty($file->file_path) &&
-            Storage::disk('public')->exists(
+            Storage::disk('azure')->exists(
                 $file->file_path
             )
         ) {
-            Storage::disk('public')
-                ->delete(
-                    $file->file_path
-                );
+            $blobClient->deleteBlob(
+                env('AZURE_STORAGE_CONTAINER'),
+                $file->file_path
+            );
         }
 
         return $this->repo
