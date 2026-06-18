@@ -161,6 +161,7 @@ class UserController extends Controller
                 $profile
             )
         );
+        
     }
     public function updatePassword(Request $request)
     {

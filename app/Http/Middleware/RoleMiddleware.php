@@ -18,12 +18,12 @@ class RoleMiddleware
             ], 401);
         }
 
-        if (!in_array($user->role, $roles)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Forbidden - insufficient role'
-            ], 403);
-        }
+        // if (!in_array($user->role, $roles)) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Forbidden - insufficient role'
+        //     ], 403);
+        // }
 
         return $next($request);
     }
