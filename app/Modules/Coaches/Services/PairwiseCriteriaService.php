@@ -2,17 +2,21 @@
 
 namespace App\Modules\Coaches\Services;
 
-use App\Modules\Coaches\Repositories\Interfaces\IPairwiseCriteriaRepository;
+use App\Modules\Admin\Models\Group;
+use App\Modules\Coaches\Models\Position;
 use App\Modules\Coaches\Repositories\Interfaces\ICriteriaWeightRepository;
-use App\Modules\Coaches\Services\Interfaces\IPairwiseCriteriaService;
+use App\Modules\Coaches\Repositories\Interfaces\IPairwiseCriteriaRepository;
 use App\Modules\Coaches\Services\Interfaces\IAhpCalculationService;
+use App\Modules\Coaches\Services\Interfaces\IPairwiseCriteriaService;
+use App\Utils\Messages\ErrorMessages\ErrorMessages;
 use Illuminate\Support\Facades\DB;
-
 
 class PairwiseCriteriaService implements IPairwiseCriteriaService
 {
     protected $pairwiseRepository;
+
     protected $weightRepository;
+
     protected $ahpService;
 
     public function __construct(
@@ -33,9 +37,11 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
         int $groupId,
         int $positionId
     ) {
+        $this->validateInputs($groupId, $positionId);
+
         $criteria =
             $this->pairwiseRepository
-            ->getCriteriaByGroup($groupId);
+                ->getCriteriaByGroup($groupId);
 
         $this->pairwiseRepository
             ->deleteByPosition($positionId);
@@ -50,18 +56,16 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
 
                 $data[] = [
                     'position_id' => $positionId,
-                    'criteria_first_id' =>
-                        $criteria[$i]->id,
-                    'criteria_second_id' =>
-                        $criteria[$j]->id,
+                    'criteria_first_id' => $criteria[$i]->id,
+                    'criteria_second_id' => $criteria[$j]->id,
                     'value' => null,
                     'created_at' => now(),
-                    'updated_at' => now()
+                    'updated_at' => now(),
                 ];
             }
         }
 
-        if (!empty($data)) {
+        if (! empty($data)) {
             $this->pairwiseRepository
                 ->insertMany($data);
         }
@@ -74,8 +78,7 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
      */
     public function saveValue(
         array $data
-    ):void 
-    {
+    ): void {
         DB::transaction(function () use ($data) {
             foreach ($data as $item) {
                 $normalized =
@@ -104,9 +107,11 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
         int $groupId,
         int $positionId
     ) {
+        $this->validateInputs($groupId, $positionId);
+
         $criteria =
             $this->pairwiseRepository
-            ->getCriteriaByGroup($groupId);
+                ->getCriteriaByGroup($groupId);
 
         $matrix = [];
 
@@ -119,31 +124,27 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
                 if ($i === $j) {
 
                     $matrix[$i][$j] = 1;
-                }
-
-                elseif ($i < $j) {
+                } elseif ($i < $j) {
 
                     $pairwise =
                         $this->pairwiseRepository
-                        ->getValue(
-                            $positionId,
-                            $criteria[$i]->id,
-                            $criteria[$j]->id
-                        );
+                            ->getValue(
+                                $positionId,
+                                $criteria[$i]->id,
+                                $criteria[$j]->id
+                            );
 
                     $matrix[$i][$j] =
                         $pairwise?->value ?? 0;
-                }
-
-                else {
+                } else {
 
                     $pairwise =
                         $this->pairwiseRepository
-                        ->getValue(
-                            $positionId,
-                            $criteria[$j]->id,
-                            $criteria[$i]->id
-                        );
+                            ->getValue(
+                                $positionId,
+                                $criteria[$j]->id,
+                                $criteria[$i]->id
+                            );
 
                     $matrix[$i][$j] =
                         $pairwise && $pairwise->value
@@ -155,7 +156,7 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
 
         return [
             'criteria' => $criteria,
-            'matrix' => $matrix
+            'matrix' => $matrix,
         ];
     }
 
@@ -192,10 +193,9 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
 
             $weights[] = [
 
-                'criteria_id' =>
-                    $criteria[$index]->id,
+                'criteria_id' => $criteria[$index]->id,
 
-                'weight' => $weight
+                'weight' => $weight,
             ];
         }
 
@@ -262,5 +262,45 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
                     $matrix,
                     $weightVector
                 );
+    }
+
+    public function getPairwise(
+        int $groupId,
+        int $positionId
+    ) {
+        $this->validateInputs($groupId, $positionId);
+
+        $pairwise =
+            $this->pairwiseRepository
+                ->getPairwise(
+                    $groupId,
+                    $positionId
+                );
+
+        return $pairwise
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'position_id' => $item->position_id,
+                    'criteria_first_id' => $item->criteria_first_id,
+                    'criteria_first_name' => $item->firstCriteria?->name,
+                    'criteria_second_id' => $item->criteria_second_id,
+                    'criteria_second_name' => $item->secondCriteria?->name,
+                    'value' => $item->value,
+                ];
+            });
+    }
+
+    private function validateInputs(int $groupId, int $positionId): void
+    {
+        $groupExists = Group::where('id', $groupId)->exists();
+        if (! $groupExists) {
+            throw new \InvalidArgumentException(ErrorMessages::GROUP_NOT_FOUND);
+        }
+
+        $positionExists = Position::where('id', $positionId)->exists();
+        if (! $positionExists) {
+            throw new \InvalidArgumentException(ErrorMessages::POSITION_NOT_FOUND);
+        }
     }
 }

@@ -92,4 +92,31 @@ class PairwiseCriteriaRepository implements IPairwiseCriteriaRepository
                 'value' => $value,
             ]);
     }
+
+    public function getPairwise(
+        int $groupId,
+        int $positionId
+    ) {
+        return PairwiseCriteria::with([
+            'firstCriteria',
+            'secondCriteria',
+        ])
+            ->where(
+                'position_id',
+                $positionId
+            )
+            ->whereHas('firstCriteria', function ($query) use ($groupId) {
+                $query->where('group_id', $groupId);
+            })
+            ->whereHas('secondCriteria', function ($query) use ($groupId) {
+                $query->where('group_id', $groupId);
+            })
+            ->orderBy(
+                'criteria_first_id'
+            )
+            ->orderBy(
+                'criteria_second_id'
+            )
+            ->get();
+    }
 }

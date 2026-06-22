@@ -2,10 +2,13 @@
 
 namespace App\Modules\Coaches\Services;
 
+use App\Modules\Coaches\Models\Criteria;
+use App\Modules\Coaches\Models\Position;
 use App\Modules\Coaches\Repositories\Interfaces\IPairwiseSubCriteriaRepository;
 use App\Modules\Coaches\Repositories\Interfaces\ISubCriteriaWeightRepository;
-use App\Modules\Coaches\Services\Interfaces\IPairwiseSubCriteriaService;
 use App\Modules\Coaches\Services\Interfaces\IAhpCalculationService;
+use App\Modules\Coaches\Services\Interfaces\IPairwiseSubCriteriaService;
+use App\Utils\Messages\ErrorMessages\ErrorMessages;
 use Illuminate\Support\Facades\DB;
 
 class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
@@ -33,6 +36,8 @@ class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
         int $positionId,
         int $criteriaId
     ) {
+        $this->validateInputs($positionId, $criteriaId);
+
         $subCriteria =
             $this->pairwiseRepository
                 ->getSubCriteriaByCriteria(
@@ -115,6 +120,8 @@ class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
         int $positionId,
         int $criteriaId
     ) {
+        $this->validateInputs($positionId, $criteriaId);
+
         $subCriteria =
             $this->pairwiseRepository
                 ->getSubCriteriaByCriteria(
@@ -207,10 +214,9 @@ class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
 
             $weights[] = [
 
-                'sub_criteria_id' =>
-                    $subCriteria[$index]->id,
+                'sub_criteria_id' => $subCriteria[$index]->id,
 
-                'weight' => $weight
+                'weight' => $weight,
             ];
         }
 
@@ -277,5 +283,55 @@ class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
                     $matrix,
                     $weightVector
                 );
+    }
+
+    public function getPairwise(
+        int $positionId,
+        int $criteriaId
+    ) {
+        $this->validateInputs($positionId, $criteriaId);
+
+        $pairwise =
+            $this->pairwiseRepository
+                ->getPairwise(
+                    $positionId,
+                    $criteriaId
+                );
+
+        return $pairwise
+            ->map(function ($item) {
+
+                return [
+
+                    'id' => $item->id,
+
+                    'position_id' => $item->position_id,
+
+                    'criteria_id' => $item->criteria_id,
+
+                    'sub_criteria_first_id' => $item->sub_criteria_first_id,
+
+                    'sub_criteria_first_name' => $item->firstSubCriteria?->name,
+
+                    'sub_criteria_second_id' => $item->sub_criteria_second_id,
+
+                    'sub_criteria_second_name' => $item->secondSubCriteria?->name,
+
+                    'value' => $item->value,
+                ];
+            });
+    }
+
+    private function validateInputs(int $positionId, int $criteriaId): void
+    {
+        $positionExists = Position::where('id', $positionId)->exists();
+        if (! $positionExists) {
+            throw new \InvalidArgumentException(ErrorMessages::POSITION_NOT_FOUND);
+        }
+
+        $criteriaExists = Criteria::where('id', $criteriaId)->exists();
+        if (! $criteriaExists) {
+            throw new \InvalidArgumentException(ErrorMessages::CRITERIA_NOT_FOUND);
+        }
     }
 }

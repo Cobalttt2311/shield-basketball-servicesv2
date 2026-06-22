@@ -9,8 +9,6 @@ use App\Utils\Requests\ForgotPasswordRequest;
 use App\Utils\Requests\LoginRequest;
 use App\Utils\Requests\ResetPasswordRequest;
 use App\Utils\Responses\BaseResponse;
-use App\Utils\Requests\ResetPasswordRequest;  
-use App\Modules\User\Services\Interfaces\IUserService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Password;
@@ -86,11 +84,12 @@ class UserController extends Controller
             (new BaseResponse(false, $error, null, 'FORGOT_PASSWORD_FAILED'))->toArray(),
             400
         );
+
         return view('auth.forgot-password', [
-            'error' => 'Email tidak ditemukan'
+            'error' => 'Email tidak ditemukan',
         ]);
     }
-    
+
     public function showForgotPasswordForm()
     {
         return view('auth.forgot-password');
@@ -116,6 +115,7 @@ class UserController extends Controller
             Password::INVALID_USER => ErrorMessages::USER_NOT_FOUND,
             default => ErrorMessages::AUTH_UNKNOWN_ERROR,
         };
+
         return view('auth.reset-password', [
             'token' => $request->token,
             'email' => $request->email,

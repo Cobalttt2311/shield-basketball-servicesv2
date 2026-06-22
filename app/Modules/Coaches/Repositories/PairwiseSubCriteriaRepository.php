@@ -134,4 +134,29 @@ class PairwiseSubCriteriaRepository implements IPairwiseSubCriteriaRepository
             ])
             ->get();
     }
+
+    public function getPairwise(
+        int $positionId,
+        int $criteriaId
+    ) {
+        return PairwiseSubCriteria::with([
+            'firstSubCriteria',
+            'secondSubCriteria',
+        ])
+            ->where(
+                'position_id',
+                $positionId
+            )
+            ->where(
+                'criteria_id',
+                $criteriaId
+            )
+            ->orderBy(
+                'sub_criteria_first_id'
+            )
+            ->orderBy(
+                'sub_criteria_second_id'
+            )
+            ->get();
+    }
 }

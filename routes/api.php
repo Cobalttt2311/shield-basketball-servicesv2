@@ -4,11 +4,12 @@ use App\Modules\Admin\Controllers\GroupController;
 use App\Modules\Admin\Controllers\ManagementDataController;
 use App\Modules\Coaches\Controllers\CriteriaController;
 use App\Modules\Coaches\Controllers\EvaluationController;
+use App\Modules\Coaches\Controllers\EvaluationReportController;
 use App\Modules\Coaches\Controllers\PairwiseCriteriaController;
 use App\Modules\Coaches\Controllers\PairwiseSubCriteriaController;
+use App\Modules\Coaches\Controllers\PlayerScoreMappingController;
 use App\Modules\Coaches\Controllers\PositionController;
 use App\Modules\User\Controllers\UserController;
-use App\Modules\Coaches\Controllers\PlayerScoreMappingController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -23,24 +24,31 @@ Route::prefix('positions')->group(function () {
     Route::put('/{id}', [PositionController::class, 'update']);
     Route::delete('/{id}', [PositionController::class, 'destroy']);
 });
-Route::prefix('pairwise-criteria')->group(function () {
-    Route::post('/generate/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'generate']);
-    Route::put('/save', [PairwiseCriteriaController::class, 'save']);
-    Route::get('/matrix/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'matrix']);
-    Route::get('/weights/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'weights']);
-    Route::post('/save-weight/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'saveWeights']);
-    Route::get('/consistency/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'consistency']);
-});
+Route::middleware(['auth:api', 'role:coach', 'head.coach'])->group(function () {
+    Route::prefix('pairwise-criteria')->group(function () {
+        Route::post('/generate/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'generate']);
+        Route::put('/save', [PairwiseCriteriaController::class, 'save']);
+        Route::get('/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'getPairwise']);
+        Route::get('/matrix/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'matrix']);
+        Route::get('/weights/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'weights']);
+        Route::post('/save-weight/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'saveWeights']);
+        Route::get('/consistency/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'consistency']);
+    });
 
-Route::prefix('pairwise-subcriteria')->group(function () {
-    Route::post('/generate/{positionId}/{criteriaId}', [PairwiseSubCriteriaController::class, 'generate']);
-    Route::put('/save', [PairwiseSubCriteriaController::class, 'save']);
-    Route::get('/matrix/{positionId}/{criteriaId}', [PairwiseSubCriteriaController::class, 'matrix']);
-    Route::get('/weights/{positionId}/{criteriaId}', [PairwiseSubCriteriaController::class, 'weights']);
-    Route::post('/save-weight/{positionId}/{criteriaId}', [PairwiseSubCriteriaController::class, 'saveWeights']);
-    Route::get('/consistency/{positionId}/{criteriaId}', [PairwiseSubCriteriaController::class, 'consistency']);
+    Route::prefix('pairwise-subcriteria')->group(function () {
+        Route::post('/generate/{positionId}/{criteriaId}', [PairwiseSubCriteriaController::class, 'generate']);
+        Route::put('/save', [PairwiseSubCriteriaController::class, 'save']);
+        Route::get('/{positionId}/{criteriaId}', [PairwiseSubCriteriaController::class, 'getPairwise']);
+        Route::get('/matrix/{positionId}/{criteriaId}', [PairwiseSubCriteriaController::class, 'matrix']);
+        Route::get('/weights/{positionId}/{criteriaId}', [PairwiseSubCriteriaController::class, 'weights']);
+        Route::post('/save-weight/{positionId}/{criteriaId}', [PairwiseSubCriteriaController::class, 'saveWeights']);
+        Route::get('/consistency/{positionId}/{criteriaId}', [PairwiseSubCriteriaController::class, 'consistency']);
+    });
 });
-Route::get('/alternative-weight/{evaluationId}/{subCriteriaId}',[PlayerScoreMappingController::class, 'calculate']);
+Route::get('/alternative-weight/{evaluationId}/{subCriteriaId}', [PlayerScoreMappingController::class, 'calculate']);
+Route::get('/alternative-score/{evaluationId}/{positionId}', [PlayerScoreMappingController::class, 'calculateAlternativeScores']);
+Route::get('/alternative-score/{positionId}', [PlayerScoreMappingController::class, 'calculateAlternativeScoresByPosition']);
+Route::get('/recommendations/{evaluationId}', [PlayerScoreMappingController::class, 'getPositionRecommendations']);
 
 Route::post('forgot-password', [UserController::class, 'forgotPassword']);
 Route::post('reset-password', [UserController::class, 'resetPassword']);
@@ -87,7 +95,11 @@ Route::middleware(['auth:api'])->group(function () {
             Route::put('/{id}', [ManagementDataController::class, 'updatePlayer']);
             Route::delete('/{id}', [ManagementDataController::class, 'deletePlayer']);
         });
+        Route::get('evaluation-reports/evaluation/{evaluationId}/player/{playerId}', [EvaluationReportController::class, 'getFinalizedReport']);
     });
+
+    Route::get('evaluation-reports/my-report/{evaluationId}', [EvaluationReportController::class, 'getPlayerReport']);
+    Route::get('evaluation-reports/my-reports', [EvaluationReportController::class, 'getMyReportsList']);
 
     Route::middleware(['role:coach'])->group(function () {
 
@@ -118,6 +130,8 @@ Route::middleware(['auth:api'])->group(function () {
             Route::patch('/{id}', [EvaluationController::class, 'updateEvaluationScore']);
             Route::delete('/{id}', [EvaluationController::class, 'deleteEvaluationScore']);
         });
+
+        Route::post('evaluation-reports/finalize', [EvaluationReportController::class, 'finalizeReport']);
         // Route::prefix('pairwise-criteria')->group(function () {
         //     Route::post('/generate/{groupId}/{positionId}',[PairwiseCriteriaController::class, 'generate']);
         //     Route::put('/update',[PairwiseCriteriaController::class, 'update']);

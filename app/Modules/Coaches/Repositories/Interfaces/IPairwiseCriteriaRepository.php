@@ -32,4 +32,9 @@ interface IPairwiseCriteriaRepository
         int $secondId,
         float $value
     );
+
+    public function getPairwise(
+        int $groupId,
+        int $positionId
+    );
 }

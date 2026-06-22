@@ -32,4 +32,9 @@ interface IPairwiseCriteriaService
         int $groupId,
         int $positionId
     );
+
+    public function getPairwise(
+        int $groupId,
+        int $positionId
+    );
 }

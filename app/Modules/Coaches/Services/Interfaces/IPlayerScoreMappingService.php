@@ -8,4 +8,13 @@ interface IPlayerScoreMappingService
         int $evaluationId,
         int $subCriteriaId
     );
+
+    public function calculateAlternativeScores(
+        int $evaluationId,
+        int $positionId
+    );
+
+    public function getPositionRecommendations(
+        int $evaluationId
+    );
 }
