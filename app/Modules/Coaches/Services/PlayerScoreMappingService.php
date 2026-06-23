@@ -247,25 +247,30 @@ class PlayerScoreMappingService implements IPlayerScoreMappingService
         $allRecommendations = [];
 
         foreach ($positions as $position) {
-            $scores = $this->calculateAlternativeScores($evaluationId, $position->id);
-            foreach ($scores as $playerScore) {
-                $pId = $playerScore['player_id'];
-                $pName = $playerScore['player_name'];
-                $score = $playerScore['score'];
+            try {
+                $scores = $this->calculateAlternativeScores($evaluationId, $position->id);
+                foreach ($scores as $playerScore) {
+                    $pId = $playerScore['player_id'];
+                    $pName = $playerScore['player_name'];
+                    $score = $playerScore['score'];
 
-                if (! isset($allRecommendations[$pId])) {
-                    $allRecommendations[$pId] = [
-                        'player_id' => $pId,
-                        'player_name' => $pName,
-                        'positions' => [],
+                    if (! isset($allRecommendations[$pId])) {
+                        $allRecommendations[$pId] = [
+                            'player_id' => $pId,
+                            'player_name' => $pName,
+                            'positions' => [],
+                        ];
+                    }
+
+                    $allRecommendations[$pId]['positions'][] = [
+                        'position_id' => $position->id,
+                        'position_name' => $position->name,
+                        'score' => round($score, 6),
                     ];
                 }
-
-                $allRecommendations[$pId]['positions'][] = [
-                    'position_id' => $position->id,
-                    'position_name' => $position->name,
-                    'score' => round($score, 6),
-                ];
+            } catch (\InvalidArgumentException $e) {
+                // Skip positions that don't have criteria weights, subcriteria weights, or evaluation scores
+                continue;
             }
         }
 
