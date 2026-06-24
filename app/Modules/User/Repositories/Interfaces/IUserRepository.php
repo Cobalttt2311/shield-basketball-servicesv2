@@ -17,7 +17,6 @@ interface IUserRepository
     public function delete(int $id): bool;
 
     public function findByEmail(string $email): ?User;
-}
     public function getProfileByUser(User $user);
 
     public function updateCoachProfile(
@@ -30,3 +29,5 @@ interface IUserRepository
         array $data
     ): Player;
 }
+
+

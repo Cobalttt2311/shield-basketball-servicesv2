@@ -8,12 +8,15 @@ use App\Modules\Coaches\Controllers\EvaluationReportController;
 use App\Modules\Coaches\Controllers\PairwiseCriteriaController;
 use App\Modules\Coaches\Controllers\PairwiseSetController;
 use App\Modules\Coaches\Controllers\PairwiseSubCriteriaController;
-use App\Modules\Coaches\Controllers\PlayerScoreMappingController;
 use App\Modules\Coaches\Controllers\PositionController;
 use App\Modules\User\Controllers\UserController;
 use App\Modules\Coaches\Controllers\PlayerScoreMappingController;
 use App\Modules\Upload\Controllers\UploadController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\RoleMiddleware;
+use App\Http\Middleware\MasterCoachMiddleware;
+use App\Http\Middleware\HeadCoachMiddleware;
+
 
 Route::prefix('auth')->group(function () {
     Route::post('/login', [UserController::class, 'login']);

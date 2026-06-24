@@ -74,4 +74,4 @@ class SuccessMessages
 
     const REPORT_GET = 'Evaluation report retrieved successfully';
 }
-}
+
