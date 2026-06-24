@@ -12,7 +12,8 @@ class PairwiseCriteria extends Model
         'position_id',
         'criteria_first_id',
         'criteria_second_id',
-        'value'
+        'value',
+        'pairwise_set_id',
     ];
 
     public function position()
@@ -35,6 +36,14 @@ class PairwiseCriteria extends Model
         return $this->belongsTo(
             Criteria::class,
             'criteria_second_id'
+        );
+    }
+
+    public function pairwiseSet()
+    {
+        return $this->belongsTo(
+            PairwiseSet::class,
+            'pairwise_set_id'
         );
     }
 }

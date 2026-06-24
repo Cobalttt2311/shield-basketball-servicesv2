@@ -5,8 +5,7 @@ namespace App\Modules\Coaches\Repositories;
 use App\Modules\Coaches\Models\Position;
 use App\Modules\Coaches\Repositories\Interfaces\IPositionRepository;
 
-class PositionRepository
-    implements IPositionRepository
+class PositionRepository implements IPositionRepository
 {
     public function getAll()
     {
@@ -17,8 +16,7 @@ class PositionRepository
 
     public function getByGroupId(
         int $groupId
-    )
-    {
+    ) {
         return Position::where(
             'group_id',
             $groupId
@@ -27,8 +25,7 @@ class PositionRepository
 
     public function findById(
         int $id
-    )
-    {
+    ) {
         return Position::findOrFail(
             $id
         );
@@ -36,8 +33,7 @@ class PositionRepository
 
     public function create(
         array $data
-    )
-    {
+    ) {
         return Position::create(
             $data
         );
@@ -46,8 +42,7 @@ class PositionRepository
     public function update(
         int $id,
         array $data
-    )
-    {
+    ) {
         $position =
             Position::findOrFail($id);
 
@@ -58,8 +53,7 @@ class PositionRepository
 
     public function delete(
         int $id
-    )
-    {
+    ) {
         return Position::destroy($id);
     }
 }

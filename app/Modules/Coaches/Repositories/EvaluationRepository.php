@@ -2,9 +2,9 @@
 
 namespace App\Modules\Coaches\Repositories;
 
-use App\Modules\Coaches\Models\SubCriteria;
 use App\Modules\Coaches\Models\Evaluation;
 use App\Modules\Coaches\Models\EvaluationScore;
+use App\Modules\Coaches\Models\SubCriteria;
 use App\Modules\Coaches\Repositories\Interfaces\IEvaluationRepository;
 
 class EvaluationRepository implements IEvaluationRepository
@@ -28,7 +28,7 @@ class EvaluationRepository implements IEvaluationRepository
     {
         return Evaluation::with([
             'coach',
-            'scores'
+            'scores',
         ])->get();
     }
 
@@ -36,7 +36,7 @@ class EvaluationRepository implements IEvaluationRepository
     {
         return Evaluation::with([
             'coach',
-            'scores'
+            'scores',
         ])->find($id);
     }
 
@@ -48,7 +48,7 @@ class EvaluationRepository implements IEvaluationRepository
         /** @var Evaluation|null $evaluation */
         $evaluation = Evaluation::find($id);
 
-        if (!$evaluation) {
+        if (! $evaluation) {
             return null;
         }
 
@@ -56,7 +56,7 @@ class EvaluationRepository implements IEvaluationRepository
 
         return $evaluation->load([
             'coach',
-            'scores'
+            'scores',
         ]);
     }
 
@@ -78,7 +78,7 @@ class EvaluationRepository implements IEvaluationRepository
         /** @var EvaluationScore|null $score */
         $score = EvaluationScore::find($id);
 
-        if (!$score) {
+        if (! $score) {
             return null;
         }
 

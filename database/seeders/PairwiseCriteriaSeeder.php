@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Modules\Coaches\Models\PairwiseCriteria;
+use App\Modules\Coaches\Models\PairwiseSet;
+use App\Modules\Coaches\Services\Interfaces\IPairwiseCriteriaService;
 use Illuminate\Database\Seeder;
 
 class PairwiseCriteriaSeeder extends Seeder
@@ -268,5 +270,17 @@ class PairwiseCriteriaSeeder extends Seeder
                 'updated_at' => $now,
             ],
         ]);
+
+        $pairwiseSet = PairwiseSet::where('group_id', 2)->first();
+        $pairwiseSetId = $pairwiseSet ? $pairwiseSet->id : null;
+
+        PairwiseCriteria::whereIn('position_id', $positions)
+            ->whereNull('pairwise_set_id')
+            ->update(['pairwise_set_id' => $pairwiseSetId]);
+
+        $pairwiseCriteriaService = app(IPairwiseCriteriaService::class);
+        foreach ($positions as $positionId) {
+            $pairwiseCriteriaService->saveWeights(2, $positionId, $pairwiseSetId);
+        }
     }
 }

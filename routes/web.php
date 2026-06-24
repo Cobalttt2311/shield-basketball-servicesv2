@@ -1,9 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\TestEmail;
 use App\Modules\User\Controllers\UserController;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
@@ -12,7 +11,7 @@ Route::get('/', function () {
 Route::get('/testmail', function () {
     Mail::raw('Test email dari Laravel + Mailtrap', function ($message) {
         $message->to('test@example.com')
-                ->subject('Test Mailtrap');
+            ->subject('Test Mailtrap');
     });
 
     return 'Email terkirim (cek Mailtrap inbox)';

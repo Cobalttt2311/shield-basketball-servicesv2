@@ -33,7 +33,7 @@ class CriteriaRepository implements ICriteriaRepository
         /** @var Criteria|null $criteria */
         $criteria = Criteria::find($id);
 
-        if (!$criteria) {
+        if (! $criteria) {
             return null;
         }
 
@@ -79,7 +79,7 @@ class CriteriaRepository implements ICriteriaRepository
         /** @var SubCriteria|null $sub */
         $sub = SubCriteria::find($id);
 
-        if (!$sub) {
+        if (! $sub) {
             return null;
         }
 

@@ -10,7 +10,7 @@ class SubCriteria extends Model
 
     protected $fillable = [
         'criteria_id',
-        'name'
+        'name',
     ];
 
     public function criteria()

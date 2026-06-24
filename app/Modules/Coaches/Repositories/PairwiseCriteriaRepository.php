@@ -20,12 +20,18 @@ class PairwiseCriteriaRepository implements IPairwiseCriteriaRepository
     }
 
     public function deleteByPosition(
-        int $positionId
+        int $positionId,
+        ?int $pairwiseSetId = null
     ) {
-        return PairwiseCriteria::where(
-            'position_id',
-            $positionId
-        )->delete();
+        $query = PairwiseCriteria::where('position_id', $positionId);
+
+        if ($pairwiseSetId !== null) {
+            $query->where('pairwise_set_id', $pairwiseSetId);
+        } else {
+            $query->whereNull('pairwise_set_id');
+        }
+
+        return $query->delete();
     }
 
     public function insertMany(
@@ -37,86 +43,89 @@ class PairwiseCriteriaRepository implements IPairwiseCriteriaRepository
     }
 
     public function getByPosition(
-        int $positionId
+        int $positionId,
+        ?int $pairwiseSetId = null
     ) {
-        return PairwiseCriteria::where(
-            'position_id',
-            $positionId
-        )
-            ->with([
-                'firstCriteria',
-                'secondCriteria',
-            ])
-            ->get();
+        $query = PairwiseCriteria::where('position_id', $positionId);
+
+        if ($pairwiseSetId !== null) {
+            $query->where('pairwise_set_id', $pairwiseSetId);
+        } else {
+            $query->whereNull('pairwise_set_id');
+        }
+
+        return $query->with([
+            'firstCriteria',
+            'secondCriteria',
+        ])->get();
     }
 
     public function getValue(
         int $positionId,
         int $firstId,
-        int $secondId
+        int $secondId,
+        ?int $pairwiseSetId = null
     ) {
-        return PairwiseCriteria::where(
-            'position_id',
-            $positionId
-        )
-            ->where(
-                'criteria_first_id',
-                $firstId
-            )
-            ->where(
-                'criteria_second_id',
-                $secondId
-            )
-            ->first();
+        $query = PairwiseCriteria::where('position_id', $positionId)
+            ->where('criteria_first_id', $firstId)
+            ->where('criteria_second_id', $secondId);
+
+        if ($pairwiseSetId !== null) {
+            $query->where('pairwise_set_id', $pairwiseSetId);
+        } else {
+            $query->whereNull('pairwise_set_id');
+        }
+
+        return $query->first();
     }
 
     public function saveValue(
         int $positionId,
         int $firstId,
         int $secondId,
-        float $value
+        float $value,
+        ?int $pairwiseSetId = null
     ) {
-        return PairwiseCriteria::where(
-            'position_id',
-            $positionId
-        )
-            ->where(
-                'criteria_first_id',
-                $firstId
-            )
-            ->where(
-                'criteria_second_id',
-                $secondId
-            )
-            ->update([
-                'value' => $value,
-            ]);
+        $query = PairwiseCriteria::where('position_id', $positionId)
+            ->where('criteria_first_id', $firstId)
+            ->where('criteria_second_id', $secondId);
+
+        if ($pairwiseSetId !== null) {
+            $query->where('pairwise_set_id', $pairwiseSetId);
+        } else {
+            $query->whereNull('pairwise_set_id');
+        }
+
+        return $query->update([
+            'value' => $value,
+        ]);
     }
 
     public function getPairwise(
         int $groupId,
-        int $positionId
+        int $positionId,
+        ?int $pairwiseSetId = null
     ) {
-        return PairwiseCriteria::with([
+        $query = PairwiseCriteria::with([
             'firstCriteria',
             'secondCriteria',
         ])
-            ->where(
-                'position_id',
-                $positionId
-            )
-            ->whereHas('firstCriteria', function ($query) use ($groupId) {
-                $query->where('group_id', $groupId);
-            })
+            ->where('position_id', $positionId);
+
+        if ($pairwiseSetId !== null) {
+            $query->where('pairwise_set_id', $pairwiseSetId);
+        } else {
+            $query->whereNull('pairwise_set_id');
+        }
+
+        return $query->whereHas('firstCriteria', function ($query) use ($groupId) {
+            $query->where('group_id', $groupId);
+        })
             ->whereHas('secondCriteria', function ($query) use ($groupId) {
                 $query->where('group_id', $groupId);
             })
-            ->orderBy(
-                'criteria_first_id'
-            )
-            ->orderBy(
-                'criteria_second_id'
-            )
+            ->orderBy('criteria_first_id')
+            ->orderBy('criteria_second_id')
             ->get();
     }
 }

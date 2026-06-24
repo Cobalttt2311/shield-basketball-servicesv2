@@ -9,6 +9,7 @@ use App\Modules\Coaches\Models\EvaluationScore;
 use App\Modules\Coaches\Models\Position;
 use App\Modules\Coaches\Repositories\Interfaces\IEvaluationReportRepository;
 use App\Modules\Coaches\Services\Interfaces\IEvaluationReportService;
+use App\Modules\Coaches\Services\Interfaces\IPlayerScoreMappingService;
 use App\Utils\Messages\ErrorMessages\ErrorMessages;
 use Exception;
 
@@ -16,9 +17,14 @@ class EvaluationReportService implements IEvaluationReportService
 {
     protected IEvaluationReportRepository $repository;
 
-    public function __construct(IEvaluationReportRepository $repository)
-    {
+    protected IPlayerScoreMappingService $playerScoreMappingService;
+
+    public function __construct(
+        IEvaluationReportRepository $repository,
+        IPlayerScoreMappingService $playerScoreMappingService
+    ) {
         $this->repository = $repository;
+        $this->playerScoreMappingService = $playerScoreMappingService;
     }
 
     public function finalizeReport(array $data)
@@ -88,7 +94,7 @@ class EvaluationReportService implements IEvaluationReportService
             'evaluation_date' => $report->evaluation->date,
             'player_id' => $report->player_id,
             'player_name' => $player->name,
-            'group_name' => $player->group ? $player->group->name : null,
+            'group_name' => $player->group ? $player->group->age_group : null,
             'head_coach' => $headCoach ? $headCoach->name : null,
             'assistant_coach' => $assistantCoach ? $assistantCoach->name : null,
             'recommended_position_id' => $report->recommended_position_id,
@@ -114,5 +120,49 @@ class EvaluationReportService implements IEvaluationReportService
                 'finalized_at' => $report->created_at->toDateTimeString(),
             ];
         });
+    }
+
+    public function getPlayersForFinalization(int $evaluationId): array
+    {
+        $evaluation = Evaluation::find($evaluationId);
+        if (! $evaluation) {
+            throw new Exception(ErrorMessages::EVALUATION_NOT_FOUND);
+        }
+
+        $coach = $evaluation->coach;
+        if (! $coach) {
+            throw new Exception(ErrorMessages::COACH_NOT_FOUND);
+        }
+
+        $players = Player::where('group_id', $coach->group_id)->get();
+
+        $recommendations = [];
+        if ($evaluation->pairwise_set_id) {
+            try {
+                $recommendations = $this->playerScoreMappingService->getPositionRecommendations($evaluationId);
+            } catch (Exception $e) {
+                // If calculations fail (e.g. empty/incomplete pairwise_set), keep empty
+                $recommendations = [];
+            }
+        }
+
+        $recommendationsByPlayer = [];
+        foreach ($recommendations as $rec) {
+            $recommendationsByPlayer[$rec['player_id']] = $rec['positions'];
+        }
+
+        $data = [];
+        foreach ($players as $player) {
+            $statusFinalisasi = $this->repository->hasReport($evaluationId, $player->id);
+            $playerRecs = $recommendationsByPlayer[$player->id] ?? [];
+            $data[] = [
+                'player_id' => $player->id,
+                'player_name' => $player->name,
+                'status_finalisasi' => $statusFinalisasi,
+                'recommendations' => $playerRecs,
+            ];
+        }
+
+        return $data;
     }
 }

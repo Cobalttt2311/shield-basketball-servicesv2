@@ -2,8 +2,8 @@
 
 namespace App\Modules\Admin\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Modules\User\Models\User;
+use Illuminate\Database\Eloquent\Model;
 
 class Player extends Model
 {
@@ -17,7 +17,7 @@ class Player extends Model
         'weight',
         'parent_name',
         'parent_phone',
-        'user_id'
+        'user_id',
     ];
 
     public function group()

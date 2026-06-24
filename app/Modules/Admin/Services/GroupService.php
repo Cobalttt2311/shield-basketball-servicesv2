@@ -2,8 +2,8 @@
 
 namespace App\Modules\Admin\Services;
 
-use App\Modules\Admin\Services\Interfaces\IGroupService;
 use App\Modules\Admin\Repositories\Interfaces\IGroupRepository;
+use App\Modules\Admin\Services\Interfaces\IGroupService;
 
 class GroupService implements IGroupService
 {

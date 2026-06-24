@@ -170,10 +170,11 @@ class PlayerScoreMappingService implements IPlayerScoreMappingService
 
     public function calculateAlternativeScores(
         int $evaluationId,
-        int $positionId
+        int $positionId,
+        ?int $pairwiseSetId = null
     ): array {
-        $evaluationExists = Evaluation::where('id', $evaluationId)->exists();
-        if (! $evaluationExists) {
+        $evaluation = Evaluation::find($evaluationId);
+        if (! $evaluation) {
             throw new \InvalidArgumentException(ErrorMessages::EVALUATION_NOT_FOUND);
         }
 
@@ -182,12 +183,16 @@ class PlayerScoreMappingService implements IPlayerScoreMappingService
             throw new \InvalidArgumentException(ErrorMessages::POSITION_NOT_FOUND);
         }
 
-        $criteriaWeights = $this->criteriaWeightRepo->getByPosition($positionId);
+        if ($pairwiseSetId === null) {
+            $pairwiseSetId = $evaluation->pairwise_set_id;
+        }
+
+        $criteriaWeights = $this->criteriaWeightRepo->getByPosition($positionId, $pairwiseSetId);
         if ($criteriaWeights->isEmpty()) {
             throw new \InvalidArgumentException(ErrorMessages::CRITERIA_WEIGHTS_NOT_FOUND);
         }
 
-        $subCriteriaWeights = $this->subCriteriaWeightRepo->getByPosition($positionId);
+        $subCriteriaWeights = $this->subCriteriaWeightRepo->getByPosition($positionId, $pairwiseSetId);
         if ($subCriteriaWeights->isEmpty()) {
             throw new \InvalidArgumentException(ErrorMessages::SUBCRITERIA_WEIGHTS_NOT_FOUND);
         }
@@ -239,16 +244,17 @@ class PlayerScoreMappingService implements IPlayerScoreMappingService
     public function getPositionRecommendations(
         int $evaluationId
     ): array {
-        $evaluationExists = Evaluation::where('id', $evaluationId)->exists();
-        if (! $evaluationExists) {
+        $evaluation = Evaluation::find($evaluationId);
+        if (! $evaluation) {
             throw new \InvalidArgumentException(ErrorMessages::EVALUATION_NOT_FOUND);
         }
+        $pairwiseSetId = $evaluation->pairwise_set_id;
         $positions = Position::all();
         $allRecommendations = [];
 
         foreach ($positions as $position) {
             try {
-                $scores = $this->calculateAlternativeScores($evaluationId, $position->id);
+                $scores = $this->calculateAlternativeScores($evaluationId, $position->id, $pairwiseSetId);
                 foreach ($scores as $playerScore) {
                     $pId = $playerScore['player_id'];
                     $pName = $playerScore['player_name'];

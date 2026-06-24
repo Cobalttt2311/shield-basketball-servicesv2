@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Modules\Coaches\Models\PairwiseSet;
 use App\Modules\Coaches\Models\PairwiseSubCriteria;
+use App\Modules\Coaches\Services\Interfaces\IPairwiseSubCriteriaService;
 use Illuminate\Database\Seeder;
 
 class PairwiseSubCriteriaSeeder extends Seeder
@@ -52,5 +54,20 @@ class PairwiseSubCriteriaSeeder extends Seeder
         }
 
         PairwiseSubCriteria::insert($data);
+
+        $pairwiseSet = PairwiseSet::where('group_id', 2)->first();
+        $pairwiseSetId = $pairwiseSet ? $pairwiseSet->id : null;
+
+        PairwiseSubCriteria::whereIn('position_id', $positions)
+            ->whereNull('pairwise_set_id')
+            ->update(['pairwise_set_id' => $pairwiseSetId]);
+
+        $pairwiseSubCriteriaService = app(IPairwiseSubCriteriaService::class);
+        $criteriaIds = [5, 6, 7, 8];
+        foreach ($positions as $positionId) {
+            foreach ($criteriaIds as $criteriaId) {
+                $pairwiseSubCriteriaService->saveWeights($positionId, $criteriaId, $pairwiseSetId);
+            }
+        }
     }
 }

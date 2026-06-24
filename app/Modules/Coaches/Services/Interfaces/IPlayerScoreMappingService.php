@@ -11,7 +11,8 @@ interface IPlayerScoreMappingService
 
     public function calculateAlternativeScores(
         int $evaluationId,
-        int $positionId
+        int $positionId,
+        ?int $pairwiseSetId = null
     );
 
     public function getPositionRecommendations(

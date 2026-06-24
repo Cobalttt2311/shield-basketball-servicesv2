@@ -35,7 +35,8 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
      */
     public function generatePairwise(
         int $groupId,
-        int $positionId
+        int $positionId,
+        ?int $pairwiseSetId = null
     ) {
         $this->validateInputs($groupId, $positionId);
 
@@ -44,7 +45,7 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
                 ->getCriteriaByGroup($groupId);
 
         $this->pairwiseRepository
-            ->deleteByPosition($positionId);
+            ->deleteByPosition($positionId, $pairwiseSetId);
 
         $data = [];
 
@@ -59,6 +60,7 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
                     'criteria_first_id' => $criteria[$i]->id,
                     'criteria_second_id' => $criteria[$j]->id,
                     'value' => null,
+                    'pairwise_set_id' => $pairwiseSetId,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
@@ -77,9 +79,10 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
      * Update Value
      */
     public function saveValue(
-        array $data
+        array $data,
+        ?int $pairwiseSetId = null
     ): void {
-        DB::transaction(function () use ($data) {
+        DB::transaction(function () use ($data, $pairwiseSetId) {
             foreach ($data as $item) {
                 $normalized =
                     $this->ahpService
@@ -93,7 +96,8 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
                         $item['position_id'],
                         $normalized['first_id'],
                         $normalized['second_id'],
-                        $normalized['value']
+                        $normalized['value'],
+                        $pairwiseSetId
                     );
             }
         });
@@ -105,7 +109,8 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
      */
     public function generateMatrix(
         int $groupId,
-        int $positionId
+        int $positionId,
+        ?int $pairwiseSetId = null
     ) {
         $this->validateInputs($groupId, $positionId);
 
@@ -131,7 +136,8 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
                             ->getValue(
                                 $positionId,
                                 $criteria[$i]->id,
-                                $criteria[$j]->id
+                                $criteria[$j]->id,
+                                $pairwiseSetId
                             );
 
                     $matrix[$i][$j] =
@@ -143,7 +149,8 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
                             ->getValue(
                                 $positionId,
                                 $criteria[$j]->id,
-                                $criteria[$i]->id
+                                $criteria[$i]->id,
+                                $pairwiseSetId
                             );
 
                     $matrix[$i][$j] =
@@ -165,12 +172,14 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
      */
     public function calculateWeights(
         int $groupId,
-        int $positionId
+        int $positionId,
+        ?int $pairwiseSetId = null
     ) {
         $generated =
             $this->generateMatrix(
                 $groupId,
-                $positionId
+                $positionId,
+                $pairwiseSetId
             );
 
         $matrix =
@@ -207,21 +216,24 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
      */
     public function saveWeights(
         int $groupId,
-        int $positionId
+        int $positionId,
+        ?int $pairwiseSetId = null
     ) {
         $weights =
             $this->calculateWeights(
                 $groupId,
-                $positionId
+                $positionId,
+                $pairwiseSetId
             );
 
         foreach ($weights as $weight) {
-
+            // Update or create weight per position, criteria, and pairwise_set_id
             $this->weightRepository
                 ->updateOrCreate(
                     $positionId,
                     $weight['criteria_id'],
-                    $weight['weight']
+                    $weight['weight'],
+                    $pairwiseSetId
                 );
         }
 
@@ -233,12 +245,14 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
      */
     public function calculateConsistencyRatio(
         int $groupId,
-        int $positionId
+        int $positionId,
+        ?int $pairwiseSetId = null
     ) {
         $generated =
             $this->generateMatrix(
                 $groupId,
-                $positionId
+                $positionId,
+                $pairwiseSetId
             );
 
         $matrix =
@@ -247,7 +261,8 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
         $weights =
             $this->calculateWeights(
                 $groupId,
-                $positionId
+                $positionId,
+                $pairwiseSetId
             );
 
         $weightVector =
@@ -266,7 +281,8 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
 
     public function getPairwise(
         int $groupId,
-        int $positionId
+        int $positionId,
+        ?int $pairwiseSetId = null
     ) {
         $this->validateInputs($groupId, $positionId);
 
@@ -274,7 +290,8 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
             $this->pairwiseRepository
                 ->getPairwise(
                     $groupId,
-                    $positionId
+                    $positionId,
+                    $pairwiseSetId
                 );
 
         return $pairwise

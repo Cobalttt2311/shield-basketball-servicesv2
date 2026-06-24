@@ -9,4 +9,6 @@ interface IEvaluationReportService
     public function getReportByEvaluationAndPlayer(int $evaluationId, int $playerId);
 
     public function getReportsListForPlayer(int $playerId);
+
+    public function getPlayersForFinalization(int $evaluationId): array;
 }

@@ -10,6 +10,7 @@ use App\Modules\Coaches\Models\Position;
 use App\Modules\Coaches\Models\SubCriteria;
 use App\Modules\User\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 uses(RefreshDatabase::class);
@@ -17,7 +18,7 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     // 1. Setup Group
     $this->group = Group::create([
-        'name' => '14 Putra',
+        'age_group' => 'KU 13-18',
     ]);
 
     // 2. Setup Coach
@@ -190,7 +191,7 @@ test('coach can retrieve finalized report with scores', function () {
             'data' => [
                 'evaluation_id' => $this->evaluation->id,
                 'player_name' => 'Player Romli',
-                'group_name' => '14 Putra',
+                'group_name' => 'KU 13-18',
                 'head_coach' => 'Coach Johan',
                 'assistant_coach' => 'Assis Nathaniel',
                 'recommended_position_name' => 'Guard',
@@ -223,6 +224,7 @@ test('player can retrieve their own report but not others', function () {
         ->postJson('/api/evaluation-reports/finalize', $payload);
 
     // Player retrieves own report
+    Auth::guard('api')->setUser($this->playerUser);
     $playerToken = JWTAuth::fromUser($this->playerUser);
     $response = $this->withHeaders(['Authorization' => "Bearer $playerToken"])
         ->getJson("/api/evaluation-reports/my-report/{$this->evaluation->id}");
@@ -260,6 +262,7 @@ test('player can retrieve their own report but not others', function () {
     ]);
 
     $otherToken = JWTAuth::fromUser($otherPlayerUser);
+    Auth::guard('api')->setUser($otherPlayerUser);
     $otherResponse = $this->withHeaders(['Authorization' => "Bearer $otherToken"])
         ->getJson("/api/evaluation-reports/my-report/{$this->evaluation->id}");
 
@@ -294,6 +297,7 @@ test('player can retrieve list of finalized reports', function () {
         ->postJson('/api/evaluation-reports/finalize', $payload);
 
     // Fetch reports list
+    Auth::guard('api')->setUser($this->playerUser);
     $playerToken = JWTAuth::fromUser($this->playerUser);
     $response = $this->withHeaders(['Authorization' => "Bearer $playerToken"])
         ->getJson('/api/evaluation-reports/my-reports');

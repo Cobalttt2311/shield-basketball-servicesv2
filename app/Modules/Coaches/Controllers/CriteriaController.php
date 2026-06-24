@@ -2,12 +2,12 @@
 
 namespace App\Modules\Coaches\Controllers;
 
-use Throwable;
+use App\Modules\Coaches\Services\Interfaces\ICriteriaService;
+use App\Utils\Messages\SuccessMessages\SuccessMessages;
+use App\Utils\Responses\BaseResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use App\Utils\Responses\BaseResponse;
-use App\Utils\Messages\SuccessMessages\SuccessMessages;
-use App\Modules\Coaches\Services\Interfaces\ICriteriaService;
+use Throwable;
 
 class CriteriaController extends Controller
 {
@@ -97,7 +97,7 @@ class CriteriaController extends Controller
     {
         try {
             $result = $this->service->createCriteria([
-                'name' => $request->name
+                'name' => $request->name,
             ]);
 
             return response()->json(
@@ -125,7 +125,7 @@ class CriteriaController extends Controller
     {
         try {
             $result = $this->service->updateCriteria($id, [
-                'name' => $request->name
+                'name' => $request->name,
             ]);
 
             return response()->json(
@@ -177,7 +177,7 @@ class CriteriaController extends Controller
         try {
             $result = $this->service->createSubCriteria([
                 'criteria_id' => $request->criteria_id,
-                'name' => $request->name
+                'name' => $request->name,
             ]);
 
             return response()->json(
@@ -255,7 +255,7 @@ class CriteriaController extends Controller
     {
         try {
             $result = $this->service->updateSubCriteria($id, [
-                'name' => $request->name
+                'name' => $request->name,
             ]);
 
             return response()->json(

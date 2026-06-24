@@ -37,10 +37,12 @@ use App\Modules\Coaches\Services\Interfaces\ICriteriaService;
 use App\Modules\Coaches\Services\Interfaces\IEvaluationReportService;
 use App\Modules\Coaches\Services\Interfaces\IEvaluationService;
 use App\Modules\Coaches\Services\Interfaces\IPairwiseCriteriaService;
+use App\Modules\Coaches\Services\Interfaces\IPairwiseSetService;
 use App\Modules\Coaches\Services\Interfaces\IPairwiseSubCriteriaService;
 use App\Modules\Coaches\Services\Interfaces\IPlayerScoreMappingService;
 use App\Modules\Coaches\Services\Interfaces\IPositionService;
 use App\Modules\Coaches\Services\PairwiseCriteriaService;
+use App\Modules\Coaches\Services\PairwiseSetService;
 use App\Modules\Coaches\Services\PairwiseSubCriteriaService;
 use App\Modules\Coaches\Services\PlayerScoreMappingService;
 use App\Modules\Coaches\Services\PositionService;
@@ -83,6 +85,8 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(IPairwiseCriteriaRepository::class, PairwiseCriteriaRepository::class);
         $this->app->bind(IPairwiseCriteriaService::class, PairwiseCriteriaService::class);
+
+        $this->app->bind(IPairwiseSetService::class, PairwiseSetService::class);
 
         $this->app->bind(IAhpCalculationService::class, AhpCalculationService::class);
         $this->app->bind(IPlayerScoreMappingRepository::class, PlayerScoreMappingRepository::class);

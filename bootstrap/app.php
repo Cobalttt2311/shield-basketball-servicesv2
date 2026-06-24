@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\HeadCoachMiddleware;
+use App\Http\Middleware\MasterCoachMiddleware;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -18,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => RoleMiddleware::class,
             'head.coach' => HeadCoachMiddleware::class,
+            'master.coach' => MasterCoachMiddleware::class,
         ]);
 
         $middleware->group('api', [

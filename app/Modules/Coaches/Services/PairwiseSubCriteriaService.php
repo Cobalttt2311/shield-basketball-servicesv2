@@ -34,7 +34,8 @@ class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
      */
     public function generatePairwise(
         int $positionId,
-        int $criteriaId
+        int $criteriaId,
+        ?int $pairwiseSetId = null
     ) {
         $this->validateInputs($positionId, $criteriaId);
 
@@ -47,7 +48,8 @@ class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
         $this->pairwiseRepository
             ->deleteByPositionAndCriteria(
                 $positionId,
-                $criteriaId
+                $criteriaId,
+                $pairwiseSetId
             );
 
         $data = [];
@@ -60,17 +62,12 @@ class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
 
                 $data[] = [
                     'position_id' => $positionId,
-
                     'criteria_id' => $criteriaId,
-
                     'sub_criteria_first_id' => $subCriteria[$i]->id,
-
                     'sub_criteria_second_id' => $subCriteria[$j]->id,
-
                     'value' => null,
-
+                    'pairwise_set_id' => $pairwiseSetId,
                     'created_at' => now(),
-
                     'updated_at' => now(),
                 ];
             }
@@ -89,9 +86,10 @@ class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
      * Update Pairwise Value
      */
     public function saveValue(
-        array $data
+        array $data,
+        ?int $pairwiseSetId = null
     ): void {
-        DB::transaction(function () use ($data) {
+        DB::transaction(function () use ($data, $pairwiseSetId) {
             foreach ($data as $item) {
                 $normalized =
                     $this->ahpService
@@ -106,7 +104,8 @@ class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
                         $item['criteria_id'],
                         $normalized['first_id'],
                         $normalized['second_id'],
-                        $normalized['value']
+                        $normalized['value'],
+                        $pairwiseSetId
                     );
             }
         });
@@ -118,7 +117,8 @@ class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
      */
     public function generateMatrix(
         int $positionId,
-        int $criteriaId
+        int $criteriaId,
+        ?int $pairwiseSetId = null
     ) {
         $this->validateInputs($positionId, $criteriaId);
 
@@ -147,7 +147,8 @@ class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
                                 $positionId,
                                 $criteriaId,
                                 $subCriteria[$i]->id,
-                                $subCriteria[$j]->id
+                                $subCriteria[$j]->id,
+                                $pairwiseSetId
                             );
 
                     $matrix[$i][$j] =
@@ -160,7 +161,8 @@ class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
                                 $positionId,
                                 $criteriaId,
                                 $subCriteria[$j]->id,
-                                $subCriteria[$i]->id
+                                $subCriteria[$i]->id,
+                                $pairwiseSetId
                             );
 
                     $matrix[$i][$j] =
@@ -186,12 +188,14 @@ class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
      */
     public function calculateWeights(
         int $positionId,
-        int $criteriaId
+        int $criteriaId,
+        ?int $pairwiseSetId = null
     ) {
         $generated =
             $this->generateMatrix(
                 $positionId,
-                $criteriaId
+                $criteriaId,
+                $pairwiseSetId
             );
 
         $matrix =
@@ -228,21 +232,24 @@ class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
      */
     public function saveWeights(
         int $positionId,
-        int $criteriaId
+        int $criteriaId,
+        ?int $pairwiseSetId = null
     ) {
         $weights =
             $this->calculateWeights(
                 $positionId,
-                $criteriaId
+                $criteriaId,
+                $pairwiseSetId
             );
 
         foreach ($weights as $weight) {
-
+            // Update or create weight per position, subcriteria, and pairwise_set_id
             $this->weightRepository
                 ->updateOrCreate(
                     $positionId,
                     $weight['sub_criteria_id'],
-                    $weight['weight']
+                    $weight['weight'],
+                    $pairwiseSetId
                 );
         }
 
@@ -254,12 +261,14 @@ class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
      */
     public function calculateConsistencyRatio(
         int $positionId,
-        int $criteriaId
+        int $criteriaId,
+        ?int $pairwiseSetId = null
     ) {
         $generated =
             $this->generateMatrix(
                 $positionId,
-                $criteriaId
+                $criteriaId,
+                $pairwiseSetId
             );
 
         $matrix =
@@ -268,7 +277,8 @@ class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
         $weights =
             $this->calculateWeights(
                 $positionId,
-                $criteriaId
+                $criteriaId,
+                $pairwiseSetId
             );
 
         $weightVector =
@@ -287,7 +297,8 @@ class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
 
     public function getPairwise(
         int $positionId,
-        int $criteriaId
+        int $criteriaId,
+        ?int $pairwiseSetId = null
     ) {
         $this->validateInputs($positionId, $criteriaId);
 
@@ -295,7 +306,8 @@ class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
             $this->pairwiseRepository
                 ->getPairwise(
                     $positionId,
-                    $criteriaId
+                    $criteriaId,
+                    $pairwiseSetId
                 );
 
         return $pairwise

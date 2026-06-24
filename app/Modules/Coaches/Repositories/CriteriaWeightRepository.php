@@ -10,12 +10,14 @@ class CriteriaWeightRepository implements ICriteriaWeightRepository
     public function updateOrCreate(
         int $positionId,
         int $criteriaId,
-        float $weight
+        float $weight,
+        ?int $pairwiseSetId = null
     ) {
         return CriteriaWeight::updateOrCreate(
             [
                 'position_id' => $positionId,
                 'criteria_id' => $criteriaId,
+                'pairwise_set_id' => $pairwiseSetId,
             ],
             [
                 'weight' => $weight,
@@ -24,13 +26,17 @@ class CriteriaWeightRepository implements ICriteriaWeightRepository
     }
 
     public function getByPosition(
-        int $positionId
+        int $positionId,
+        ?int $pairwiseSetId = null
     ) {
-        return CriteriaWeight::where(
-            'position_id',
-            $positionId
-        )
-            ->with('criteria')
-            ->get();
+        $query = CriteriaWeight::where('position_id', $positionId);
+
+        if ($pairwiseSetId !== null) {
+            $query->where('pairwise_set_id', $pairwiseSetId);
+        } else {
+            $query->whereNull('pairwise_set_id');
+        }
+
+        return $query->with('criteria')->get();
     }
 }

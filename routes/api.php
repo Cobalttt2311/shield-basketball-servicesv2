@@ -6,6 +6,7 @@ use App\Modules\Coaches\Controllers\CriteriaController;
 use App\Modules\Coaches\Controllers\EvaluationController;
 use App\Modules\Coaches\Controllers\EvaluationReportController;
 use App\Modules\Coaches\Controllers\PairwiseCriteriaController;
+use App\Modules\Coaches\Controllers\PairwiseSetController;
 use App\Modules\Coaches\Controllers\PairwiseSubCriteriaController;
 use App\Modules\Coaches\Controllers\PlayerScoreMappingController;
 use App\Modules\Coaches\Controllers\PositionController;
@@ -24,7 +25,7 @@ Route::prefix('positions')->group(function () {
     Route::put('/{id}', [PositionController::class, 'update']);
     Route::delete('/{id}', [PositionController::class, 'destroy']);
 });
-Route::middleware(['auth:api', 'role:coach', 'head.coach'])->group(function () {
+Route::middleware(['auth:api', 'role:coach', 'master.coach'])->group(function () {
     Route::prefix('pairwise-criteria')->group(function () {
         Route::post('/generate/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'generate']);
         Route::put('/save', [PairwiseCriteriaController::class, 'save']);
@@ -107,14 +108,17 @@ Route::middleware(['auth:api'])->group(function () {
             Route::get('/me', [CriteriaController::class, 'getMyCriteria']);
             Route::get('/group/{groupId}', [CriteriaController::class, 'getCriteriaByGroupId']);
             Route::get('/{id}', [CriteriaController::class, 'getCriteriaById']);
-            Route::post('/', [CriteriaController::class, 'createCriteria']);
-            Route::put('/{id}', [CriteriaController::class, 'updateCriteria']);
-            Route::delete('/{id}', [CriteriaController::class, 'deleteCriteria']);
             Route::get('/sub/all', [CriteriaController::class, 'getAllSubCriteria']);
             Route::get('/sub/criteria/{criteriaId}', [CriteriaController::class, 'getSubCriteriaByCriteria']);
-            Route::post('/sub', [CriteriaController::class, 'createSubCriteria']);
-            Route::put('/sub/{id}', [CriteriaController::class, 'updateSubCriteria']);
-            Route::delete('/sub/{id}', [CriteriaController::class, 'deleteSubCriteria']);
+
+            Route::middleware(['master.coach'])->group(function () {
+                Route::post('/', [CriteriaController::class, 'createCriteria']);
+                Route::put('/{id}', [CriteriaController::class, 'updateCriteria']);
+                Route::delete('/{id}', [CriteriaController::class, 'deleteCriteria']);
+                Route::post('/sub', [CriteriaController::class, 'createSubCriteria']);
+                Route::put('/sub/{id}', [CriteriaController::class, 'updateSubCriteria']);
+                Route::delete('/sub/{id}', [CriteriaController::class, 'deleteSubCriteria']);
+            });
         });
 
         Route::prefix('evaluations')->group(function () {
@@ -123,6 +127,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::get('/{id}', [EvaluationController::class, 'getEvaluationById']);
             Route::put('/{id}', [EvaluationController::class, 'updateEvaluation']);
             Route::delete('/{id}', [EvaluationController::class, 'deleteEvaluation']);
+            Route::post('/{id}/process-recommendation', [PlayerScoreMappingController::class, 'processRecommendation']);
         });
 
         Route::prefix('evaluation-scores')->group(function () {
@@ -131,7 +136,13 @@ Route::middleware(['auth:api'])->group(function () {
             Route::delete('/{id}', [EvaluationController::class, 'deleteEvaluationScore']);
         });
 
+        Route::prefix('pairwise-sets')->group(function () {
+            Route::get('/', [PairwiseSetController::class, 'getCompatibleSets']);
+            Route::middleware(['master.coach'])->post('/', [PairwiseSetController::class, 'createSet']);
+        });
+
         Route::post('evaluation-reports/finalize', [EvaluationReportController::class, 'finalizeReport']);
+        Route::get('evaluation-reports/evaluation/{evaluationId}/players', [EvaluationReportController::class, 'getPlayersForFinalization']);
         // Route::prefix('pairwise-criteria')->group(function () {
         //     Route::post('/generate/{groupId}/{positionId}',[PairwiseCriteriaController::class, 'generate']);
         //     Route::put('/update',[PairwiseCriteriaController::class, 'update']);

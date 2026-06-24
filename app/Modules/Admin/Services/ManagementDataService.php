@@ -2,14 +2,15 @@
 
 namespace App\Modules\Admin\Services;
 
-use Illuminate\Support\Facades\DB;
-use App\Modules\Admin\Services\Interfaces\IManagementDataService;
 use App\Modules\Admin\Repositories\Interfaces\IManagementDataRepository;
+use App\Modules\Admin\Services\Interfaces\IManagementDataService;
 use App\Modules\User\Services\Interfaces\IUserService;
+use Illuminate\Support\Facades\DB;
 
 class ManagementDataService implements IManagementDataService
 {
     protected IManagementDataRepository $repo;
+
     protected IUserService $userService;
 
     public function __construct(
@@ -29,14 +30,16 @@ class ManagementDataService implements IManagementDataService
     {
         $coach = $this->repo->getCoachDetail($id);
 
-        if (!$coach) return null;
+        if (! $coach) {
+            return null;
+        }
 
         if ($coach->user) {
             // Buat properti custom
             $coach->user_data = [
                 'id' => $coach->user->id,
                 'username' => $coach->user->username,
-                'default_password' => '*ShieldCoach' . $coach->user->id . '#'
+                'default_password' => '*ShieldCoach'.$coach->user->id.'#',
             ];
             $coach->makeHidden('user');
         }
@@ -48,32 +51,33 @@ class ManagementDataService implements IManagementDataService
     {
         return DB::transaction(function () use ($data) {
             $userData = $this->userService->createUser([
-                'name'       => $data['name'],
-                'email'      => $data['email'],
+                'name' => $data['name'],
+                'email' => $data['email'],
                 'birth_date' => $data['birth_date'],
-                'role'       => 'coach'
+                'role' => 'coach',
             ]);
 
             $user = $userData['user'];
 
             $coach = $this->repo->createCoach([
-                'name'         => $data['name'],
-                'birth_date'   => $data['birth_date'],
-                'group_id'     => $data['group_id'],
-                'position'     => $data['position'],
-                'license'      => $data['license'] ?? null,
+                'name' => $data['name'],
+                'birth_date' => $data['birth_date'],
+                'group_id' => $data['group_id'],
+                'position' => $data['position'],
+                'license' => $data['license'] ?? null,
                 'phone_number' => $data['phone_number'],
-                'email'        => $data['email'],
-                'user_id'      => $user->id
+                'email' => $data['email'],
+                'user_id' => $user->id,
+                'is_master' => $data['is_master'] ?? false,
             ]);
 
             return [
                 'coach' => $coach,
                 'user' => [
-                    'id'       => $user->id,
+                    'id' => $user->id,
                     'username' => $userData['username'],
-                    'password' => $userData['password']
-                ]
+                    'password' => $userData['password'],
+                ],
             ];
         });
     }
@@ -87,7 +91,7 @@ class ManagementDataService implements IManagementDataService
     {
         return DB::transaction(function () use ($id) {
             $coach = $this->repo->findCoachById($id);
-            if (!$coach) {
+            if (! $coach) {
                 return false;
             }
 
@@ -109,13 +113,15 @@ class ManagementDataService implements IManagementDataService
     {
         $player = $this->repo->getPlayerDetail($id);
 
-        if (!$player) return null;
+        if (! $player) {
+            return null;
+        }
 
         if ($player->user) {
             $player->user_data = [
                 'id' => $player->user->id,
                 'username' => $player->user->username,
-                'default_password' => '*ShieldPlayer' . $player->user->id . '#'
+                'default_password' => '*ShieldPlayer'.$player->user->id.'#',
             ];
             $player->makeHidden('user');
         }
@@ -127,34 +133,34 @@ class ManagementDataService implements IManagementDataService
     {
         return DB::transaction(function () use ($data) {
             $userData = $this->userService->createUser([
-                'name'       => $data['name'],
-                'email'      => $data['email'],
+                'name' => $data['name'],
+                'email' => $data['email'],
                 'birth_date' => $data['birth_date'],
-                'role'       => 'player'
+                'role' => 'player',
             ]);
 
             $user = $userData['user'];
 
             $player = $this->repo->createPlayer([
-                'name'                 => $data['name'],
-                'birth_date'           => $data['birth_date'],
-                'group_id'             => $data['group_id'],
-                'phone_number'         => $data['phone_number'],
-                'email'                => $data['email'],
-                'height'               => $data['height'],
-                'weight'               => $data['weight'],
-                'parent_name'          => $data['parent_name'],
-                'parent_phone'         => $data['parent_phone'],
-                'user_id'              => $user->id
+                'name' => $data['name'],
+                'birth_date' => $data['birth_date'],
+                'group_id' => $data['group_id'],
+                'phone_number' => $data['phone_number'],
+                'email' => $data['email'],
+                'height' => $data['height'],
+                'weight' => $data['weight'],
+                'parent_name' => $data['parent_name'],
+                'parent_phone' => $data['parent_phone'],
+                'user_id' => $user->id,
             ]);
 
             return [
                 'player' => $player,
                 'user' => [
-                    'id'       => $user->id,
+                    'id' => $user->id,
                     'username' => $userData['username'],
-                    'password' => $userData['password']
-                ]
+                    'password' => $userData['password'],
+                ],
             ];
         });
     }
@@ -168,7 +174,7 @@ class ManagementDataService implements IManagementDataService
     {
         return DB::transaction(function () use ($id) {
             $player = $this->repo->findPlayerById($id);
-            if (!$player) {
+            if (! $player) {
                 return false;
             }
 

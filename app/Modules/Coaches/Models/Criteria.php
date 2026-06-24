@@ -2,11 +2,8 @@
 
 namespace App\Modules\Coaches\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use App\Modules\Coaches\Models\SubCriteria;
-use App\Modules\Coaches\Models\PairwiseCriteria;
-use App\Modules\Coaches\Models\CriteriaWeight;
 use App\Modules\Admin\Models\Group;
+use Illuminate\Database\Eloquent\Model;
 
 class Criteria extends Model
 {
@@ -14,7 +11,7 @@ class Criteria extends Model
 
     protected $fillable = [
         'group_id',
-        'name'
+        'name',
     ];
 
     public function group()

@@ -2,11 +2,11 @@
 
 namespace App\Modules\Coaches\Services;
 
+use App\Modules\Coaches\Repositories\Interfaces\IEvaluationRepository;
+use App\Modules\Coaches\Services\Interfaces\IEvaluationService;
+use App\Utils\Messages\ErrorMessages\ErrorMessages;
 use Exception;
 use Illuminate\Support\Facades\DB;
-use App\Utils\Messages\ErrorMessages\ErrorMessages;
-use App\Modules\Coaches\Services\Interfaces\IEvaluationService;
-use App\Modules\Coaches\Repositories\Interfaces\IEvaluationRepository;
 
 class EvaluationService implements IEvaluationService
 {
@@ -26,7 +26,7 @@ class EvaluationService implements IEvaluationService
         $evaluation = $this->repo->createEvaluation([
             'title' => $data['title'],
             'date' => $data['date'],
-            'coach_id' => $coachId
+            'coach_id' => $coachId,
         ]);
 
         return $this->repo
@@ -43,7 +43,7 @@ class EvaluationService implements IEvaluationService
         $evaluation = $this->repo
             ->getEvaluationById($id);
 
-        if (!$evaluation) {
+        if (! $evaluation) {
             throw new Exception(
                 ErrorMessages::EVALUATION_NOT_FOUND
             );
@@ -60,7 +60,7 @@ class EvaluationService implements IEvaluationService
         $evaluation = $this->repo
             ->getEvaluationById($id);
 
-        if (!$evaluation) {
+        if (! $evaluation) {
             throw new Exception(
                 ErrorMessages::EVALUATION_NOT_FOUND
             );
@@ -93,7 +93,7 @@ class EvaluationService implements IEvaluationService
                     $data['evaluation_id']
                 );
 
-            if (!$evaluation) {
+            if (! $evaluation) {
                 throw new Exception(
                     ErrorMessages::EVALUATION_NOT_FOUND
                 );
@@ -108,7 +108,7 @@ class EvaluationService implements IEvaluationService
                         $score['sub_criteria_id']
                     );
 
-                if (!$subCriteria) {
+                if (! $subCriteria) {
                     throw new Exception(
                         ErrorMessages::SUBCRITERIA_NOT_FOUND
                     );
@@ -129,7 +129,7 @@ class EvaluationService implements IEvaluationService
                     'sub_criteria_id' => $score['sub_criteria_id'],
                     'score' => $score['score'],
                     'created_at' => now(),
-                    'updated_at' => now()
+                    'updated_at' => now(),
                 ];
             }
 
@@ -158,7 +158,7 @@ class EvaluationService implements IEvaluationService
         $score = $this->repo
             ->findScoreById($id);
 
-        if (!$score) {
+        if (! $score) {
             throw new Exception(
                 'Evaluation score not found'
             );
@@ -178,7 +178,7 @@ class EvaluationService implements IEvaluationService
                     $data['sub_criteria_id']
                 );
 
-            if (!$subCriteria) {
+            if (! $subCriteria) {
                 throw new Exception(
                     ErrorMessages::SUBCRITERIA_NOT_FOUND
                 );
@@ -214,7 +214,7 @@ class EvaluationService implements IEvaluationService
         $evaluation = $this->repo
             ->getEvaluationById($id);
 
-        if (!$evaluation) {
+        if (! $evaluation) {
             throw new Exception(
                 ErrorMessages::EVALUATION_NOT_FOUND
             );
@@ -229,7 +229,7 @@ class EvaluationService implements IEvaluationService
         $score = $this->repo
             ->findScoreById($id);
 
-        if (!$score) {
+        if (! $score) {
             throw new Exception(
                 'Evaluation score not found'
             );

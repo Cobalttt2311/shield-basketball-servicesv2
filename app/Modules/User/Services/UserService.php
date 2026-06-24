@@ -2,14 +2,14 @@
 
 namespace App\Modules\User\Services;
 
+use App\Modules\User\Models\User;
+use App\Modules\User\Repositories\Interfaces\IUserRepository;
+use App\Modules\User\Services\Interfaces\IUserService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
-use App\Modules\User\Services\Interfaces\IUserService;
-use App\Modules\User\Repositories\Interfaces\IUserRepository;
-use App\Modules\User\Models\User;
-use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserService implements IUserService
 {
@@ -24,14 +24,14 @@ class UserService implements IUserService
     {
         $user = $this->userRepository->findByLogin($login);
 
-        if (!$user || !Hash::check($password, $user->password)) {
+        if (! $user || ! Hash::check($password, $user->password)) {
             return null;
         }
 
         $token = JWTAuth::fromUser($user);
 
         return [
-            'user'  => $user,
+            'user' => $user,
             'token' => $token,
         ];
     }
@@ -39,26 +39,27 @@ class UserService implements IUserService
     public function logout(User $user): bool
     {
         JWTAuth::invalidate(JWTAuth::getToken());
+
         return true;
     }
 
     public function createUser(array $data): array
     {
         $user = $this->userRepository->create([
-            'name'     => $data['name'],
-            'username' => 'temp_' . Str::random(8),
-            'email'    => $data['email'],
+            'name' => $data['name'],
+            'username' => 'temp_'.Str::random(8),
+            'email' => $data['email'],
             'password' => Hash::make(Str::random(16)),
-            'role'     => $data['role'],
+            'role' => $data['role'],
         ]);
 
         $dob = isset($data['birth_date'])
             ? Carbon::parse($data['birth_date'])->format('Ymd')
             : '00000000';
 
-        $username = $user->id . $dob;
+        $username = $user->id.$dob;
 
-        $defaultPassword = '*Shield' . ucfirst($data['role']) . $user->id . '#';
+        $defaultPassword = '*Shield'.ucfirst($data['role']).$user->id.'#';
 
         $user = $this->userRepository->update($user->id, [
             'username' => $username,
@@ -68,7 +69,7 @@ class UserService implements IUserService
         return [
             'user' => $user,
             'username' => $username,
-            'password' => $defaultPassword
+            'password' => $defaultPassword,
         ];
     }
 
@@ -80,7 +81,7 @@ class UserService implements IUserService
     public function sendResetLinkEmail(string $email): string
     {
         $user = $this->userRepository->findByEmail($email);
-        if (!$user) {
+        if (! $user) {
             return Password::INVALID_USER;
         }
 
@@ -92,7 +93,7 @@ class UserService implements IUserService
     {
         // Pastikan user dengan email tersebut ada
         $user = $this->userRepository->findByEmail($credentials['email']);
-        if (!$user) {
+        if (! $user) {
             return Password::INVALID_USER;
         }
 

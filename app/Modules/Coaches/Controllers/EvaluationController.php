@@ -2,14 +2,14 @@
 
 namespace App\Modules\Coaches\Controllers;
 
-use Throwable;
+use App\Modules\Coaches\Services\Interfaces\IEvaluationService;
+use App\Utils\Messages\ErrorMessages\ErrorMessages;
+use App\Utils\Messages\SuccessMessages\SuccessMessages;
+use App\Utils\Responses\BaseResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Utils\Responses\BaseResponse;
-use App\Utils\Messages\ErrorMessages\ErrorMessages;
-use App\Utils\Messages\SuccessMessages\SuccessMessages;
-use App\Modules\Coaches\Services\Interfaces\IEvaluationService;
+use Throwable;
 
 class EvaluationController extends Controller
 {
@@ -29,7 +29,7 @@ class EvaluationController extends Controller
 
             if (
                 $user->role !== 'coach' ||
-                !$user->coach
+                ! $user->coach
             ) {
                 return response()->json(
                     (new BaseResponse(
@@ -46,7 +46,7 @@ class EvaluationController extends Controller
                 ->createEvaluation(
                     [
                         'title' => $request->title,
-                        'date' => $request->date
+                        'date' => $request->date,
                     ],
                     $coach->id
                 );

@@ -2,8 +2,8 @@
 
 namespace App\Modules\Coaches\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Modules\Admin\Models\Player;
+use Illuminate\Database\Eloquent\Model;
 
 class EvaluationScore extends Model
 {
@@ -11,7 +11,7 @@ class EvaluationScore extends Model
         'evaluation_id',
         'player_id',
         'sub_criteria_id',
-        'score'
+        'score',
     ];
 
     public function player()
@@ -37,5 +37,4 @@ class EvaluationScore extends Model
             'sub_criteria_id'
         );
     }
-
 }

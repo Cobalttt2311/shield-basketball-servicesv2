@@ -172,4 +172,29 @@ class EvaluationReportController extends Controller
             );
         }
     }
+
+    public function getPlayersForFinalization($evaluationId)
+    {
+        try {
+            $data = $this->service->getPlayersForFinalization((int) $evaluationId);
+
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    'Evaluation players retrieved successfully',
+                    $data
+                ))->toArray()
+            );
+        } catch (Throwable $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
+                400
+            );
+        }
+    }
 }

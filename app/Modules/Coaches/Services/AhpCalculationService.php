@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Modules\Coaches\Services;
+
 use App\Modules\Coaches\Services\Interfaces\IAhpCalculationService;
 
 class AhpCalculationService implements IAhpCalculationService
@@ -22,14 +23,14 @@ class AhpCalculationService implements IAhpCalculationService
                 'value' => round(
                     1 / $value,
                     8
-                )
+                ),
             ];
         }
 
         return [
             'first_id' => $firstId,
             'second_id' => $secondId,
-            'value' => $value
+            'value' => $value,
         ];
     }
 
@@ -113,6 +114,15 @@ class AhpCalculationService implements IAhpCalculationService
 
         $size = count($matrix);
 
+        if ($size <= 1) {
+            return [
+                'lambda_max' => 1.0,
+                'ci' => 0.0,
+                'cr' => 0.0,
+                'is_consistent' => true,
+            ];
+        }
+
         $weightedSum = [];
 
         for ($i = 0; $i < $size; $i++) {
@@ -174,17 +184,13 @@ class AhpCalculationService implements IAhpCalculationService
 
         return [
 
-            'lambda_max' =>
-                round($lambdaMax, 6),
+            'lambda_max' => round($lambdaMax, 6),
 
-            'ci' =>
-                round($ci, 6),
+            'ci' => round($ci, 6),
 
-            'cr' =>
-                round($cr, 6),
+            'cr' => round($cr, 6),
 
-            'is_consistent' =>
-                $cr < 0.1,
+            'is_consistent' => $cr < 0.1,
         ];
     }
 }

@@ -19,11 +19,13 @@ class PairwiseSubCriteriaController extends Controller
     }
 
     public function generate(
+        Request $request,
         int $positionId,
         int $criteriaId
     ) {
         try {
-            $this->service->generatePairwise($positionId, $criteriaId);
+            $pairwiseSetId = $request->query('pairwise_set_id');
+            $this->service->generatePairwise($positionId, $criteriaId, $pairwiseSetId);
 
             return response()->json(
                 (new BaseResponse(
@@ -49,14 +51,17 @@ class PairwiseSubCriteriaController extends Controller
     ) {
         try {
             $validated = $request->validate([
-                '*.position_id' => 'required|exists:positions,id',
-                '*.criteria_id' => 'required|exists:criteria,id',
-                '*.sub_criteria_first_id' => 'required|exists:sub_criteria,id',
-                '*.sub_criteria_second_id' => 'required|exists:sub_criteria,id',
-                '*.value' => 'required|numeric|min:0.111|max:9',
+                'pairwise_set_id' => 'integer|nullable',
+                'items' => 'required|array',
+                'items.*.position_id' => 'required|exists:positions,id',
+                'items.*.criteria_id' => 'required|exists:criteria,id',
+                'items.*.sub_criteria_first_id' => 'required|exists:sub_criteria,id',
+                'items.*.sub_criteria_second_id' => 'required|exists:sub_criteria,id',
+                'items.*.value' => 'required|numeric|min:0.111|max:9',
             ]);
 
-            $this->service->saveValue($validated);
+            $pairwiseSetId = $validated['pairwise_set_id'] ?? null;
+            $this->service->saveValue($validated['items'], $pairwiseSetId);
 
             return response()->json(
                 (new BaseResponse(
@@ -78,11 +83,13 @@ class PairwiseSubCriteriaController extends Controller
     }
 
     public function matrix(
+        Request $request,
         int $positionId,
         int $criteriaId
     ) {
         try {
-            $data = $this->service->generateMatrix($positionId, $criteriaId);
+            $pairwiseSetId = $request->query('pairwise_set_id');
+            $data = $this->service->generateMatrix($positionId, $criteriaId, $pairwiseSetId);
 
             return response()->json(
                 (new BaseResponse(
@@ -105,11 +112,13 @@ class PairwiseSubCriteriaController extends Controller
     }
 
     public function weights(
+        Request $request,
         int $positionId,
         int $criteriaId
     ) {
         try {
-            $data = $this->service->calculateWeights($positionId, $criteriaId);
+            $pairwiseSetId = $request->query('pairwise_set_id');
+            $data = $this->service->calculateWeights($positionId, $criteriaId, $pairwiseSetId);
 
             return response()->json(
                 (new BaseResponse(
@@ -132,11 +141,13 @@ class PairwiseSubCriteriaController extends Controller
     }
 
     public function saveWeights(
+        Request $request,
         int $positionId,
         int $criteriaId
     ) {
         try {
-            $this->service->saveWeights($positionId, $criteriaId);
+            $pairwiseSetId = $request->query('pairwise_set_id');
+            $this->service->saveWeights($positionId, $criteriaId, $pairwiseSetId);
 
             return response()->json(
                 (new BaseResponse(
@@ -158,11 +169,13 @@ class PairwiseSubCriteriaController extends Controller
     }
 
     public function consistency(
+        Request $request,
         int $positionId,
         int $criteriaId
     ) {
         try {
-            $data = $this->service->calculateConsistencyRatio($positionId, $criteriaId);
+            $pairwiseSetId = $request->query('pairwise_set_id');
+            $data = $this->service->calculateConsistencyRatio($positionId, $criteriaId, $pairwiseSetId);
 
             return response()->json(
                 (new BaseResponse(
@@ -185,11 +198,13 @@ class PairwiseSubCriteriaController extends Controller
     }
 
     public function getPairwise(
+        Request $request,
         int $positionId,
         int $criteriaId
     ) {
         try {
-            $data = $this->service->getPairwise($positionId, $criteriaId);
+            $pairwiseSetId = $request->query('pairwise_set_id');
+            $data = $this->service->getPairwise($positionId, $criteriaId, $pairwiseSetId);
 
             return response()->json(
                 (new BaseResponse(

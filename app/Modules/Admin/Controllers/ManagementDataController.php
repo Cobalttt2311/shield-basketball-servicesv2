@@ -2,12 +2,12 @@
 
 namespace App\Modules\Admin\Controllers;
 
-use Illuminate\Routing\Controller;
-use Illuminate\Http\Request;
 use App\Modules\Admin\Services\Interfaces\IManagementDataService;
-use App\Utils\Responses\BaseResponse;
-use App\Utils\Messages\SuccessMessages\SuccessMessages;
 use App\Utils\Messages\ErrorMessages\ErrorMessages;
+use App\Utils\Messages\SuccessMessages\SuccessMessages;
+use App\Utils\Responses\BaseResponse;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
 class ManagementDataController extends Controller
 {
@@ -41,7 +41,7 @@ class ManagementDataController extends Controller
         try {
             $data = $this->service->getCoachDetail($id);
 
-            if (!$data) {
+            if (! $data) {
                 return response()->json(
                     (new BaseResponse(false, ErrorMessages::COACH_NOT_FOUND))->toArray(),
                     404
@@ -70,10 +70,11 @@ class ManagementDataController extends Controller
                 'position',
                 'license',
                 'phone_number',
+                'is_master',
             ]);
 
             $result = $this->service->createCoach($data);
-            
+
             return response()->json(
                 (new BaseResponse(true, SuccessMessages::COACH_CREATED, $result))->toArray(),
                 201
@@ -97,10 +98,11 @@ class ManagementDataController extends Controller
                 'license',
                 'phone_number',
                 'email',
+                'is_master',
             ]);
 
             $result = $this->service->updateCoach($id, $data);
-            
+
             return response()->json(
                 (new BaseResponse(true, SuccessMessages::COACH_UPDATED, $result))->toArray()
             );
@@ -116,12 +118,13 @@ class ManagementDataController extends Controller
     {
         try {
             $success = $this->service->deleteCoach($id);
-            if (!$success) {
+            if (! $success) {
                 return response()->json(
                     (new BaseResponse(false, ErrorMessages::COACH_NOT_FOUND))->toArray(),
                     404
                 );
             }
+
             return response()->json(
                 (new BaseResponse(true, SuccessMessages::COACH_DELETED))->toArray()
             );
@@ -156,7 +159,7 @@ class ManagementDataController extends Controller
         try {
             $data = $this->service->getPlayerDetail($id);
 
-            if (!$data) {
+            if (! $data) {
                 return response()->json(
                     (new BaseResponse(false, ErrorMessages::PLAYER_NOT_FOUND))->toArray(),
                     404
@@ -190,7 +193,7 @@ class ManagementDataController extends Controller
             ]);
 
             $result = $this->service->createPlayer($data);
-            
+
             return response()->json(
                 (new BaseResponse(true, SuccessMessages::PLAYER_CREATED, $result))->toArray(),
                 201
@@ -219,7 +222,7 @@ class ManagementDataController extends Controller
             ]);
 
             $result = $this->service->updatePlayer($id, $data);
-            
+
             return response()->json(
                 (new BaseResponse(true, SuccessMessages::PLAYER_UPDATED, $result))->toArray()
             );
@@ -235,12 +238,13 @@ class ManagementDataController extends Controller
     {
         try {
             $success = $this->service->deletePlayer($id);
-            if (!$success) {
+            if (! $success) {
                 return response()->json(
                     (new BaseResponse(false, ErrorMessages::PLAYER_NOT_FOUND))->toArray(),
                     404
                 );
             }
+
             return response()->json(
                 (new BaseResponse(true, SuccessMessages::PLAYER_DELETED))->toArray()
             );
