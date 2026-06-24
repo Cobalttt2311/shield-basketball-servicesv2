@@ -12,8 +12,27 @@ use App\Utils\Messages\ErrorMessages\ErrorMessages;
 
 class PairwiseSetService implements IPairwiseSetService
 {
-    public function getCompatibleSets(int $evaluationId): array
+    public function getCompatibleSets(?int $evaluationId = null): array
     {
+        if ($evaluationId === null) {
+            $sets = PairwiseSet::with('group')->get();
+            $result = [];
+            foreach ($sets as $set) {
+                $isFilled = $set->pairwiseCriteria()->whereNotNull('value')->exists()
+                    || $set->pairwiseSubCriteria()->whereNotNull('value')->exists();
+                $result[] = [
+                    'id' => $set->id,
+                    'name' => $set->name,
+                    'group_id' => $set->group_id,
+                    'group_name' => $set->group ? $set->group->age_group : null,
+                    'status' => $isFilled ? 'edit' : 'input',
+                    'created_at' => $set->created_at ? $set->created_at->toDateString() : null,
+                ];
+            }
+
+            return $result;
+        }
+
         $evaluation = Evaluation::find($evaluationId);
         if (! $evaluation) {
             throw new \InvalidArgumentException(ErrorMessages::EVALUATION_NOT_FOUND);
@@ -102,15 +121,46 @@ class PairwiseSetService implements IPairwiseSetService
 
     public function createSet(array $data): array
     {
-        $groupExists = Group::where('id', $data['group_id'])->exists();
-        if (! $groupExists) {
-            throw new \InvalidArgumentException(ErrorMessages::GROUP_NOT_FOUND);
+        $groupId = $data['group_id'] ?? null;
+        if ($groupId) {
+            $groupExists = Group::where('id', $groupId)->exists();
+            if (! $groupExists) {
+                throw new \InvalidArgumentException(ErrorMessages::GROUP_NOT_FOUND);
+            }
         }
 
         $set = PairwiseSet::create([
             'name' => $data['name'],
-            'group_id' => $data['group_id'],
+            'group_id' => $groupId,
         ]);
+
+        return [
+            'id' => $set->id,
+            'name' => $set->name,
+            'group_id' => $set->group_id,
+        ];
+    }
+
+    public function updateSet(int $id, array $data): array
+    {
+        $set = PairwiseSet::find($id);
+        if (! $set) {
+            throw new \InvalidArgumentException('Pairwise set not found');
+        }
+
+        if (isset($data['group_id'])) {
+            $groupExists = Group::where('id', $data['group_id'])->exists();
+            if (! $groupExists) {
+                throw new \InvalidArgumentException(ErrorMessages::GROUP_NOT_FOUND);
+            }
+            $set->group_id = $data['group_id'];
+        }
+
+        if (isset($data['name'])) {
+            $set->name = $data['name'];
+        }
+
+        $set->save();
 
         return [
             'id' => $set->id,

@@ -285,3 +285,126 @@ test('process recommendation and finalization list player works successfully', f
     expect($recs)->not->toBeEmpty();
     expect($recs[0]['position_id'])->toEqual($this->position->id);
 });
+
+test('complete set-based pairwise flow works successfully', function () {
+    $masterToken = JWTAuth::fromUser($this->masterUser->fresh('coach'));
+
+    // Create a second criteria and subcriteria so we have at least 2 items to compare
+    $criteria2 = Criteria::create([
+        'group_id' => $this->group->id,
+        'name' => 'Fisik',
+    ]);
+    $subCriteria2 = SubCriteria::create([
+        'criteria_id' => $this->criteria->id,
+        'name' => 'Dribbling',
+    ]);
+
+    // 1. Create set with only name
+    $response = $this->withHeaders(['Authorization' => "Bearer $masterToken"])
+        ->postJson('/api/pairwise-sets', [
+            'name' => 'Set Dinamis Baru',
+        ]);
+    $response->assertStatus(201);
+    $setId = $response->json('data.id');
+    expect($setId)->not->toBeNull();
+
+    $this->assertDatabaseHas('pairwise_sets', [
+        'id' => $setId,
+        'name' => 'Set Dinamis Baru',
+        'group_id' => null,
+    ]);
+
+    // 2. Update set to associate with group
+    $response = $this->withHeaders(['Authorization' => "Bearer $masterToken"])
+        ->putJson("/api/pairwise-sets/{$setId}", [
+            'group_id' => $this->group->id,
+        ]);
+    $response->assertStatus(200);
+
+    $this->assertDatabaseHas('pairwise_sets', [
+        'id' => $setId,
+        'group_id' => $this->group->id,
+    ]);
+
+    // 3. Generate pairwise criteria
+    $response = $this->withHeaders(['Authorization' => "Bearer $masterToken"])
+        ->postJson('/api/pairwise-criteria/generate', [
+            'pairwise_set_id' => $setId,
+        ]);
+    $response->assertStatus(200);
+
+    // 4. Get pairwise criteria
+    $response = $this->withHeaders(['Authorization' => "Bearer $masterToken"])
+        ->getJson("/api/pairwise-criteria?pairwise_set_id={$setId}");
+    $response->assertStatus(200);
+    $criteriaData = $response->json('data');
+    expect($criteriaData)->not->toBeEmpty();
+
+    // Collect comparison IDs for saving
+    $comparisons = [];
+    foreach ($criteriaData as $item) {
+        foreach ($item['comparisons'] as $comp) {
+            $comparisons[] = [
+                'id' => $comp['id'],
+                'value' => 1.0,
+            ];
+        }
+    }
+
+    // 5. Save pairwise criteria values
+    $response = $this->withHeaders(['Authorization' => "Bearer $masterToken"])
+        ->putJson('/api/pairwise-criteria/save', [
+            'pairwise_set_id' => $setId,
+            'comparisons' => $comparisons,
+        ]);
+    $response->assertStatus(200);
+
+    // 6. Calculate weights criteria
+    $response = $this->withHeaders(['Authorization' => "Bearer $masterToken"])
+        ->postJson('/api/pairwise-criteria/calculate-weights', [
+            'pairwise_set_id' => $setId,
+        ]);
+    $response->assertStatus(200);
+
+    // 7. Generate pairwise subcriteria
+    $response = $this->withHeaders(['Authorization' => "Bearer $masterToken"])
+        ->postJson('/api/pairwise-subcriteria/generate', [
+            'pairwise_set_id' => $setId,
+            'criteria_id' => $this->criteria->id,
+        ]);
+    $response->assertStatus(200);
+
+    // 8. Get pairwise subcriteria
+    $response = $this->withHeaders(['Authorization' => "Bearer $masterToken"])
+        ->getJson("/api/pairwise-subcriteria?pairwise_set_id={$setId}&criteria_id={$this->criteria->id}");
+    $response->assertStatus(200);
+    $subCriteriaData = $response->json('data');
+    expect($subCriteriaData)->not->toBeEmpty();
+
+    // Collect subcriteria comparisons
+    $subComparisons = [];
+    foreach ($subCriteriaData as $item) {
+        foreach ($item['comparisons'] as $comp) {
+            $subComparisons[] = [
+                'id' => $comp['id'],
+                'value' => 1.0,
+            ];
+        }
+    }
+
+    // 9. Save pairwise subcriteria values
+    $response = $this->withHeaders(['Authorization' => "Bearer $masterToken"])
+        ->putJson('/api/pairwise-subcriteria/save', [
+            'pairwise_set_id' => $setId,
+            'comparisons' => $subComparisons,
+        ]);
+    $response->assertStatus(200);
+
+    // 10. Calculate weights subcriteria
+    $response = $this->withHeaders(['Authorization' => "Bearer $masterToken"])
+        ->postJson('/api/pairwise-subcriteria/calculate-weights', [
+            'pairwise_set_id' => $setId,
+            'criteria_id' => $this->criteria->id,
+        ]);
+    $response->assertStatus(200);
+});

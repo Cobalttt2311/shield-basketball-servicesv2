@@ -19,16 +19,14 @@ class PairwiseSetController extends Controller
     public function getCompatibleSets(Request $request)
     {
         try {
-            $request->validate([
-                'evaluation_id' => 'required|integer',
-            ]);
+            $evaluationId = $request->has('evaluation_id') ? (int) $request->evaluation_id : null;
 
-            $data = $this->service->getCompatibleSets((int) $request->evaluation_id);
+            $data = $this->service->getCompatibleSets($evaluationId);
 
             return response()->json(
                 (new BaseResponse(
                     true,
-                    'Compatible pairwise sets retrieved successfully',
+                    $evaluationId === null ? 'All pairwise sets retrieved successfully' : 'Compatible pairwise sets retrieved successfully',
                     $data
                 ))->toArray()
             );
@@ -60,7 +58,7 @@ class PairwiseSetController extends Controller
         try {
             $request->validate([
                 'name' => 'required|string|max:255',
-                'group_id' => 'required|integer',
+                'group_id' => 'nullable|integer',
             ]);
 
             $data = $this->service->createSet($request->only(['name', 'group_id']));
@@ -72,6 +70,46 @@ class PairwiseSetController extends Controller
                     $data
                 ))->toArray(),
                 201
+            );
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
+                400
+            );
+        } catch (\Exception $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    'SERVER_ERROR'
+                ))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function updateSet(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'name' => 'nullable|string|max:255',
+                'group_id' => 'nullable|integer',
+            ]);
+
+            $data = $this->service->updateSet((int) $id, $request->only(['name', 'group_id']));
+
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    'Pairwise set updated successfully',
+                    $data
+                ))->toArray()
             );
         } catch (\InvalidArgumentException $e) {
             return response()->json(

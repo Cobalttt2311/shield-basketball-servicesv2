@@ -3,6 +3,8 @@
 namespace App\Modules\Coaches\Services;
 
 use App\Modules\Admin\Models\Group;
+use App\Modules\Coaches\Models\PairwiseCriteria;
+use App\Modules\Coaches\Models\PairwiseSet;
 use App\Modules\Coaches\Models\Position;
 use App\Modules\Coaches\Repositories\Interfaces\ICriteriaWeightRepository;
 use App\Modules\Coaches\Repositories\Interfaces\IPairwiseCriteriaRepository;
@@ -306,6 +308,153 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
                     'value' => $item->value,
                 ];
             });
+    }
+
+    public function generatePairwiseForSet(int $pairwiseSetId): bool
+    {
+        $set = PairwiseSet::find($pairwiseSetId);
+        if (! $set) {
+            throw new \InvalidArgumentException('Pairwise set not found');
+        }
+
+        $groupId = $set->group_id;
+        if (! $groupId) {
+            throw new \InvalidArgumentException('Kelompok Umur (KU) belum dipilih untuk set pairwise ini.');
+        }
+
+        $criteria = $this->pairwiseRepository->getCriteriaByGroup($groupId);
+        $positions = Position::where('group_id', $groupId)->get();
+
+        $data = [];
+        $count = count($criteria);
+
+        foreach ($positions as $position) {
+            for ($i = 0; $i < $count; $i++) {
+                for ($j = $i + 1; $j < $count; $j++) {
+                    $exists = PairwiseCriteria::where([
+                        'position_id' => $position->id,
+                        'criteria_first_id' => $criteria[$i]->id,
+                        'criteria_second_id' => $criteria[$j]->id,
+                        'pairwise_set_id' => $pairwiseSetId,
+                    ])->exists();
+
+                    if (! $exists) {
+                        $data[] = [
+                            'position_id' => $position->id,
+                            'criteria_first_id' => $criteria[$i]->id,
+                            'criteria_second_id' => $criteria[$j]->id,
+                            'value' => null,
+                            'pairwise_set_id' => $pairwiseSetId,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ];
+                    }
+                }
+            }
+        }
+
+        if (! empty($data)) {
+            $this->pairwiseRepository->insertMany($data);
+        }
+
+        return true;
+    }
+
+    public function getPairwiseForSet(int $pairwiseSetId): array
+    {
+        $comparisons = PairwiseCriteria::with(['firstCriteria', 'secondCriteria', 'position'])
+            ->where('pairwise_set_id', $pairwiseSetId)
+            ->get();
+
+        $grouped = [];
+
+        foreach ($comparisons as $comp) {
+            $key = $comp->criteria_first_id.'-'.$comp->criteria_second_id;
+            if (! isset($grouped[$key])) {
+                $grouped[$key] = [
+                    'criteria_first_id' => $comp->criteria_first_id,
+                    'criteria_first_name' => $comp->firstCriteria?->name,
+                    'criteria_second_id' => $comp->criteria_second_id,
+                    'criteria_second_name' => $comp->secondCriteria?->name,
+                    'comparisons' => [],
+                ];
+            }
+            $grouped[$key]['comparisons'][] = [
+                'id' => $comp->id,
+                'position_id' => $comp->position_id,
+                'position_name' => $comp->position?->name,
+                'value' => $comp->value !== null ? (float) $comp->value : null,
+            ];
+        }
+
+        return array_values($grouped);
+    }
+
+    public function saveValueForSet(array $comparisons): void
+    {
+        DB::transaction(function () use ($comparisons) {
+            foreach ($comparisons as $item) {
+                PairwiseCriteria::where('id', $item['id'])->update([
+                    'value' => $item['value'],
+                ]);
+            }
+        });
+    }
+
+    public function calculateAndSaveWeightsForSet(int $pairwiseSetId): array
+    {
+        $set = PairwiseSet::find($pairwiseSetId);
+        if (! $set) {
+            throw new \InvalidArgumentException('Pairwise set not found');
+        }
+
+        $groupId = $set->group_id;
+        if (! $groupId) {
+            throw new \InvalidArgumentException('Kelompok Umur (KU) belum diset untuk set pairwise ini.');
+        }
+
+        // 1. Cek kelengkapan data (apakah ada value yang null)
+        $emptyComparisons = PairwiseCriteria::with(['firstCriteria', 'secondCriteria', 'position'])
+            ->where('pairwise_set_id', $pairwiseSetId)
+            ->whereNull('value')
+            ->get();
+
+        if ($emptyComparisons->isNotEmpty()) {
+            $errors = [];
+            foreach ($emptyComparisons as $comp) {
+                $errors[] = [
+                    'position_name' => $comp->position?->name,
+                    'criteria_first_name' => $comp->firstCriteria?->name,
+                    'criteria_second_name' => $comp->secondCriteria?->name,
+                ];
+            }
+
+            return [
+                'success' => false,
+                'errors' => $errors,
+            ];
+        }
+
+        // 2. Lakukan kalkulasi untuk setiap posisi
+        $positions = Position::where('group_id', $groupId)->get();
+        $results = [];
+
+        foreach ($positions as $position) {
+            $this->saveWeights($groupId, $position->id, $pairwiseSetId);
+            $consistencyData = $this->calculateConsistencyRatio($groupId, $position->id, $pairwiseSetId);
+            $crVal = $consistencyData['cr'] ?? 0.0;
+            $results[] = [
+                'position_id' => $position->id,
+                'position_name' => $position->name,
+                'is_consistent' => $crVal < 0.1,
+                'consistency_ratio' => round($crVal, 4),
+            ];
+        }
+
+        return [
+            'success' => true,
+            'results' => $results,
+        ];
     }
 
     private function validateInputs(int $groupId, int $positionId): void

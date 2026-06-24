@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('pairwise_sets', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('group_id')->constrained('groups')->cascadeOnDelete();
+            $table->foreignId('group_id')->nullable()->constrained('groups')->cascadeOnDelete();
             $table->timestamps();
         });
 

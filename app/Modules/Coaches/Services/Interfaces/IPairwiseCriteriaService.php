@@ -44,4 +44,12 @@ interface IPairwiseCriteriaService
         int $positionId,
         ?int $pairwiseSetId = null
     );
+
+    public function generatePairwiseForSet(int $pairwiseSetId): bool;
+
+    public function getPairwiseForSet(int $pairwiseSetId): array;
+
+    public function saveValueForSet(array $comparisons): void;
+
+    public function calculateAndSaveWeightsForSet(int $pairwiseSetId): array;
 }
