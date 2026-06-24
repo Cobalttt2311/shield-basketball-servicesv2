@@ -12,29 +12,39 @@ use App\Modules\Admin\Services\Interfaces\IManagementDataService;
 use App\Modules\Admin\Services\ManagementDataService;
 use App\Modules\Coaches\Repositories\CriteriaRepository;
 use App\Modules\Coaches\Repositories\CriteriaWeightRepository;
+use App\Modules\Coaches\Repositories\EvaluationReportRepository;
 use App\Modules\Coaches\Repositories\EvaluationRepository;
 use App\Modules\Coaches\Repositories\Interfaces\ICriteriaRepository;
 use App\Modules\Coaches\Repositories\Interfaces\ICriteriaWeightRepository;
+use App\Modules\Coaches\Repositories\Interfaces\IEvaluationReportRepository;
 use App\Modules\Coaches\Repositories\Interfaces\IEvaluationRepository;
 use App\Modules\Coaches\Repositories\Interfaces\IPairwiseCriteriaRepository;
 use App\Modules\Coaches\Repositories\Interfaces\IPairwiseSubCriteriaRepository;
+use App\Modules\Coaches\Repositories\Interfaces\IPlayerScoreMappingRepository;
 use App\Modules\Coaches\Repositories\Interfaces\IPositionRepository;
 use App\Modules\Coaches\Repositories\Interfaces\ISubCriteriaWeightRepository;
-use App\Modules\Coaches\Repositories\Interfaces\IPlayerScoreMappingRepository;
 use App\Modules\Coaches\Repositories\PairwiseCriteriaRepository;
 use App\Modules\Coaches\Repositories\PairwiseSubCriteriaRepository;
+use App\Modules\Coaches\Repositories\PlayerScoreMappingRepository;
 use App\Modules\Coaches\Repositories\PositionRepository;
 use App\Modules\Coaches\Repositories\SubCriteriaWeightRepository;
-use App\Modules\Coaches\Repositories\PlayerScoreMappingRepository;
+use App\Modules\Coaches\Services\AhpCalculationService;
 use App\Modules\Coaches\Services\CriteriaService;
+use App\Modules\Coaches\Services\EvaluationReportService;
 use App\Modules\Coaches\Services\EvaluationService;
+use App\Modules\Coaches\Services\Interfaces\IAhpCalculationService;
 use App\Modules\Coaches\Services\Interfaces\ICriteriaService;
+use App\Modules\Coaches\Services\Interfaces\IEvaluationReportService;
 use App\Modules\Coaches\Services\Interfaces\IEvaluationService;
 use App\Modules\Coaches\Services\Interfaces\IPairwiseCriteriaService;
+use App\Modules\Coaches\Services\Interfaces\IPairwiseSetService;
 use App\Modules\Coaches\Services\Interfaces\IPairwiseSubCriteriaService;
+use App\Modules\Coaches\Services\Interfaces\IPlayerScoreMappingService;
 use App\Modules\Coaches\Services\Interfaces\IPositionService;
 use App\Modules\Coaches\Services\PairwiseCriteriaService;
+use App\Modules\Coaches\Services\PairwiseSetService;
 use App\Modules\Coaches\Services\PairwiseSubCriteriaService;
+use App\Modules\Coaches\Services\PlayerScoreMappingService;
 use App\Modules\Coaches\Services\PositionService;
 use App\Modules\User\Repositories\Interfaces\IUserRepository;
 use App\Modules\User\Repositories\UserRepository;
@@ -84,10 +94,14 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IPairwiseCriteriaRepository::class, PairwiseCriteriaRepository::class);
         $this->app->bind(IPairwiseCriteriaService::class, PairwiseCriteriaService::class);
 
+        $this->app->bind(IPairwiseSetService::class, PairwiseSetService::class);
+
         $this->app->bind(IAhpCalculationService::class, AhpCalculationService::class);
         $this->app->bind(IPlayerScoreMappingRepository::class, PlayerScoreMappingRepository::class);
         $this->app->bind(IPlayerScoreMappingService::class, PlayerScoreMappingService::class);
 
+        $this->app->bind(IEvaluationReportRepository::class, EvaluationReportRepository::class);
+        $this->app->bind(IEvaluationReportService::class, EvaluationReportService::class);
         $this->app->bind(IUploadRepository::class, UploadRepository::class);
         $this->app->bind(IUploadService::class, UploadService::class);
     }

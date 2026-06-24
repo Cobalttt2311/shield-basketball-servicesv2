@@ -10,7 +10,8 @@ interface IPairwiseSubCriteriaRepository
 
     public function deleteByPositionAndCriteria(
         int $positionId,
-        int $criteriaId
+        int $criteriaId,
+        ?int $pairwiseSetId = null
     );
 
     public function insertMany(
@@ -21,7 +22,8 @@ interface IPairwiseSubCriteriaRepository
         int $positionId,
         int $criteriaId,
         int $firstId,
-        int $secondId
+        int $secondId,
+        ?int $pairwiseSetId = null
     );
 
     public function saveValue(
@@ -29,11 +31,19 @@ interface IPairwiseSubCriteriaRepository
         int $criteriaId,
         int $firstId,
         int $secondId,
-        float $value
+        float $value,
+        ?int $pairwiseSetId = null
     );
 
     public function getByPositionAndCriteria(
         int $positionId,
-        int $criteriaId
+        int $criteriaId,
+        ?int $pairwiseSetId = null
+    );
+
+    public function getPairwise(
+        int $positionId,
+        int $criteriaId,
+        ?int $pairwiseSetId = null
     );
 }

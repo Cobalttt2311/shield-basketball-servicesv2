@@ -9,10 +9,15 @@ use App\Modules\Admin\Models\Player;
 interface IUserRepository
 {
     public function findByLogin(string $login): ?User;
+
     public function create(array $data): User;
+
     public function update(int $id, array $data): ?User;
+
     public function delete(int $id): bool;
+
     public function findByEmail(string $email): ?User;
+}
     public function getProfileByUser(User $user);
 
     public function updateCoachProfile(

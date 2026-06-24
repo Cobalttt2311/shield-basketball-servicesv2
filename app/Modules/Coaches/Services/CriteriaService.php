@@ -2,15 +2,16 @@
 
 namespace App\Modules\Coaches\Services;
 
+use App\Modules\Admin\Repositories\Interfaces\IManagementDataRepository;
+use App\Modules\Coaches\Repositories\Interfaces\ICriteriaRepository;
+use App\Modules\Coaches\Services\Interfaces\ICriteriaService;
 use Exception;
 use Illuminate\Support\Facades\Auth;
-use App\Modules\Coaches\Services\Interfaces\ICriteriaService;
-use App\Modules\Coaches\Repositories\Interfaces\ICriteriaRepository;
-use App\Modules\Admin\Repositories\Interfaces\IManagementDataRepository;
 
 class CriteriaService implements ICriteriaService
 {
     protected ICriteriaRepository $repo;
+
     protected IManagementDataRepository $managementRepo;
 
     public function __construct(
@@ -27,7 +28,7 @@ class CriteriaService implements ICriteriaService
 
         $coach = $this->managementRepo->findCoachByUserId($user->id);
 
-        if (!$coach) {
+        if (! $coach) {
             throw new Exception('Coach not found');
         }
 
@@ -38,7 +39,7 @@ class CriteriaService implements ICriteriaService
     {
         $criteria = $this->repo->findCriteriaById($id);
 
-        if (!$criteria) {
+        if (! $criteria) {
             throw new Exception('Criteria not found');
         }
 
@@ -56,7 +57,7 @@ class CriteriaService implements ICriteriaService
 
         $coach = $this->managementRepo->findCoachByUserId($user->id);
 
-        if (!$coach) {
+        if (! $coach) {
             throw new Exception('Coach not found');
         }
 
@@ -66,7 +67,7 @@ class CriteriaService implements ICriteriaService
 
         return $this->repo->createCriteria([
             'name' => $data['name'],
-            'group_id' => $coach->group_id
+            'group_id' => $coach->group_id,
         ]);
     }
 
@@ -74,7 +75,7 @@ class CriteriaService implements ICriteriaService
     {
         $criteria = $this->repo->findCriteriaById($id);
 
-        if (!$criteria) {
+        if (! $criteria) {
             throw new Exception('Criteria not found');
         }
 
@@ -87,7 +88,7 @@ class CriteriaService implements ICriteriaService
         }
 
         return $this->repo->updateCriteria($id, [
-            'name' => $data['name']
+            'name' => $data['name'],
         ]);
     }
 
@@ -95,7 +96,7 @@ class CriteriaService implements ICriteriaService
     {
         $criteria = $this->repo->findCriteriaById($id);
 
-        if (!$criteria) {
+        if (! $criteria) {
             throw new Exception('Criteria not found');
         }
 
@@ -116,13 +117,13 @@ class CriteriaService implements ICriteriaService
 
         $coach = $this->managementRepo->findCoachByUserId($user->id);
 
-        if (!$coach) {
+        if (! $coach) {
             throw new Exception('Coach not found');
         }
 
         $criteria = $this->repo->findCriteriaById($data['criteria_id']);
 
-        if (!$criteria) {
+        if (! $criteria) {
             throw new Exception('Criteria not found');
         }
 
@@ -139,7 +140,7 @@ class CriteriaService implements ICriteriaService
 
         return $this->repo->createSubCriteria([
             'criteria_id' => $data['criteria_id'],
-            'name' => $data['name']
+            'name' => $data['name'],
         ]);
     }
 
@@ -157,12 +158,12 @@ class CriteriaService implements ICriteriaService
     {
         $sub = $this->repo->findSubCriteriaById($id);
 
-        if (!$sub) {
+        if (! $sub) {
             throw new Exception('Sub criteria not found');
         }
 
         return $this->repo->updateSubCriteria($id, [
-            'name' => $data['name']
+            'name' => $data['name'],
         ]);
     }
 
@@ -170,7 +171,7 @@ class CriteriaService implements ICriteriaService
     {
         $sub = $this->repo->findSubCriteriaById($id);
 
-        if (!$sub) {
+        if (! $sub) {
             throw new Exception('Sub criteria not found');
         }
 

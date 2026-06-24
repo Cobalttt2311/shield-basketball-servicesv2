@@ -2,11 +2,10 @@
 
 namespace App\Modules\Coaches\Services;
 
-use App\Modules\Coaches\Services\Interfaces\IPositionService;
 use App\Modules\Coaches\Repositories\Interfaces\IPositionRepository;
+use App\Modules\Coaches\Services\Interfaces\IPositionService;
 
-class PositionService
-    implements IPositionService
+class PositionService implements IPositionService
 {
     protected $repository;
 
@@ -24,8 +23,7 @@ class PositionService
 
     public function getByGroupId(
         int $groupId
-    )
-    {
+    ) {
         return $this->repository
             ->getByGroupId(
                 $groupId
@@ -34,16 +32,14 @@ class PositionService
 
     public function getById(
         int $id
-    )
-    {
+    ) {
         return $this->repository
             ->findById($id);
     }
 
     public function create(
         array $data
-    )
-    {
+    ) {
         return $this->repository
             ->create($data);
     }
@@ -51,8 +47,7 @@ class PositionService
     public function update(
         int $id,
         array $data
-    )
-    {
+    ) {
         return $this->repository
             ->update(
                 $id,
@@ -62,8 +57,7 @@ class PositionService
 
     public function delete(
         int $id
-    )
-    {
+    ) {
         return $this->repository
             ->delete($id);
     }

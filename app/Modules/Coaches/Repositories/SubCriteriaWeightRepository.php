@@ -10,12 +10,14 @@ class SubCriteriaWeightRepository implements ISubCriteriaWeightRepository
     public function updateOrCreate(
         int $positionId,
         int $subCriteriaId,
-        float $weight
+        float $weight,
+        ?int $pairwiseSetId = null
     ) {
         return SubCriteriaWeight::updateOrCreate(
             [
                 'position_id' => $positionId,
                 'sub_criteria_id' => $subCriteriaId,
+                'pairwise_set_id' => $pairwiseSetId,
             ],
             [
                 'weight' => $weight,
@@ -24,13 +26,17 @@ class SubCriteriaWeightRepository implements ISubCriteriaWeightRepository
     }
 
     public function getByPosition(
-        int $positionId
+        int $positionId,
+        ?int $pairwiseSetId = null
     ) {
-        return SubCriteriaWeight::where(
-            'position_id',
-            $positionId
-        )
-            ->with('subCriteria')
-            ->get();
+        $query = SubCriteriaWeight::where('position_id', $positionId);
+
+        if ($pairwiseSetId !== null) {
+            $query->where('pairwise_set_id', $pairwiseSetId);
+        } else {
+            $query->whereNull('pairwise_set_id');
+        }
+
+        return $query->with('subCriteria')->get();
     }
 }

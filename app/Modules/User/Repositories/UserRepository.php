@@ -13,7 +13,7 @@ class UserRepository implements IUserRepository
     {
         return User::where(function ($query) use ($login) {
             $query->where('email', $login)
-                  ->orWhere('username', $login);
+                ->orWhere('username', $login);
         })->first();
     }
 
@@ -27,9 +27,12 @@ class UserRepository implements IUserRepository
         /** @var User|null $user */
         $user = User::find($id);
 
-        if (!$user) return null;
+        if (! $user) {
+            return null;
+        }
 
         $user->update($data);
+
         return $user;
     }
 
@@ -38,7 +41,9 @@ class UserRepository implements IUserRepository
         /** @var User|null $user */
         $user = User::find($id);
 
-        if (!$user) return false;
+        if (! $user) {
+            return false;
+        }
 
         return $user->delete();
     }

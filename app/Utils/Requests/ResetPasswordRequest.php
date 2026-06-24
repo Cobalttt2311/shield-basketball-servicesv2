@@ -14,8 +14,8 @@ class ResetPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'token'    => 'required',
-            'email'    => 'required|email|exists:users,email',
+            'token' => 'required',
+            'email' => 'required|email|exists:users,email',
             'password' => 'required|confirmed|min:8',
         ];
     }
@@ -23,9 +23,9 @@ class ResetPasswordRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.exists'       => 'Email tidak ditemukan.',
+            'email.exists' => 'Email tidak ditemukan.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
-            'password.min'       => 'Password minimal 8 karakter.',
+            'password.min' => 'Password minimal 8 karakter.',
         ];
     }
 }

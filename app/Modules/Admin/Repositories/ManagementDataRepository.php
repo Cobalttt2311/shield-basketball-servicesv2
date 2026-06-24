@@ -8,7 +8,6 @@ use App\Modules\Admin\Repositories\Interfaces\IManagementDataRepository;
 
 class ManagementDataRepository implements IManagementDataRepository
 {
-    
     public function getAllCoaches($groupId = null)
     {
         $query = Coach::query();
@@ -39,6 +38,7 @@ class ManagementDataRepository implements IManagementDataRepository
     {
         $coach = Coach::findOrFail($id);
         $coach->update($data);
+
         return $coach;
     }
 
@@ -82,6 +82,7 @@ class ManagementDataRepository implements IManagementDataRepository
     {
         $player = Player::findOrFail($id);
         $player->update($data);
+
         return $player;
     }
 
@@ -89,6 +90,7 @@ class ManagementDataRepository implements IManagementDataRepository
     {
         return Player::findOrFail($id)->delete();
     }
+}
 
     public function findPlayerByUserId(int $userId)
     {

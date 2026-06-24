@@ -5,8 +5,11 @@ namespace App\Utils\Responses;
 class BaseResponse
 {
     public $success;
+
     public $message;
+
     public $data;
+
     public $error;
 
     public function __construct($success, $message, $data = null, $error = null)
@@ -24,7 +27,7 @@ class BaseResponse
             'success' => $this->success,
             'message' => $this->message,
             'data' => $this->data,
-            'error' => $this->error
+            'error' => $this->error,
         ];
     }
 }

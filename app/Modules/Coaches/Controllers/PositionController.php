@@ -3,8 +3,8 @@
 namespace App\Modules\Coaches\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Modules\Coaches\Services\PositionService;
+use Illuminate\Http\Request;
 
 class PositionController extends Controller
 {
@@ -46,11 +46,9 @@ class PositionController extends Controller
     ) {
         $validated =
             $request->validate([
-                'group_id' =>
-                    'required|exists:groups,id',
+                'group_id' => 'required|exists:groups,id',
 
-                'name' =>
-                    'required|string|max:255'
+                'name' => 'required|string|max:255',
             ]);
 
         $position =
@@ -59,9 +57,8 @@ class PositionController extends Controller
             );
 
         return response()->json([
-            'message' =>
-                'Position created successfully',
-            'data' => $position
+            'message' => 'Position created successfully',
+            'data' => $position,
         ], 201);
     }
 
@@ -71,11 +68,9 @@ class PositionController extends Controller
     ) {
         $validated =
             $request->validate([
-                'group_id' =>
-                    'required|exists:groups,id',
+                'group_id' => 'required|exists:groups,id',
 
-                'name' =>
-                    'required|string|max:255'
+                'name' => 'required|string|max:255',
             ]);
 
         $position =
@@ -85,9 +80,8 @@ class PositionController extends Controller
             );
 
         return response()->json([
-            'message' =>
-                'Position updated successfully',
-            'data' => $position
+            'message' => 'Position updated successfully',
+            'data' => $position,
         ]);
     }
 
@@ -97,8 +91,7 @@ class PositionController extends Controller
         $this->service->delete($id);
 
         return response()->json([
-            'message' =>
-                'Position deleted successfully'
+            'message' => 'Position deleted successfully',
         ]);
     }
 }

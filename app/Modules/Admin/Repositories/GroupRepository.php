@@ -25,16 +25,21 @@ class GroupRepository implements IGroupRepository
     public function updateGroup(int $id, array $data): ?Group
     {
         $group = $this->findById($id);
-        if (!$group) return null;
+        if (! $group) {
+            return null;
+        }
 
         $group->update($data);
+
         return $group;
     }
 
     public function deleteGroup(int $id): bool
     {
         $group = $this->findById($id);
-        if (!$group) return false;
+        if (! $group) {
+            return false;
+        }
 
         return $group->delete();
     }

@@ -2,9 +2,9 @@
 
 namespace App\Modules\Admin\Controllers;
 
-use Illuminate\Routing\Controller;
-use Illuminate\Http\Request;
 use App\Modules\Admin\Services\Interfaces\IGroupService;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
 class GroupController extends Controller
 {
@@ -19,7 +19,7 @@ class GroupController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => $this->service->getAll()
+            'data' => $this->service->getAll(),
         ]);
     }
 
@@ -30,7 +30,7 @@ class GroupController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Group created',
-            'data' => $data
+            'data' => $data,
         ]);
     }
 
@@ -41,7 +41,7 @@ class GroupController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Group updated',
-            'data' => $data
+            'data' => $data,
         ]);
     }
 
@@ -51,7 +51,7 @@ class GroupController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Group deleted'
+            'message' => 'Group deleted',
         ]);
     }
 }

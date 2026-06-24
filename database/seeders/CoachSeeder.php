@@ -52,6 +52,7 @@ class CoachSeeder extends Seeder
                 'license' => 'B License',
                 'phone_number' => '08123456789',
                 'email' => 'akmal@gmail.com',
+                'is_master' => true,
             ],
             [
                 'name' => 'Ahmad',
@@ -62,6 +63,7 @@ class CoachSeeder extends Seeder
                 'license' => 'C License',
                 'phone_number' => '08123456780',
                 'email' => 'ahmad@gmail.com',
+                'is_master' => false,
             ],
             [
                 'name' => 'Dani',
@@ -72,6 +74,7 @@ class CoachSeeder extends Seeder
                 'license' => 'C License',
                 'phone_number' => '08123456781',
                 'email' => 'dani@gmail.com',
+                'is_master' => false,
             ],
             [
                 'name' => 'Nalen',
@@ -82,6 +85,7 @@ class CoachSeeder extends Seeder
                 'license' => 'C License',
                 'phone_number' => '08123456782',
                 'email' => 'nalen@gmail.com',
+                'is_master' => false,
             ],
         ]);
     }

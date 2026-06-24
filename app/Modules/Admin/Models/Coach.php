@@ -2,8 +2,8 @@
 
 namespace App\Modules\Admin\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Modules\User\Models\User;
+use Illuminate\Database\Eloquent\Model;
 
 class Coach extends Model
 {
@@ -15,7 +15,12 @@ class Coach extends Model
         'license',
         'phone_number',
         'email',
-        'user_id'
+        'user_id',
+        'is_master',
+    ];
+
+    protected $casts = [
+        'is_master' => 'boolean',
     ];
 
     public function group()

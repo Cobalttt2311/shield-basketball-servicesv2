@@ -4,6 +4,8 @@ namespace App\Modules\Coaches\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Coaches\Services\PairwiseCriteriaService;
+use App\Utils\Messages\SuccessMessages\SuccessMessages;
+use App\Utils\Responses\BaseResponse;
 use Illuminate\Http\Request;
 
 class PairwiseCriteriaController extends Controller
@@ -16,97 +18,172 @@ class PairwiseCriteriaController extends Controller
         $this->service = $service;
     }
 
-    public function generate(
-        int $groupId,
-        int $positionId
-    ) {
-        $this->service
-            ->generatePairwise(
-                $groupId,
-                $positionId
-            );
-
-        return response()->json([
-            'message' => 'Pairwise generated successfully',
-        ]);
-    }
-
-    public function save(
-        Request $request
-    ) {
-        $validated =
+    public function generate(Request $request)
+    {
+        try {
             $request->validate([
-
-                '*.position_id' => 'required|exists:positions,id',
-
-                '*.criteria_first_id' => 'required|exists:criteria,id',
-
-                '*.criteria_second_id' => 'required|exists:criteria,id',
-
-                '*.value' => 'required|numeric|min:0.111|max:9',
+                'pairwise_set_id' => 'required|integer',
             ]);
 
-        $this->service
-            ->saveValue(
-                $validated
+            $this->service->generatePairwiseForSet((int) $request->pairwise_set_id);
+
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    SuccessMessages::PAIRWISE_GENERATED
+                ))->toArray()
             );
-
-        return response()->json([
-            'message' => 'Pairwise updated successfully',
-        ]);
-    }
-
-    public function matrix(
-        int $groupId,
-        int $positionId
-    ) {
-        return response()->json(
-            $this->service
-                ->generateMatrix(
-                    $groupId,
-                    $positionId
-                )
-        );
-    }
-
-    public function weights(
-        int $groupId,
-        int $positionId
-    ) {
-        return response()->json(
-            $this->service
-                ->calculateWeights(
-                    $groupId,
-                    $positionId
-                )
-        );
-    }
-
-    public function saveWeights(
-        int $groupId,
-        int $positionId
-    ) {
-        $this->service
-            ->saveWeights(
-                $groupId,
-                $positionId
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
+                400
             );
-
-        return response()->json([
-            'message' => 'Weights saved successfully',
-        ]);
+        } catch (\Exception $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    'SERVER_ERROR'
+                ))->toArray(),
+                500
+            );
+        }
     }
 
-    public function consistency(
-        int $groupId,
-        int $positionId
-    ) {
-        return response()->json(
-            $this->service
-                ->calculateConsistencyRatio(
-                    $groupId,
-                    $positionId
-                )
-        );
+    public function save(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'pairwise_set_id' => 'required|integer',
+                'comparisons' => 'required|array',
+                'comparisons.*.id' => 'required|integer',
+                'comparisons.*.value' => 'required|numeric|min:0.111|max:9',
+            ]);
+
+            $this->service->saveValueForSet($validated['comparisons']);
+
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    SuccessMessages::PAIRWISE_SAVED
+                ))->toArray()
+            );
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
+                400
+            );
+        } catch (\Exception $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    'SERVER_ERROR'
+                ))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function getPairwise(Request $request)
+    {
+        try {
+            $request->validate([
+                'pairwise_set_id' => 'required|integer',
+            ]);
+
+            $data = $this->service->getPairwiseForSet((int) $request->pairwise_set_id);
+
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    SuccessMessages::PAIRWISE_RETRIEVED,
+                    $data
+                ))->toArray()
+            );
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
+                400
+            );
+        } catch (\Exception $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    'SERVER_ERROR'
+                ))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function calculateWeights(Request $request)
+    {
+        try {
+            $request->validate([
+                'pairwise_set_id' => 'required|integer',
+            ]);
+
+            $res = $this->service->calculateAndSaveWeightsForSet((int) $request->pairwise_set_id);
+
+            if (! $res['success']) {
+                return response()->json(
+                    (new BaseResponse(
+                        false,
+                        $res['message'] ?? 'Beberapa perbandingan kriteria belum diisi.',
+                        null,
+                        $res['errors']
+                    ))->toArray(),
+                    422
+                );
+            }
+
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    'Bobot kriteria berhasil dihitung.',
+                    $res['results']
+                ))->toArray()
+            );
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
+                400
+            );
+        } catch (\Exception $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    'SERVER_ERROR'
+                ))->toArray(),
+                500
+            );
+        }
     }
 }

@@ -7,10 +7,12 @@ interface ISubCriteriaWeightRepository
     public function updateOrCreate(
         int $positionId,
         int $subCriteriaId,
-        float $weight
+        float $weight,
+        ?int $pairwiseSetId = null
     );
 
     public function getByPosition(
-        int $positionId
+        int $positionId,
+        ?int $pairwiseSetId = null
     );
 }

@@ -6,30 +6,50 @@ interface IPairwiseSubCriteriaService
 {
     public function generatePairwise(
         int $positionId,
-        int $criteriaId
+        int $criteriaId,
+        ?int $pairwiseSetId = null
     );
 
     public function saveValue(
-        array $data
+        array $data,
+        ?int $pairwiseSetId = null
     ): void;
 
     public function generateMatrix(
         int $positionId,
-        int $criteriaId
+        int $criteriaId,
+        ?int $pairwiseSetId = null
     );
 
     public function calculateWeights(
         int $positionId,
-        int $criteriaId
+        int $criteriaId,
+        ?int $pairwiseSetId = null
     );
 
     public function saveWeights(
         int $positionId,
-        int $criteriaId
+        int $criteriaId,
+        ?int $pairwiseSetId = null
     );
 
     public function calculateConsistencyRatio(
         int $positionId,
-        int $criteriaId
+        int $criteriaId,
+        ?int $pairwiseSetId = null
     );
+
+    public function getPairwise(
+        int $positionId,
+        int $criteriaId,
+        ?int $pairwiseSetId = null
+    );
+
+    public function generatePairwiseForSet(int $pairwiseSetId, int $criteriaId): bool;
+
+    public function getPairwiseForSet(int $pairwiseSetId, int $criteriaId): array;
+
+    public function saveValueForSet(array $comparisons): void;
+
+    public function calculateAndSaveWeightsForSet(int $pairwiseSetId, int $criteriaId): array;
 }

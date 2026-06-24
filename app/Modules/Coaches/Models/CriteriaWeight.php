@@ -11,7 +11,8 @@ class CriteriaWeight extends Model
     protected $fillable = [
         'position_id',
         'criteria_id',
-        'weight'
+        'weight',
+        'pairwise_set_id',
     ];
 
     public function position()
@@ -25,6 +26,14 @@ class CriteriaWeight extends Model
     {
         return $this->belongsTo(
             Criteria::class
+        );
+    }
+
+    public function pairwiseSet()
+    {
+        return $this->belongsTo(
+            PairwiseSet::class,
+            'pairwise_set_id'
         );
     }
 }

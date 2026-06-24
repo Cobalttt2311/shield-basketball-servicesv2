@@ -5,8 +5,7 @@ namespace App\Modules\Coaches\Repositories;
 use App\Modules\Coaches\Models\EvaluationScore;
 use App\Modules\Coaches\Repositories\Interfaces\IPlayerScoreMappingRepository;
 
-class PlayerScoreMappingRepository
-    implements IPlayerScoreMappingRepository
+class PlayerScoreMappingRepository implements IPlayerScoreMappingRepository
 {
     public function getScoresBySubCriteria(
         int $evaluationId,
