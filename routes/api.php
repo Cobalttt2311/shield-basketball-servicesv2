@@ -11,6 +11,8 @@ use App\Modules\Coaches\Controllers\PairwiseSubCriteriaController;
 use App\Modules\Coaches\Controllers\PlayerScoreMappingController;
 use App\Modules\Coaches\Controllers\PositionController;
 use App\Modules\User\Controllers\UserController;
+use App\Modules\Coaches\Controllers\PlayerScoreMappingController;
+use App\Modules\Upload\Controllers\UploadController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -33,6 +35,15 @@ Route::middleware(['auth:api', 'role:coach', 'master.coach'])->group(function ()
         Route::post('/calculate-weights', [PairwiseCriteriaController::class, 'calculateWeights']);
     });
 
+Route::prefix('pairwise-criteria')->group(function () {
+    Route::post('/generate/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'generate']);
+    Route::put('/save', [PairwiseCriteriaController::class, 'save']);
+    Route::get('/matrix/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'matrix']);
+    Route::get('/weights/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'weights']);
+    Route::post('/save-weight/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'saveWeights']);
+    Route::get('/consistency/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'consistency']);
+});
+
     Route::prefix('pairwise-subcriteria')->group(function () {
         Route::post('/generate', [PairwiseSubCriteriaController::class, 'generate']);
         Route::put('/save', [PairwiseSubCriteriaController::class, 'save']);
@@ -45,6 +56,7 @@ Route::get('/alternative-score/{evaluationId}/{positionId}', [PlayerScoreMapping
 Route::get('/alternative-score/{positionId}', [PlayerScoreMappingController::class, 'calculateAlternativeScoresByPosition']);
 Route::get('/recommendations/{evaluationId}', [PlayerScoreMappingController::class, 'getPositionRecommendations']);
 
+Route::get('/alternative-weight/{evaluationId}/{subCriteriaId}',[PlayerScoreMappingController::class, 'calculate']);
 Route::post('forgot-password', [UserController::class, 'forgotPassword']);
 Route::post('reset-password', [UserController::class, 'resetPassword']);
 
@@ -54,6 +66,14 @@ Route::middleware(['auth:api'])->group(function () {
 
     Route::prefix('auth')->group(function () {
         Route::post('/logout', [UserController::class, 'logout']);
+    });
+
+    Route::middleware('role:player')->group(function (){
+        Route::prefix('player')->group(function (){
+            Route::get('/profile', [UserController::class, 'getProfile']);
+            Route::put('/profile', [UserController::class, 'updateProfile']);   
+            Route::post('/change-password', [UserController::class, 'updatePassword']);   
+        });
     });
 
     Route::middleware(['role:admin'])->group(function () {
@@ -71,16 +91,6 @@ Route::middleware(['auth:api'])->group(function () {
             Route::put('/{id}', [ManagementDataController::class, 'updateCoach']);
             Route::delete('/{id}', [ManagementDataController::class, 'deleteCoach']);
         });
-
-        // Route::prefix('positions')->group(function () {
-        //     Route::get('/',[PositionController::class, 'index']);
-        //     Route::get('/group/{groupId}',[PositionController::class, 'getByGroup']);
-        //     Route::get('/{id}',[PositionController::class, 'show']);
-        //     Route::post('/',[PositionController::class, 'store']);
-        //     Route::put('/{id}',[PositionController::class, 'update']);
-        //     Route::delete('/{id}',[PositionController::class, 'destroy']);
-        // });
-
     });
 
     Route::middleware(['role:coach,admin'])->group(function () {
@@ -98,6 +108,12 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('evaluation-reports/my-reports', [EvaluationReportController::class, 'getMyReportsList']);
 
     Route::middleware(['role:coach'])->group(function () {
+
+        Route::prefix('coach')->group(function (){
+            Route::get('/profile', [UserController::class, 'getProfile']);
+            Route::put('/profile', [UserController::class, 'updateProfile']);   
+            Route::post('/change-password', [UserController::class, 'updatePassword']);   
+        });
 
         Route::prefix('criteria')->group(function () {
             Route::get('/me', [CriteriaController::class, 'getMyCriteria']);
@@ -159,4 +175,12 @@ Route::middleware(['auth:api'])->group(function () {
     });
 });
 
-Route::get('/test', [UserController::class, 'test']);
+Route::prefix('uploads')->group(function () {
+    Route::post('/', [UploadController::class, 'upload']);
+    Route::get('/', [UploadController::class, 'getAll']);
+    Route::get('/{id}', [UploadController::class, 'getById']);
+    Route::delete('/{id}', [UploadController::class, 'delete']);
+});
+
+
+

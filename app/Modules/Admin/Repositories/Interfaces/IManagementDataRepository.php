@@ -32,3 +32,5 @@ interface IManagementDataRepository
 
     public function deletePlayer(int $id);
 }
+    public function findPlayerByUserId(int $userId);    
+}

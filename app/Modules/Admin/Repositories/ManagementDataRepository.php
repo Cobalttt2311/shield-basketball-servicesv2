@@ -91,3 +91,9 @@ class ManagementDataRepository implements IManagementDataRepository
         return Player::findOrFail($id)->delete();
     }
 }
+
+    public function findPlayerByUserId(int $userId)
+    {
+        return Player::where('user_id', $userId)->first();
+    }
+}

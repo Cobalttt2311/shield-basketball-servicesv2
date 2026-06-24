@@ -51,6 +51,14 @@ use App\Modules\User\Repositories\UserRepository;
 use App\Modules\User\Services\Interfaces\IUserService;
 use App\Modules\User\Services\UserService;
 use Illuminate\Support\ServiceProvider;
+use App\Modules\Coaches\Services\AhpCalculationService;
+use App\Modules\Coaches\Services\Interfaces\IAhpCalculationService;
+use App\Modules\Coaches\Services\Interfaces\IPlayerScoreMappingService;
+use App\Modules\Coaches\Services\PlayerScoreMappingService;
+use App\Modules\Upload\Repositories\Interfaces\IUploadRepository;
+use App\Modules\Upload\Repositories\UploadRepository;
+use App\Modules\Upload\Services\Interfaces\IUploadService;
+use App\Modules\Upload\Services\UploadService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -94,6 +102,8 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(IEvaluationReportRepository::class, EvaluationReportRepository::class);
         $this->app->bind(IEvaluationReportService::class, EvaluationReportService::class);
+        $this->app->bind(IUploadRepository::class, UploadRepository::class);
+        $this->app->bind(IUploadService::class, UploadService::class);
     }
 
     /**
