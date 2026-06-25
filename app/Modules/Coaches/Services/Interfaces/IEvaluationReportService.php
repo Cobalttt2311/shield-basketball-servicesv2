@@ -6,7 +6,7 @@ interface IEvaluationReportService
 {
     public function finalizeReport(array $data);
 
-    public function getReportByEvaluationAndPlayer(int $evaluationId, int $playerId);
+    public function getReportByEvaluationAndPlayer(int $evaluationId, int $playerId, bool $allowDraft = false);
 
     public function getReportsListForPlayer(int $playerId);
 

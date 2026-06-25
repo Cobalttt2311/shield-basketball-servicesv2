@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('pairwise_sets', function (Blueprint $table) {
@@ -20,18 +17,45 @@ return new class extends Migration
 
         Schema::table('pairwise_criteria', function (Blueprint $table) {
             $table->foreignId('pairwise_set_id')->nullable()->constrained('pairwise_sets')->cascadeOnDelete();
+            $table->dropUnique('pairwise_criteria_unique');
+            $table->unique([
+                'pairwise_set_id',
+                'position_id',
+                'criteria_first_id',
+                'criteria_second_id',
+            ], 'pairwise_criteria_unique');
         });
 
         Schema::table('pairwise_sub_criteria', function (Blueprint $table) {
             $table->foreignId('pairwise_set_id')->nullable()->constrained('pairwise_sets')->cascadeOnDelete();
+            $table->dropUnique('pairwise_subcriteria_unique');
+            $table->unique([
+                'pairwise_set_id',
+                'position_id',
+                'criteria_id',
+                'sub_criteria_first_id',
+                'sub_criteria_second_id',
+            ], 'pairwise_subcriteria_unique');
         });
 
         Schema::table('criteria_weights', function (Blueprint $table) {
             $table->foreignId('pairwise_set_id')->nullable()->constrained('pairwise_sets')->cascadeOnDelete();
+            $table->dropUnique('criteria_weight_unique');
+            $table->unique([
+                'pairwise_set_id',
+                'position_id',
+                'criteria_id',
+            ], 'criteria_weight_unique');
         });
 
         Schema::table('sub_criteria_weights', function (Blueprint $table) {
             $table->foreignId('pairwise_set_id')->nullable()->constrained('pairwise_sets')->cascadeOnDelete();
+            $table->dropUnique('subcriteria_weight_unique');
+            $table->unique([
+                'pairwise_set_id',
+                'position_id',
+                'sub_criteria_id',
+            ], 'subcriteria_weight_unique');
         });
 
         Schema::table('evaluations', function (Blueprint $table) {
@@ -50,23 +74,46 @@ return new class extends Migration
         });
 
         Schema::table('sub_criteria_weights', function (Blueprint $table) {
+            $table->dropUnique('subcriteria_weight_unique');
             $table->dropForeign(['pairwise_set_id']);
             $table->dropColumn('pairwise_set_id');
+            $table->unique([
+                'position_id',
+                'sub_criteria_id',
+            ], 'subcriteria_weight_unique');
         });
 
         Schema::table('criteria_weights', function (Blueprint $table) {
+            $table->dropUnique('criteria_weight_unique');
             $table->dropForeign(['pairwise_set_id']);
             $table->dropColumn('pairwise_set_id');
+            $table->unique([
+                'position_id',
+                'criteria_id',
+            ], 'criteria_weight_unique');
         });
 
         Schema::table('pairwise_sub_criteria', function (Blueprint $table) {
+            $table->dropUnique('pairwise_subcriteria_unique');
             $table->dropForeign(['pairwise_set_id']);
             $table->dropColumn('pairwise_set_id');
+            $table->unique([
+                'position_id',
+                'criteria_id',
+                'sub_criteria_first_id',
+                'sub_criteria_second_id',
+            ], 'pairwise_subcriteria_unique');
         });
 
         Schema::table('pairwise_criteria', function (Blueprint $table) {
+            $table->dropUnique('pairwise_criteria_unique');
             $table->dropForeign(['pairwise_set_id']);
             $table->dropColumn('pairwise_set_id');
+            $table->unique([
+                'position_id',
+                'criteria_first_id',
+                'criteria_second_id',
+            ], 'pairwise_criteria_unique');
         });
 
         Schema::dropIfExists('pairwise_sets');

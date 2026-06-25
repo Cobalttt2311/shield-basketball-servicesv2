@@ -65,7 +65,8 @@ class EvaluationReportController extends Controller
         try {
             $result = $this->service->getReportByEvaluationAndPlayer(
                 (int) $evaluationId,
-                (int) $playerId
+                (int) $playerId,
+                true
             );
 
             return response()->json(

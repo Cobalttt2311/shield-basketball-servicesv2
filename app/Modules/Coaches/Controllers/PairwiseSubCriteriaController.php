@@ -67,7 +67,7 @@ class PairwiseSubCriteriaController extends Controller
                 'comparisons.*.value' => 'required|numeric|min:0.111|max:9',
             ]);
 
-            $this->service->saveValueForSet($validated['comparisons']);
+            $this->service->saveValueForSet((int) $validated['pairwise_set_id'], $validated['comparisons']);
 
             return response()->json(
                 (new BaseResponse(

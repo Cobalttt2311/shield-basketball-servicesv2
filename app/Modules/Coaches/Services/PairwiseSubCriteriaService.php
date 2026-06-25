@@ -391,10 +391,20 @@ class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
 
     public function getPairwiseForSet(int $pairwiseSetId, int $criteriaId): array
     {
-        $comparisons = PairwiseSubCriteria::with(['firstSubCriteria', 'secondSubCriteria', 'position'])
+        $set = PairwiseSet::find($pairwiseSetId);
+        $groupId = $set?->group_id;
+
+        $query = PairwiseSubCriteria::with(['firstSubCriteria', 'secondSubCriteria', 'position'])
             ->where('pairwise_set_id', $pairwiseSetId)
-            ->where('criteria_id', $criteriaId)
-            ->get();
+            ->where('criteria_id', $criteriaId);
+
+        if ($groupId) {
+            $query->whereHas('position', function ($q) use ($groupId) {
+                $q->where('group_id', $groupId);
+            });
+        }
+
+        $comparisons = $query->get();
 
         $grouped = [];
 
@@ -420,13 +430,19 @@ class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
         return array_values($grouped);
     }
 
-    public function saveValueForSet(array $comparisons): void
+    public function saveValueForSet(int $pairwiseSetId, array $comparisons): void
     {
-        DB::transaction(function () use ($comparisons) {
+        DB::transaction(function () use ($pairwiseSetId, $comparisons) {
             foreach ($comparisons as $item) {
-                PairwiseSubCriteria::where('id', $item['id'])->update([
-                    'value' => $item['value'],
-                ]);
+                $updated = PairwiseSubCriteria::where('id', $item['id'])
+                    ->where('pairwise_set_id', $pairwiseSetId)
+                    ->update([
+                        'value' => $item['value'],
+                    ]);
+
+                if ($updated === 0) {
+                    throw new \InvalidArgumentException("Perbandingan dengan ID {$item['id']} tidak ditemukan pada set pairwise ID {$pairwiseSetId}.");
+                }
             }
         });
     }

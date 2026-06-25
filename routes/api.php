@@ -104,27 +104,26 @@ Route::middleware(['auth:api'])->group(function () {
             Route::put('/{id}', [ManagementDataController::class, 'updatePlayer']);
             Route::delete('/{id}', [ManagementDataController::class, 'deletePlayer']);
         });
-        Route::get('evaluation-reports/evaluation/{evaluationId}/player/{playerId}', [EvaluationReportController::class, 'getFinalizedReport']);
     });
-
+    
     Route::get('evaluation-reports/my-report/{evaluationId}', [EvaluationReportController::class, 'getPlayerReport']);
     Route::get('evaluation-reports/my-reports', [EvaluationReportController::class, 'getMyReportsList']);
-
+    
     Route::middleware(['role:coach'])->group(function () {
-
+        
         Route::prefix('coach')->group(function (){
             Route::get('/profile', [UserController::class, 'getProfile']);
             Route::put('/profile', [UserController::class, 'updateProfile']);   
             Route::post('/change-password', [UserController::class, 'updatePassword']);   
         });
-
+        
         Route::prefix('criteria')->group(function () {
             Route::get('/me', [CriteriaController::class, 'getMyCriteria']);
             Route::get('/group/{groupId}', [CriteriaController::class, 'getCriteriaByGroupId']);
             Route::get('/{id}', [CriteriaController::class, 'getCriteriaById']);
             Route::get('/sub/all', [CriteriaController::class, 'getAllSubCriteria']);
             Route::get('/sub/criteria/{criteriaId}', [CriteriaController::class, 'getSubCriteriaByCriteria']);
-
+            
             Route::middleware(['master.coach'])->group(function () {
                 Route::post('/', [CriteriaController::class, 'createCriteria']);
                 Route::put('/{id}', [CriteriaController::class, 'updateCriteria']);
@@ -134,7 +133,7 @@ Route::middleware(['auth:api'])->group(function () {
                 Route::delete('/sub/{id}', [CriteriaController::class, 'deleteSubCriteria']);
             });
         });
-
+        
         Route::prefix('evaluations')->group(function () {
             Route::post('/', [EvaluationController::class, 'createEvaluation']);
             Route::get('/all', [EvaluationController::class, 'getAllEvaluations']);
@@ -143,20 +142,21 @@ Route::middleware(['auth:api'])->group(function () {
             Route::delete('/{id}', [EvaluationController::class, 'deleteEvaluation']);
             Route::post('/{id}/process-recommendation', [PlayerScoreMappingController::class, 'processRecommendation']);
         });
-
+        
         Route::prefix('evaluation-scores')->group(function () {
             Route::post('/', [EvaluationController::class, 'createEvaluationScores']);
             Route::patch('/{id}', [EvaluationController::class, 'updateEvaluationScore']);
             Route::delete('/{id}', [EvaluationController::class, 'deleteEvaluationScore']);
         });
-
+        
         Route::prefix('pairwise-sets')->group(function () {
             Route::get('/', [PairwiseSetController::class, 'getCompatibleSets']);
             Route::middleware(['master.coach'])->post('/', [PairwiseSetController::class, 'createSet']);
             Route::middleware(['master.coach'])->put('/{id}', [PairwiseSetController::class, 'updateSet']);
         });
-
+        
         Route::post('evaluation-reports/finalize', [EvaluationReportController::class, 'finalizeReport']);
+        Route::get('evaluation-reports/evaluation/{evaluationId}/player/{playerId}', [EvaluationReportController::class, 'getFinalizedReport']);
         Route::get('evaluation-reports/evaluation/{evaluationId}/players', [EvaluationReportController::class, 'getPlayersForFinalization']);
         // Route::prefix('pairwise-criteria')->group(function () {
         //     Route::post('/generate/{groupId}/{positionId}',[PairwiseCriteriaController::class, 'generate']);

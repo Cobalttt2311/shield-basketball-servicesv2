@@ -54,15 +54,90 @@ class EvaluationReportService implements IEvaluationReportService
         return $this->repository->saveReport($data);
     }
 
-    public function getReportByEvaluationAndPlayer(int $evaluationId, int $playerId)
+    public function getReportByEvaluationAndPlayer(int $evaluationId, int $playerId, bool $allowDraft = false)
     {
         // 1. Fetch finalized report
         $report = $this->repository->getReportByEvaluationAndPlayer($evaluationId, $playerId);
+
         if (! $report) {
-            throw new Exception(ErrorMessages::REPORT_NOT_FOUND);
+            if (! $allowDraft) {
+                throw new Exception(ErrorMessages::REPORT_NOT_FOUND);
+            }
+
+            // Check if player and evaluation exist to prevent returning draft for invalid IDs
+            $player = Player::with('group')->find($playerId);
+            $evaluation = Evaluation::find($evaluationId);
+            if (! $player || ! $evaluation) {
+                throw new Exception(ErrorMessages::REPORT_NOT_FOUND);
+            }
+
+            // Fetch evaluation scores
+            $scores = EvaluationScore::with('subCriteria.criteria')
+                ->where('evaluation_id', $evaluationId)
+                ->where('player_id', $playerId)
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'sub_criteria_id' => $item->sub_criteria_id,
+                        'sub_criteria_name' => $item->subCriteria->name,
+                        'criteria_id' => $item->subCriteria->criteria_id,
+                        'criteria_name' => $item->subCriteria->criteria->name,
+                        'score' => $item->score,
+                    ];
+                });
+
+            // Fetch Coaches for the player's group
+            $coaches = Coach::where('group_id', $player->group_id)->get();
+            $headCoach = $coaches->first(function ($c) {
+                return strtolower(trim($c->position)) === 'head coach';
+            });
+            $assistantCoach = $coaches->first(function ($c) {
+                return strtolower(trim($c->position)) === 'assistant coach';
+            });
+
+            // Fetch dynamic position recommendations
+            $recommendedPositionId = null;
+            $recommendedPositionName = null;
+
+            if ($evaluation->pairwise_set_id) {
+                try {
+                    $recommendations = $this->playerScoreMappingService->getPositionRecommendations($evaluationId);
+                    $playerRecs = [];
+                    foreach ($recommendations as $rec) {
+                        if ($rec['player_id'] === $playerId) {
+                            $playerRecs = $rec['positions'];
+                            break;
+                        }
+                    }
+                    if (! empty($playerRecs)) {
+                        $recommendedPositionId = $playerRecs[0]['position_id'] ?? null;
+                        $recommendedPositionName = $playerRecs[0]['position_name'] ?? null;
+                    }
+                } catch (Exception $e) {
+                    // Fail silently, keep null
+                }
+            }
+
+            return [
+                'report_id' => null,
+                'evaluation_id' => $evaluationId,
+                'evaluation_title' => $evaluation->title,
+                'evaluation_date' => $evaluation->date,
+                'player_id' => $playerId,
+                'player_name' => $player->name,
+                'group_name' => $player->group ? $player->group->age_group : null,
+                'head_coach' => $headCoach ? $headCoach->name : null,
+                'assistant_coach' => $assistantCoach ? $assistantCoach->name : null,
+                'recommended_position_id' => $recommendedPositionId,
+                'recommended_position_name' => $recommendedPositionName,
+                'final_position_id' => null,
+                'final_position_name' => null,
+                'notes' => null,
+                'scores' => $scores,
+            ];
         }
 
-        // 2. Fetch evaluation scores
+        // 2. Fetch evaluation scores for finalized report
         $scores = EvaluationScore::with('subCriteria.criteria')
             ->where('evaluation_id', $evaluationId)
             ->where('player_id', $playerId)

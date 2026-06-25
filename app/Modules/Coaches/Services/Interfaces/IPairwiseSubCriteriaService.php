@@ -49,7 +49,7 @@ interface IPairwiseSubCriteriaService
 
     public function getPairwiseForSet(int $pairwiseSetId, int $criteriaId): array;
 
-    public function saveValueForSet(array $comparisons): void;
+    public function saveValueForSet(int $pairwiseSetId, array $comparisons): void;
 
     public function calculateAndSaveWeightsForSet(int $pairwiseSetId, int $criteriaId): array;
 }
