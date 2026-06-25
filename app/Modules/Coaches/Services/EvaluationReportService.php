@@ -56,8 +56,58 @@ class EvaluationReportService implements IEvaluationReportService
 
     public function getReportByEvaluationAndPlayer(int $evaluationId, int $playerId, bool $allowDraft = false)
     {
-        // 1. Fetch finalized report
+        // 1. Fetch finalized or draft report
         $report = $this->repository->getReportByEvaluationAndPlayer($evaluationId, $playerId);
+
+        // Jika ada laporan di database tetapi belum difinalisasi (baru draf dari Step 2)
+        if ($report && ! $report->is_finalized) {
+            if (! $allowDraft) {
+                throw new Exception(ErrorMessages::REPORT_NOT_FOUND);
+            }
+
+            // Fetch evaluation scores secara dinamis
+            $scores = EvaluationScore::with('subCriteria.criteria')
+                ->where('evaluation_id', $evaluationId)
+                ->where('player_id', $playerId)
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'sub_criteria_id' => $item->sub_criteria_id,
+                        'sub_criteria_name' => $item->subCriteria->name,
+                        'criteria_id' => $item->subCriteria->criteria_id,
+                        'criteria_name' => $item->subCriteria->criteria->name,
+                        'score' => $item->score,
+                    ];
+                });
+
+            // Fetch Coaches
+            $player = $report->player;
+            $coaches = Coach::where('group_id', $player->group_id)->get();
+            $headCoach = $coaches->first(function ($c) {
+                return strtolower(trim($c->position)) === 'head coach';
+            });
+            $assistantCoach = $coaches->first(function ($c) {
+                return strtolower(trim($c->position)) === 'assistant coach';
+            });
+
+            return [
+                'report_id' => null, // null agar FE tahu belum difinalisasi secara resmi
+                'evaluation_id' => $evaluationId,
+                'evaluation_title' => $report->evaluation->title,
+                'evaluation_date' => $report->evaluation->date,
+                'player_id' => $playerId,
+                'player_name' => $player->name,
+                'group_name' => $player->group ? $player->group->age_group : null,
+                'head_coach' => $headCoach ? $headCoach->name : null,
+                'assistant_coach' => $assistantCoach ? $assistantCoach->name : null,
+                'recommended_position_id' => $report->recommended_position_id,
+                'recommended_position_name' => $report->recommendedPosition ? $report->recommendedPosition->name : null,
+                'final_position_id' => null, // null agar FE tahu pelatih belum memilih final position secara resmi
+                'final_position_name' => null,
+                'notes' => null,
+                'scores' => $scores,
+            ];
+        }
 
         if (! $report) {
             if (! $allowDraft) {
@@ -239,5 +289,28 @@ class EvaluationReportService implements IEvaluationReportService
         }
 
         return $data;
+    }
+
+    public function saveRecommendationDrafts(int $evaluationId, array $recommendations)
+    {
+        foreach ($recommendations as $rec) {
+            $playerId = (int) $rec['player_id'];
+            $positions = $rec['positions'] ?? [];
+            if (empty($positions)) {
+                continue;
+            }
+
+            // Rekomendasi teratas (posisi pertama hasil AHP)
+            $topPositionId = (int) $positions[0]['position_id'];
+
+            $this->repository->saveDraft([
+                'evaluation_id' => $evaluationId,
+                'player_id' => $playerId,
+                'recommended_position_id' => $topPositionId,
+                'final_position_id' => $topPositionId, // Default ke posisi teratas
+                'notes' => null,
+                'is_finalized' => false,
+            ]);
+        }
     }
 }

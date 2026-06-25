@@ -15,6 +15,7 @@ class EvaluationReport extends Model
         'recommended_position_id',
         'final_position_id',
         'notes',
+        'is_finalized',
     ];
 
     public function evaluation()

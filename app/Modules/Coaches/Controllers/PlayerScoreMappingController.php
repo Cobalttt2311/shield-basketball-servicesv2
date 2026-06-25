@@ -5,6 +5,7 @@ namespace App\Modules\Coaches\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\Coaches\Models\Evaluation;
 use App\Modules\Coaches\Models\Position;
+use App\Modules\Coaches\Services\Interfaces\IEvaluationReportService;
 use App\Modules\Coaches\Services\Interfaces\IPairwiseSetService;
 use App\Modules\Coaches\Services\Interfaces\IPlayerScoreMappingService;
 use App\Utils\Messages\SuccessMessages\SuccessMessages;
@@ -17,12 +18,16 @@ class PlayerScoreMappingController extends Controller
 
     protected IPairwiseSetService $pairwiseSetService;
 
+    protected IEvaluationReportService $evaluationReportService;
+
     public function __construct(
         IPlayerScoreMappingService $service,
-        IPairwiseSetService $pairwiseSetService
+        IPairwiseSetService $pairwiseSetService,
+        IEvaluationReportService $evaluationReportService
     ) {
         $this->service = $service;
         $this->pairwiseSetService = $pairwiseSetService;
+        $this->evaluationReportService = $evaluationReportService;
     }
 
     public function calculate(
@@ -205,6 +210,9 @@ class PlayerScoreMappingController extends Controller
 
             // 3. Proses kalkulasi AHP & dapatkan rekomendasi
             $data = $this->service->getPositionRecommendations($evaluationId);
+
+            // 4. Simpan draf rekomendasi terbaik langsung ke tabel evaluation_reports
+            $this->evaluationReportService->saveRecommendationDrafts($evaluationId, $data);
 
             return response()->json(
                 (new BaseResponse(

@@ -10,5 +10,7 @@ interface IEvaluationReportRepository
 
     public function hasReport(int $evaluationId, int $playerId): bool;
 
+    public function saveDraft(array $data);
+
     public function getReportsByPlayer(int $playerId);
 }

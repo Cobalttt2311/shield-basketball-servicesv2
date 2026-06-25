@@ -18,6 +18,23 @@ class EvaluationReportRepository implements IEvaluationReportRepository
                 'recommended_position_id' => $data['recommended_position_id'],
                 'final_position_id' => $data['final_position_id'],
                 'notes' => $data['notes'] ?? null,
+                'is_finalized' => true,
+            ]
+        );
+    }
+
+    public function saveDraft(array $data)
+    {
+        return EvaluationReport::updateOrCreate(
+            [
+                'evaluation_id' => $data['evaluation_id'],
+                'player_id' => $data['player_id'],
+            ],
+            [
+                'recommended_position_id' => $data['recommended_position_id'],
+                'final_position_id' => $data['final_position_id'],
+                'notes' => $data['notes'] ?? null,
+                'is_finalized' => $data['is_finalized'] ?? false,
             ]
         );
     }
@@ -39,6 +56,7 @@ class EvaluationReportRepository implements IEvaluationReportRepository
     {
         return EvaluationReport::where('evaluation_id', $evaluationId)
             ->where('player_id', $playerId)
+            ->where('is_finalized', true)
             ->exists();
     }
 
@@ -48,6 +66,7 @@ class EvaluationReportRepository implements IEvaluationReportRepository
             ->join('evaluations', 'evaluation_reports.evaluation_id', '=', 'evaluations.id')
             ->with(['evaluation', 'finalPosition'])
             ->where('player_id', $playerId)
+            ->where('is_finalized', true)
             ->orderBy('evaluations.date', 'desc')
             ->get();
     }
