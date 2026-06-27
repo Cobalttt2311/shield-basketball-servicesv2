@@ -77,6 +77,8 @@ Route::middleware(['auth:api'])->group(function () {
             Route::get('/profile', [UserController::class, 'getProfile']);
             Route::put('/profile', [UserController::class, 'updateProfile']);   
             Route::post('/change-password', [UserController::class, 'updatePassword']);   
+            Route::get('evaluation-reports/my-report/{evaluationId}', [EvaluationReportController::class, 'getPlayerReport']);
+            Route::get('evaluation-reports/my-reports', [EvaluationReportController::class, 'getMyReportsList']);
         });
     });
 
@@ -106,10 +108,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::delete('/{id}', [ManagementDataController::class, 'deletePlayer']);
         });
     });
-    
-    Route::get('evaluation-reports/my-report/{evaluationId}', [EvaluationReportController::class, 'getPlayerReport']);
-    Route::get('evaluation-reports/my-reports', [EvaluationReportController::class, 'getMyReportsList']);
-    
+        
     Route::middleware(['role:coach'])->group(function () {
         
         Route::prefix('coach')->group(function (){
