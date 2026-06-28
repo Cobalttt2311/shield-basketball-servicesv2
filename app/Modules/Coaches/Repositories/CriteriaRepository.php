@@ -17,8 +17,7 @@ class CriteriaRepository implements ICriteriaRepository
 
     public function getCriteriaByGroupId(int $groupId)
     {
-        /** @var Criteria|null $criteria */
-        $criteria = Criteria::with('subCriteria')
+        return Criteria::with('subCriteria')
             ->where('group_id', $groupId)
             ->get();
     }
