@@ -204,6 +204,7 @@ test('coach can retrieve finalized report with scores', function () {
                         'score' => 80,
                     ],
                 ],
+                'recommendations' => [],
             ],
         ]);
 });
@@ -227,7 +228,7 @@ test('player can retrieve their own report but not others', function () {
     Auth::guard('api')->setUser($this->playerUser);
     $playerToken = JWTAuth::fromUser($this->playerUser);
     $response = $this->withHeaders(['Authorization' => "Bearer $playerToken"])
-        ->getJson("/api/evaluation-reports/my-report/{$this->evaluation->id}");
+        ->getJson("/api/player/evaluation-reports/my-report/{$this->evaluation->id}");
 
     $response->assertStatus(200)
         ->assertJson([
@@ -240,7 +241,7 @@ test('player can retrieve their own report but not others', function () {
             ],
         ]);
 
-    // Create another player and try to retrieve Romli's report (since route has no playerId parameter, player retrieves their own, but since they have no report, they should get 404 Not Found)
+    // Create another player and try to retrieve Romli's report
     $otherPlayerUser = User::create([
         'name' => 'Other Player',
         'username' => 'otherplayer',
@@ -264,7 +265,7 @@ test('player can retrieve their own report but not others', function () {
     $otherToken = JWTAuth::fromUser($otherPlayerUser);
     Auth::guard('api')->setUser($otherPlayerUser);
     $otherResponse = $this->withHeaders(['Authorization' => "Bearer $otherToken"])
-        ->getJson("/api/evaluation-reports/my-report/{$this->evaluation->id}");
+        ->getJson("/api/player/evaluation-reports/my-report/{$this->evaluation->id}");
 
     $otherResponse->assertStatus(404);
 });
@@ -300,7 +301,7 @@ test('player can retrieve list of finalized reports', function () {
     Auth::guard('api')->setUser($this->playerUser);
     $playerToken = JWTAuth::fromUser($this->playerUser);
     $response = $this->withHeaders(['Authorization' => "Bearer $playerToken"])
-        ->getJson('/api/evaluation-reports/my-reports');
+        ->getJson('/api/player/evaluation-reports/my-reports');
 
     $response->assertStatus(200)
         ->assertJson([
