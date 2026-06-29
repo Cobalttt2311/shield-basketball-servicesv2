@@ -22,14 +22,6 @@ Route::prefix('auth')->group(function () {
     Route::post('/login', [UserController::class, 'login']);
 });
 
-Route::prefix('positions')->group(function () {
-    Route::get('/', [PositionController::class, 'index']);
-    Route::get('/group/{groupId}', [PositionController::class, 'getByGroup']);
-    Route::get('/{id}', [PositionController::class, 'show']);
-    Route::post('/', [PositionController::class, 'store']);
-    Route::put('/{id}', [PositionController::class, 'update']);
-    Route::delete('/{id}', [PositionController::class, 'destroy']);
-});
 
 Route::middleware(['auth:api', 'role:coach', 'master.coach'])->group(function () {
     Route::prefix('pairwise-criteria')->group(function () {
@@ -39,14 +31,14 @@ Route::middleware(['auth:api', 'role:coach', 'master.coach'])->group(function ()
         Route::post('/calculate-weights', [PairwiseCriteriaController::class, 'calculateWeights']);
     });
 
-Route::prefix('pairwise-criteria')->group(function () {
-    Route::post('/generate/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'generate']);
-    Route::put('/save', [PairwiseCriteriaController::class, 'save']);
-    Route::get('/matrix/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'matrix']);
-    Route::get('/weights/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'weights']);
-    Route::post('/save-weight/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'saveWeights']);
-    Route::get('/consistency/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'consistency']);
-});
+    Route::prefix('pairwise-criteria')->group(function () {
+        Route::post('/generate/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'generate']);
+        Route::put('/save', [PairwiseCriteriaController::class, 'save']);
+        Route::get('/matrix/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'matrix']);
+        Route::get('/weights/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'weights']);
+        Route::post('/save-weight/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'saveWeights']);
+        Route::get('/consistency/{groupId}/{positionId}', [PairwiseCriteriaController::class, 'consistency']);
+    });
 
     Route::prefix('pairwise-subcriteria')->group(function () {
         Route::post('/generate', [PairwiseSubCriteriaController::class, 'generate']);
@@ -54,13 +46,24 @@ Route::prefix('pairwise-criteria')->group(function () {
         Route::get('/', [PairwiseSubCriteriaController::class, 'getPairwise']);
         Route::post('/calculate-weights', [PairwiseSubCriteriaController::class, 'calculateWeights']);
     });
+
+    Route::prefix('positions')->group(function () {
+        Route::get('/', [PositionController::class, 'index']);
+        Route::get('/group/{groupId}', [PositionController::class, 'getByGroup']);
+        Route::get('/{id}', [PositionController::class, 'show']);
+        Route::post('/', [PositionController::class, 'store']);
+        Route::put('/{id}', [PositionController::class, 'update']);
+        Route::delete('/{id}', [PositionController::class, 'destroy']);
+    });
 });
+
 Route::get('/alternative-weight/{evaluationId}/{subCriteriaId}', [PlayerScoreMappingController::class, 'calculate']);
 Route::get('/alternative-score/{evaluationId}/{positionId}', [PlayerScoreMappingController::class, 'calculateAlternativeScores']);
 Route::get('/alternative-score/{positionId}', [PlayerScoreMappingController::class, 'calculateAlternativeScoresByPosition']);
 Route::get('/recommendations/{evaluationId}', [PlayerScoreMappingController::class, 'getPositionRecommendations']);
-
 Route::get('/alternative-weight/{evaluationId}/{subCriteriaId}',[PlayerScoreMappingController::class, 'calculate']);
+
+
 Route::post('forgot-password', [UserController::class, 'forgotPassword']);
 Route::post('reset-password', [UserController::class, 'resetPassword']);
 
