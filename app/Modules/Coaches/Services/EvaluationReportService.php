@@ -59,6 +59,23 @@ class EvaluationReportService implements IEvaluationReportService
         // 1. Fetch finalized or draft report
         $report = $this->repository->getReportByEvaluationAndPlayer($evaluationId, $playerId);
 
+        $playerRecommendations = [];
+        $evaluation = $report ? $report->evaluation : Evaluation::find($evaluationId);
+
+        if ($evaluation && $evaluation->pairwise_set_id) {
+            try {
+                $recommendations = $this->playerScoreMappingService->getPositionRecommendations($evaluationId);
+                foreach ($recommendations as $rec) {
+                    if ($rec['player_id'] === $playerId) {
+                        $playerRecommendations = $rec['positions'] ?? [];
+                        break;
+                    }
+                }
+            } catch (Exception $e) {
+                // Fail silently
+            }
+        }
+
         // Jika ada laporan di database tetapi belum difinalisasi (baru draf dari Step 2)
         if ($report && ! $report->is_finalized) {
             if (! $allowDraft) {
@@ -106,6 +123,7 @@ class EvaluationReportService implements IEvaluationReportService
                 'final_position_name' => null,
                 'notes' => null,
                 'scores' => $scores,
+                'recommendations' => $playerRecommendations,
             ];
         }
 
@@ -116,7 +134,6 @@ class EvaluationReportService implements IEvaluationReportService
 
             // Check if player and evaluation exist to prevent returning draft for invalid IDs
             $player = Player::with('group')->find($playerId);
-            $evaluation = Evaluation::find($evaluationId);
             if (! $player || ! $evaluation) {
                 throw new Exception(ErrorMessages::REPORT_NOT_FOUND);
             }
@@ -149,23 +166,9 @@ class EvaluationReportService implements IEvaluationReportService
             $recommendedPositionId = null;
             $recommendedPositionName = null;
 
-            if ($evaluation->pairwise_set_id) {
-                try {
-                    $recommendations = $this->playerScoreMappingService->getPositionRecommendations($evaluationId);
-                    $playerRecs = [];
-                    foreach ($recommendations as $rec) {
-                        if ($rec['player_id'] === $playerId) {
-                            $playerRecs = $rec['positions'];
-                            break;
-                        }
-                    }
-                    if (! empty($playerRecs)) {
-                        $recommendedPositionId = $playerRecs[0]['position_id'] ?? null;
-                        $recommendedPositionName = $playerRecs[0]['position_name'] ?? null;
-                    }
-                } catch (Exception $e) {
-                    // Fail silently, keep null
-                }
+            if (! empty($playerRecommendations)) {
+                $recommendedPositionId = $playerRecommendations[0]['position_id'] ?? null;
+                $recommendedPositionName = $playerRecommendations[0]['position_name'] ?? null;
             }
 
             return [
@@ -184,6 +187,7 @@ class EvaluationReportService implements IEvaluationReportService
                 'final_position_name' => null,
                 'notes' => null,
                 'scores' => $scores,
+                'recommendations' => $playerRecommendations,
             ];
         }
 
@@ -228,6 +232,7 @@ class EvaluationReportService implements IEvaluationReportService
             'final_position_name' => $report->finalPosition ? $report->finalPosition->name : null,
             'notes' => $report->notes,
             'scores' => $scores,
+            'recommendations' => $playerRecommendations,
         ];
     }
 
