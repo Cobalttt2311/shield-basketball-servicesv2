@@ -12,6 +12,7 @@ class Evaluation extends Model
         'date',
         'coach_id',
         'pairwise_set_id',
+        'status',
     ];
 
     public function coach()

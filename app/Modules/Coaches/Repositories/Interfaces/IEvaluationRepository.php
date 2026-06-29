@@ -29,4 +29,6 @@ interface IEvaluationRepository
     );
 
     public function deleteScore(int $id);
+
+    public function deactivateAllEvaluationsForCoach(int $coachId): void;
 }

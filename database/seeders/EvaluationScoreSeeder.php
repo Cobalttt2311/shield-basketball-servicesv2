@@ -30,6 +30,7 @@ class EvaluationScoreSeeder extends Seeder
                 'date' => $now->toDateString(),
                 'coach_id' => $coachId,
                 'pairwise_set_id' => $pairwiseSetId,
+                'status' => 'ACTIVE',
             ]
         );
 
