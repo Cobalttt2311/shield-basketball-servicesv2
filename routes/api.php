@@ -75,6 +75,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::put('/profile', [UserController::class, 'updateProfile']);
             Route::post('/change-password', [UserController::class, 'updatePassword']);
             Route::get('evaluation-reports/my-report/{evaluationId}', [EvaluationReportController::class, 'getPlayerReport']);
+            Route::get('evaluation-reports/my-report/{evaluationId}/download', [EvaluationReportController::class, 'downloadPlayerReportPdf']);
             Route::get('evaluation-reports/my-reports', [EvaluationReportController::class, 'getMyReportsList']);
         });
     });

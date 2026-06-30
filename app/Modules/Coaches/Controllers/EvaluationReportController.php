@@ -135,6 +135,41 @@ class EvaluationReportController extends Controller
         }
     }
 
+    public function downloadPlayerReportPdf($evaluationId)
+    {
+        try {
+            $user = Auth::user();
+            if (! $user || $user->role !== 'player' || ! $user->player) {
+                return response()->json(
+                    (new BaseResponse(
+                        false,
+                        ErrorMessages::PLAYER_NOT_FOUND,
+                        null,
+                        'Unauthorized player access'
+                    ))->toArray(),
+                    403
+                );
+            }
+
+            $playerId = $user->player->id;
+            $pdf = $this->service->generatePdfReport((int) $evaluationId, $playerId);
+
+            return $pdf->download("report-{$evaluationId}-{$playerId}.pdf");
+        } catch (Throwable $e) {
+            $statusCode = $e->getMessage() === ErrorMessages::REPORT_NOT_FOUND ? 404 : 400;
+
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
+                $statusCode
+            );
+        }
+    }
+
     public function getMyReportsList()
     {
         try {

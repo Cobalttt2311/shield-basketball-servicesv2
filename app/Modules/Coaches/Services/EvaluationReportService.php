@@ -11,6 +11,7 @@ use App\Modules\Coaches\Repositories\Interfaces\IEvaluationReportRepository;
 use App\Modules\Coaches\Services\Interfaces\IEvaluationReportService;
 use App\Modules\Coaches\Services\Interfaces\IPlayerScoreMappingService;
 use App\Utils\Messages\ErrorMessages\ErrorMessages;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 
 class EvaluationReportService implements IEvaluationReportService
@@ -317,5 +318,12 @@ class EvaluationReportService implements IEvaluationReportService
                 'is_finalized' => false,
             ]);
         }
+    }
+
+    public function generatePdfReport(int $evaluationId, int $playerId)
+    {
+        $reportData = $this->getReportByEvaluationAndPlayer($evaluationId, $playerId, true);
+
+        return Pdf::loadView('reports.evaluation_pdf', ['data' => $reportData]);
     }
 }

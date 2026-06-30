@@ -13,4 +13,6 @@ interface IEvaluationReportService
     public function getPlayersForFinalization(int $evaluationId): array;
 
     public function saveRecommendationDrafts(int $evaluationId, array $recommendations);
+
+    public function generatePdfReport(int $evaluationId, int $playerId);
 }
