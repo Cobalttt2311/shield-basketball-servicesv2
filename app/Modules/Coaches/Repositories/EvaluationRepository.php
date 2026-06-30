@@ -91,4 +91,9 @@ class EvaluationRepository implements IEvaluationRepository
     {
         return EvaluationScore::destroy($id);
     }
+
+    public function deactivateAllEvaluationsForCoach(int $coachId): void
+    {
+        Evaluation::where('coach_id', $coachId)->update(['status' => 'INACTIVE']);
+    }
 }

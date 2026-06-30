@@ -110,8 +110,8 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::prefix('coach')->group(function () {
             Route::get('/profile', [UserController::class, 'getProfile']);
-            Route::put('/profile', [UserController::class, 'updateProfile']);
-            Route::post('/change-password', [UserController::class, 'updatePassword']);
+            Route::put('/profile', [UserController::class, 'updateProfile']);   
+            Route::post('/change-password', [UserController::class, 'updatePassword']);   
         });
 
         Route::prefix('criteria')->group(function () {

@@ -204,6 +204,7 @@ test('coach can retrieve finalized report with scores', function () {
                         'score' => 80,
                     ],
                 ],
+                'recommendations' => [],
             ],
         ]);
 });
@@ -240,7 +241,7 @@ test('player can retrieve their own report but not others', function () {
             ],
         ]);
 
-    // Create another player and try to retrieve Romli's report (since route has no playerId parameter, player retrieves their own, but since they have no report, they should get 404 Not Found)
+    // Create another player and try to retrieve Romli's report
     $otherPlayerUser = User::create([
         'name' => 'Other Player',
         'username' => 'otherplayer',

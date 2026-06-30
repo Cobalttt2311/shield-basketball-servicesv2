@@ -255,4 +255,44 @@ class ManagementDataController extends Controller
             );
         }
     }
+
+    public function getPlayerByGroupCoach(Request $request)
+    {
+        try {
+            $user = $request->user();
+            if (! $user) {
+                return response()->json(
+                    (new BaseResponse(false, 'Unauthorized'))->toArray(),
+                    401
+                );
+            }
+
+            $coach = $user->coach;
+            if (! $coach) {
+                return response()->json(
+                    (new BaseResponse(false, ErrorMessages::COACH_NOT_FOUND))->toArray(),
+                    404
+                );
+            }
+
+            $groupId = $coach->group_id;
+            if (! $groupId) {
+                return response()->json(
+                    (new BaseResponse(false, 'Coach does not have an assigned age group'))->toArray(),
+                    400
+                );
+            }
+
+            $data = $this->service->getAllPlayers($groupId);
+
+            return response()->json(
+                (new BaseResponse(true, SuccessMessages::PLAYER_GET, $data))->toArray()
+            );
+        } catch (\Throwable $e) {
+            return response()->json(
+                (new BaseResponse(false, $e->getMessage(), null, $e->getMessage()))->toArray(),
+                500
+            );
+        }
+    }
 }

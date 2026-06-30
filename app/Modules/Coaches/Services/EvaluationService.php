@@ -22,15 +22,19 @@ class EvaluationService implements IEvaluationService
         array $data,
         int $coachId
     ) {
+        return DB::transaction(function () use ($data, $coachId) {
+            $this->repo->deactivateAllEvaluationsForCoach($coachId);
 
-        $evaluation = $this->repo->createEvaluation([
-            'title' => $data['title'],
-            'date' => $data['date'],
-            'coach_id' => $coachId,
-        ]);
+            $evaluation = $this->repo->createEvaluation([
+                'title' => $data['title'],
+                'date' => $data['date'],
+                'coach_id' => $coachId,
+                'status' => 'ACTIVE',
+            ]);
 
-        return $this->repo
-            ->getEvaluationById($evaluation->id);
+            return $this->repo
+                ->getEvaluationById($evaluation->id);
+        });
     }
 
     public function getAllEvaluations()
