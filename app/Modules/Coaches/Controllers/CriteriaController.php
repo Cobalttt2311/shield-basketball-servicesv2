@@ -5,6 +5,7 @@ namespace App\Modules\Coaches\Controllers;
 use App\Modules\Coaches\Services\Interfaces\ICriteriaService;
 use App\Utils\Messages\SuccessMessages\SuccessMessages;
 use App\Utils\Responses\BaseResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Throwable;
@@ -327,6 +328,146 @@ class CriteriaController extends Controller
                     $e->getMessage(),
                     null,
                     $e->getMessage()
+                ))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function indexSets(): JsonResponse
+    {
+        try {
+            $data = $this->service->getAllSets();
+
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    'Criteria sets retrieved successfully',
+                    $data
+                ))->toArray()
+            );
+        } catch (Throwable $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    'SERVER_ERROR'
+                ))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function storeSets(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'group_id' => 'required|integer',
+            ]);
+
+            $data = $this->service->createSet($validated);
+
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    'Criteria set created successfully',
+                    $data
+                ))->toArray(),
+                201
+            );
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
+                400
+            );
+        } catch (Throwable $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    'SERVER_ERROR'
+                ))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function updateSets(Request $request, $id): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'name' => 'sometimes|required|string|max:255',
+                'group_id' => 'sometimes|required|integer',
+            ]);
+
+            $data = $this->service->updateSet((int) $id, $validated);
+
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    'Criteria set updated successfully',
+                    $data
+                ))->toArray()
+            );
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
+                400
+            );
+        } catch (Throwable $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    'SERVER_ERROR'
+                ))->toArray(),
+                500
+            );
+        }
+    }
+
+    public function destroySets($id): JsonResponse
+    {
+        try {
+            $this->service->deleteSet((int) $id);
+
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    'Criteria set deleted successfully'
+                ))->toArray()
+            );
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
+                400
+            );
+        } catch (Throwable $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    'SERVER_ERROR'
                 ))->toArray(),
                 500
             );

@@ -27,4 +27,12 @@ interface ICriteriaService
     public function updateSubCriteria(int $id, array $data);
 
     public function deleteSubCriteria(int $id);
+
+    public function getAllSets(): array;
+
+    public function createSet(array $data): array;
+
+    public function updateSet(int $id, array $data): array;
+
+    public function deleteSet(int $id): bool;
 }

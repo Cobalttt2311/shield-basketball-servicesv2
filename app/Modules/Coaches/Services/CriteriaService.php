@@ -2,9 +2,11 @@
 
 namespace App\Modules\Coaches\Services;
 
+use App\Modules\Admin\Models\Group;
 use App\Modules\Admin\Repositories\Interfaces\IManagementDataRepository;
 use App\Modules\Coaches\Repositories\Interfaces\ICriteriaRepository;
 use App\Modules\Coaches\Services\Interfaces\ICriteriaService;
+use App\Utils\Messages\ErrorMessages\ErrorMessages;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 
@@ -192,5 +194,84 @@ class CriteriaService implements ICriteriaService
         }
 
         return $this->repo->deleteSubCriteria($id);
+    }
+
+    public function getAllSets(): array
+    {
+        $sets = $this->repo->getAllSets();
+        $result = [];
+
+        foreach ($sets as $set) {
+            $result[] = [
+                'id' => $set->id,
+                'name' => $set->name,
+                'group_id' => $set->group_id,
+                'group_name' => $set->group ? $set->group->age_group : null,
+                'created_at' => $set->created_at ? $set->created_at->toDateString() : null,
+            ];
+        }
+
+        return $result;
+    }
+
+    public function createSet(array $data): array
+    {
+        $groupId = $data['group_id'] ?? null;
+        if ($groupId) {
+            $groupExists = Group::where('id', $groupId)->exists();
+            if (! $groupExists) {
+                throw new \InvalidArgumentException(ErrorMessages::GROUP_NOT_FOUND);
+            }
+        }
+
+        $set = $this->repo->createSet([
+            'name' => $data['name'],
+            'group_id' => $groupId,
+        ]);
+
+        return [
+            'id' => $set->id,
+            'name' => $set->name,
+            'group_id' => $set->group_id,
+        ];
+    }
+
+    public function updateSet(int $id, array $data): array
+    {
+        $set = $this->repo->findSetById($id);
+        if (! $set) {
+            throw new \InvalidArgumentException('Criteria set not found');
+        }
+
+        $updateData = [];
+        if (isset($data['group_id'])) {
+            $groupExists = Group::where('id', $data['group_id'])->exists();
+            if (! $groupExists) {
+                throw new \InvalidArgumentException(ErrorMessages::GROUP_NOT_FOUND);
+            }
+            $updateData['group_id'] = $data['group_id'];
+        }
+
+        if (isset($data['name'])) {
+            $updateData['name'] = $data['name'];
+        }
+
+        $set = $this->repo->updateSet($set, $updateData);
+
+        return [
+            'id' => $set->id,
+            'name' => $set->name,
+            'group_id' => $set->group_id,
+        ];
+    }
+
+    public function deleteSet(int $id): bool
+    {
+        $set = $this->repo->findSetById($id);
+        if (! $set) {
+            throw new \InvalidArgumentException('Criteria set not found');
+        }
+
+        return $this->repo->deleteSet($set);
     }
 }

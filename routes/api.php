@@ -3,7 +3,6 @@
 use App\Modules\Admin\Controllers\GroupController;
 use App\Modules\Admin\Controllers\ManagementDataController;
 use App\Modules\Coaches\Controllers\CriteriaController;
-use App\Modules\Coaches\Controllers\CriteriaSetController;
 use App\Modules\Coaches\Controllers\EvaluationController;
 use App\Modules\Coaches\Controllers\EvaluationReportController;
 use App\Modules\Coaches\Controllers\PairwiseCriteriaController;
@@ -137,10 +136,10 @@ Route::middleware(['auth:api'])->group(function () {
             });
         });
         Route::prefix('criteria-sets')->group(function () {
-            Route::get('/', [CriteriaSetController::class, 'index']);
-            Route::middleware(['master.coach'])->post('/', [CriteriaSetController::class, 'store']);
-            Route::middleware(['master.coach'])->patch('/{id}', [CriteriaSetController::class, 'update']);
-            Route::middleware(['master.coach'])->delete('/{id}', [CriteriaSetController::class, 'destroy']);
+            Route::get('/', [CriteriaController::class, 'indexSets']);
+            Route::middleware(['master.coach'])->post('/', [CriteriaController::class, 'storeSets']);
+            Route::middleware(['master.coach'])->patch('/{id}', [CriteriaController::class, 'updateSets']);
+            Route::middleware(['master.coach'])->delete('/{id}', [CriteriaController::class, 'destroySets']);
         });
 
         Route::prefix('evaluations')->group(function () {

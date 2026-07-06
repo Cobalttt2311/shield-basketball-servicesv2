@@ -3,6 +3,7 @@
 namespace App\Modules\Coaches\Repositories;
 
 use App\Modules\Coaches\Models\Criteria;
+use App\Modules\Coaches\Models\CriteriaSet;
 use App\Modules\Coaches\Models\SubCriteria;
 use App\Modules\Coaches\Repositories\Interfaces\ICriteriaRepository;
 
@@ -120,5 +121,32 @@ class CriteriaRepository implements ICriteriaRepository
         return SubCriteria::where('name', $name)
             ->where('criteria_id', $criteriaId)
             ->exists();
+    }
+
+    public function getAllSets()
+    {
+        return CriteriaSet::with('group')->get();
+    }
+
+    public function findSetById(int $id)
+    {
+        return CriteriaSet::with('group')->find($id);
+    }
+
+    public function createSet(array $data)
+    {
+        return CriteriaSet::create($data);
+    }
+
+    public function updateSet(CriteriaSet $set, array $data)
+    {
+        $set->update($data);
+
+        return $set;
+    }
+
+    public function deleteSet(CriteriaSet $set)
+    {
+        return $set->delete();
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Modules\Coaches\Repositories\Interfaces;
 
+use App\Modules\Coaches\Models\CriteriaSet;
+
 interface ICriteriaRepository
 {
     public function getByGroup(int $groupId);
@@ -35,4 +37,14 @@ interface ICriteriaRepository
     public function checkCriteriaExists(string $name, int $setId): bool;
 
     public function checkSubCriteriaExists(string $name, int $criteriaId): bool;
+
+    public function getAllSets();
+
+    public function findSetById(int $id);
+
+    public function createSet(array $data);
+
+    public function updateSet(CriteriaSet $set, array $data);
+
+    public function deleteSet(CriteriaSet $set);
 }
