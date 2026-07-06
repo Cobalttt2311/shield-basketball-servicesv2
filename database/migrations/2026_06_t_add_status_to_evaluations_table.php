@@ -9,20 +9,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    // public function up(): void
-    // {
-    //     Schema::table('evaluations', function (Blueprint $table) {
-    //         $table->string('status')->default('ACTIVE')->after('coach_id');
-    //     });
-    // }
+    public function up(): void
+    {
+        Schema::table('evaluations', function (Blueprint $table) {
+            $table->string('status')->default('ACTIVE');
+        });
+    }
 
-    // /**
-    //  * Reverse the migrations.
-    //  */
-    // public function down(): void
-    // {
-    //     Schema::table('evaluations', function (Blueprint $table) {
-    //         $table->dropColumn('status');
-    //     });
-    // }
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('evaluations', function (Blueprint $table) {
+            $table->dropColumn('status');
+        });
+    }
 };

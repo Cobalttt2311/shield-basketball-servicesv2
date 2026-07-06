@@ -2,8 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Modules\Coaches\Models\Criteria;
+use App\Modules\Coaches\Models\CriteriaSet;
 use App\Modules\Coaches\Models\PairwiseSet;
 use App\Modules\Coaches\Models\PairwiseSubCriteria;
+use App\Modules\Coaches\Models\Position;
+use App\Modules\Coaches\Models\SubCriteria;
 use App\Modules\Coaches\Services\Interfaces\IPairwiseSubCriteriaService;
 use Illuminate\Database\Seeder;
 
@@ -15,17 +19,51 @@ class PairwiseSubCriteriaSeeder extends Seeder
     public function run(): void
     {
         $now = now();
-        $positions = [4, 5, 6, 7, 8];
 
-        PairwiseSubCriteria::whereIn('position_id', $positions)->delete();
+        // 1. Dapatkan kriteria ID untuk group 2 secara dinamis
+        $set2 = CriteriaSet::where('group_id', 2)->latest('id')->first();
+        if (! $set2) {
+            throw new \Exception('Criteria set for group 2 not found');
+        }
 
-        // Sub-criteria IDs mapped per criteria_id for KU 13-18
+        $c5 = Criteria::where('criteria_set_id', $set2->id)->where('name', 'Skill')->first()?->id;
+        $c6 = Criteria::where('criteria_set_id', $set2->id)->where('name', 'Fisik')->first()?->id;
+        $c7 = Criteria::where('criteria_set_id', $set2->id)->where('name', 'Antropometri')->first()?->id;
+        $c8 = Criteria::where('criteria_set_id', $set2->id)->where('name', 'Pemahaman Bermain')->first()?->id;
+
+        if (! $c5 || ! $c6 || ! $c7 || ! $c8) {
+            throw new \Exception('Group 2 criteria not found');
+        }
+
+        // Sub-criteria IDs mapped per criteria_id
         $criteriaSubMap = [
-            5 => [17, 18, 19, 20, 21, 22, 23], // Skill
-            6 => [24, 25, 26, 27, 28],         // Fisik
-            7 => [29, 30, 31, 32],             // Antropometri
-            8 => [33, 34, 35, 36, 37],         // Pemahaman Bermain
+            $c5 => SubCriteria::where('criteria_id', $c5)->orderBy('id')->pluck('id')->toArray(),
+            $c6 => SubCriteria::where('criteria_id', $c6)->orderBy('id')->pluck('id')->toArray(),
+            $c7 => SubCriteria::where('criteria_id', $c7)->orderBy('id')->pluck('id')->toArray(),
+            $c8 => SubCriteria::where('criteria_id', $c8)->orderBy('id')->pluck('id')->toArray(),
         ];
+
+        // 2. Dapatkan posisi ID untuk group 2 secara dinamis
+        $sg = Position::where('group_id', 2)->where('name', 'Shooting Guard')->first()?->id;
+        $pg = Position::where('group_id', 2)->where('name', 'Point Guard')->first()?->id;
+        $sf = Position::where('group_id', 2)->where('name', 'Small Forward')->first()?->id;
+        $pf = Position::where('group_id', 2)->where('name', 'Power Forward')->first()?->id;
+        $c = Position::where('group_id', 2)->where('name', 'Center')->first()?->id;
+
+        $positions = array_filter([$sg, $pg, $sf, $pf, $c]);
+
+        // 3. Dapatkan pairwise_set_id
+        $pairwiseSet = PairwiseSet::where('group_id', 2)->first();
+        $pairwiseSetId = $pairwiseSet ? $pairwiseSet->id : null;
+
+        // Bersihkan data lama
+        PairwiseSubCriteria::whereIn('position_id', $positions)
+            ->where('pairwise_set_id', $pairwiseSetId)
+            ->delete();
+
+        if (! $pairwiseSetId) {
+            return;
+        }
 
         $data = [];
         $possibleValues = [1.0, 2.0, 3.0, 5.0, 0.5, 0.3333, 0.2, 1.0, 4.0, 0.25, 6.0, 0.1667];
@@ -45,6 +83,7 @@ class PairwiseSubCriteriaSeeder extends Seeder
                             'sub_criteria_first_id' => $subIds[$i],
                             'sub_criteria_second_id' => $subIds[$j],
                             'value' => $val,
+                            'pairwise_set_id' => $pairwiseSetId,
                             'created_at' => $now,
                             'updated_at' => $now,
                         ];
@@ -55,15 +94,8 @@ class PairwiseSubCriteriaSeeder extends Seeder
 
         PairwiseSubCriteria::insert($data);
 
-        $pairwiseSet = PairwiseSet::where('group_id', 2)->first();
-        $pairwiseSetId = $pairwiseSet ? $pairwiseSet->id : null;
-
-        PairwiseSubCriteria::whereIn('position_id', $positions)
-            ->whereNull('pairwise_set_id')
-            ->update(['pairwise_set_id' => $pairwiseSetId]);
-
         $pairwiseSubCriteriaService = app(IPairwiseSubCriteriaService::class);
-        $criteriaIds = [5, 6, 7, 8];
+        $criteriaIds = [$c5, $c6, $c7, $c8];
         foreach ($positions as $positionId) {
             foreach ($criteriaIds as $criteriaId) {
                 $pairwiseSubCriteriaService->saveWeights($positionId, $criteriaId, $pairwiseSetId);

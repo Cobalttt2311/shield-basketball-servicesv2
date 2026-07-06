@@ -51,6 +51,11 @@ class CriteriaService implements ICriteriaService
         return $this->repo->getCriteriaByGroupId($groupId);
     }
 
+    public function getCriteriaBySetId(int $setId)
+    {
+        return $this->repo->getBySet($setId);
+    }
+
     public function createCriteria(array $data)
     {
         $user = Auth::user();
@@ -61,13 +66,18 @@ class CriteriaService implements ICriteriaService
             throw new Exception('Coach not found');
         }
 
-        if ($this->repo->checkCriteriaExists($data['name'], $coach->group_id)) {
+        $setId = $data['criteria_set_id'] ?? null;
+        if (! $setId) {
+            throw new Exception('Criteria set ID is required');
+        }
+
+        if ($this->repo->checkCriteriaExists($data['name'], $setId)) {
             throw new Exception('Criteria already exists');
         }
 
         return $this->repo->createCriteria([
             'name' => $data['name'],
-            'group_id' => $coach->group_id,
+            'criteria_set_id' => $setId,
         ]);
     }
 
@@ -83,7 +93,9 @@ class CriteriaService implements ICriteriaService
 
         $coach = $this->managementRepo->findCoachByUserId($user->id);
 
-        if ($criteria->group_id != $coach->group_id) {
+        $isMaster = in_array('master_coach', $user->roles ?? []);
+
+        if (! $isMaster && $criteria->criteriaSet?->group_id != $coach->group_id) {
             throw new Exception('Forbidden: different group');
         }
 
@@ -104,7 +116,9 @@ class CriteriaService implements ICriteriaService
 
         $coach = $this->managementRepo->findCoachByUserId($user->id);
 
-        if ($criteria->group_id != $coach->group_id) {
+        $isMaster = in_array('master_coach', $user->roles ?? []);
+
+        if (! $isMaster && $criteria->criteriaSet?->group_id != $coach->group_id) {
             throw new Exception('Forbidden: different group');
         }
 
@@ -127,7 +141,9 @@ class CriteriaService implements ICriteriaService
             throw new Exception('Criteria not found');
         }
 
-        if ($criteria->group_id != $coach->group_id) {
+        $isMaster = in_array('master_coach', $user->roles ?? []);
+
+        if (! $isMaster && $criteria->criteriaSet?->group_id != $coach->group_id) {
             throw new Exception('Forbidden: different group');
         }
 

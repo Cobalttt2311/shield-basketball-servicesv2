@@ -11,10 +11,9 @@ class PairwiseCriteriaRepository implements IPairwiseCriteriaRepository
     public function getCriteriaByGroup(
         int $groupId
     ) {
-        return Criteria::where(
-            'group_id',
-            $groupId
-        )
+        return Criteria::whereHas('criteriaSet', function ($q) use ($groupId) {
+            $q->where('group_id', $groupId);
+        })
             ->orderBy('id')
             ->get();
     }
@@ -118,10 +117,10 @@ class PairwiseCriteriaRepository implements IPairwiseCriteriaRepository
             $query->whereNull('pairwise_set_id');
         }
 
-        return $query->whereHas('firstCriteria', function ($query) use ($groupId) {
+        return $query->whereHas('firstCriteria.criteriaSet', function ($query) use ($groupId) {
             $query->where('group_id', $groupId);
         })
-            ->whereHas('secondCriteria', function ($query) use ($groupId) {
+            ->whereHas('secondCriteria.criteriaSet', function ($query) use ($groupId) {
                 $query->where('group_id', $groupId);
             })
             ->orderBy('criteria_first_id')

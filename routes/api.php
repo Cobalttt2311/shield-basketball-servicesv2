@@ -3,6 +3,7 @@
 use App\Modules\Admin\Controllers\GroupController;
 use App\Modules\Admin\Controllers\ManagementDataController;
 use App\Modules\Coaches\Controllers\CriteriaController;
+use App\Modules\Coaches\Controllers\CriteriaSetController;
 use App\Modules\Coaches\Controllers\EvaluationController;
 use App\Modules\Coaches\Controllers\EvaluationReportController;
 use App\Modules\Coaches\Controllers\PairwiseCriteriaController;
@@ -121,6 +122,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::prefix('criteria')->group(function () {
             Route::get('/me', [CriteriaController::class, 'getMyCriteria']);
             Route::get('/group/{groupId}', [CriteriaController::class, 'getCriteriaByGroupId']);
+            Route::get('/set/{setId}', [CriteriaController::class, 'getCriteriaBySetId']);
             Route::get('/{id}', [CriteriaController::class, 'getCriteriaById']);
             Route::get('/sub/all', [CriteriaController::class, 'getAllSubCriteria']);
             Route::get('/sub/criteria/{criteriaId}', [CriteriaController::class, 'getSubCriteriaByCriteria']);
@@ -133,6 +135,12 @@ Route::middleware(['auth:api'])->group(function () {
                 Route::put('/sub/{id}', [CriteriaController::class, 'updateSubCriteria']);
                 Route::delete('/sub/{id}', [CriteriaController::class, 'deleteSubCriteria']);
             });
+        });
+        Route::prefix('criteria-sets')->group(function () {
+            Route::get('/', [CriteriaSetController::class, 'index']);
+            Route::middleware(['master.coach'])->post('/', [CriteriaSetController::class, 'store']);
+            Route::middleware(['master.coach'])->patch('/{id}', [CriteriaSetController::class, 'update']);
+            Route::middleware(['master.coach'])->delete('/{id}', [CriteriaSetController::class, 'destroy']);
         });
 
         Route::prefix('evaluations')->group(function () {

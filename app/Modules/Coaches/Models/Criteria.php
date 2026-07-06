@@ -2,7 +2,6 @@
 
 namespace App\Modules\Coaches\Models;
 
-use App\Modules\Admin\Models\Group;
 use Illuminate\Database\Eloquent\Model;
 
 class Criteria extends Model
@@ -10,13 +9,13 @@ class Criteria extends Model
     protected $table = 'criteria';
 
     protected $fillable = [
-        'group_id',
+        'criteria_set_id',
         'name',
     ];
 
-    public function group()
+    public function criteriaSet()
     {
-        return $this->belongsTo(Group::class);
+        return $this->belongsTo(CriteriaSet::class, 'criteria_set_id');
     }
 
     public function subCriteria()

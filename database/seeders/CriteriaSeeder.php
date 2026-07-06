@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Modules\Coaches\Models\Criteria;
+use App\Modules\Coaches\Models\CriteriaSet;
 use Illuminate\Database\Seeder;
 
 class CriteriaSeeder extends Seeder
@@ -12,39 +13,49 @@ class CriteriaSeeder extends Seeder
      */
     public function run(): void
     {
+        $set1 = CriteriaSet::create([
+            'name' => 'Set Kriteria Default KU 10-12',
+            'group_id' => 1,
+        ]);
+
+        $set2 = CriteriaSet::create([
+            'name' => 'Set Kriteria Default KU 13-18',
+            'group_id' => 2,
+        ]);
+
         Criteria::insert([
             [
-                'group_id' => 1,
+                'criteria_set_id' => $set1->id,
                 'name' => 'Skill',
             ],
             [
-                'group_id' => 1,
+                'criteria_set_id' => $set1->id,
                 'name' => 'Fisik',
             ],
             [
-                'group_id' => 1,
+                'criteria_set_id' => $set1->id,
                 'name' => 'Antropometri',
             ],
             [
-                'group_id' => 1,
+                'criteria_set_id' => $set1->id,
                 'name' => 'Pemahaman Bermain',
             ],
 
             // KU 13-18
             [
-                'group_id' => 2,
+                'criteria_set_id' => $set2->id,
                 'name' => 'Skill',
             ],
             [
-                'group_id' => 2,
+                'criteria_set_id' => $set2->id,
                 'name' => 'Fisik',
             ],
             [
-                'group_id' => 2,
+                'criteria_set_id' => $set2->id,
                 'name' => 'Antropometri',
             ],
             [
-                'group_id' => 2,
+                'criteria_set_id' => $set2->id,
                 'name' => 'Pemahaman Bermain',
             ],
         ]);

@@ -4,6 +4,7 @@ use App\Modules\Admin\Models\Coach;
 use App\Modules\Admin\Models\Group;
 use App\Modules\Admin\Models\Player;
 use App\Modules\Coaches\Models\Criteria;
+use App\Modules\Coaches\Models\CriteriaSet;
 use App\Modules\Coaches\Models\Evaluation;
 use App\Modules\Coaches\Models\EvaluationScore;
 use App\Modules\Coaches\Models\Position;
@@ -100,8 +101,13 @@ beforeEach(function () {
     ]);
 
     // 7. Setup Criteria & SubCriteria
-    $this->criteria = Criteria::create([
+    $this->criteriaSet = CriteriaSet::create([
+        'name' => 'Default Set',
         'group_id' => $this->group->id,
+    ]);
+
+    $this->criteria = Criteria::create([
+        'criteria_set_id' => $this->criteriaSet->id,
         'name' => 'Skill',
     ]);
 

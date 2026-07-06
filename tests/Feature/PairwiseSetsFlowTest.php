@@ -4,6 +4,7 @@ use App\Modules\Admin\Models\Coach;
 use App\Modules\Admin\Models\Group;
 use App\Modules\Admin\Models\Player;
 use App\Modules\Coaches\Models\Criteria;
+use App\Modules\Coaches\Models\CriteriaSet;
 use App\Modules\Coaches\Models\Evaluation;
 use App\Modules\Coaches\Models\EvaluationScore;
 use App\Modules\Coaches\Models\PairwiseCriteria;
@@ -94,8 +95,13 @@ beforeEach(function () {
     ]);
 
     // 6. Setup Criteria & SubCriteria
-    $this->criteria = Criteria::create([
+    $this->criteriaSet = CriteriaSet::create([
+        'name' => 'Default Set',
         'group_id' => $this->group->id,
+    ]);
+
+    $this->criteria = Criteria::create([
+        'criteria_set_id' => $this->criteriaSet->id,
         'name' => 'Skill',
     ]);
 
@@ -199,7 +205,7 @@ test('compatibility filtering filters sets based on active criteria', function (
 
     // Now, trigger mismatch compatibility by adding a new criteria to the group
     Criteria::create([
-        'group_id' => $this->group->id,
+        'criteria_set_id' => $this->criteriaSet->id,
         'name' => 'Kriteria Baru',
     ]);
 
@@ -291,7 +297,7 @@ test('complete set-based pairwise flow works successfully', function () {
 
     // Create a second criteria and subcriteria so we have at least 2 items to compare
     $criteria2 = Criteria::create([
-        'group_id' => $this->group->id,
+        'criteria_set_id' => $this->criteriaSet->id,
         'name' => 'Fisik',
     ]);
     $subCriteria2 = SubCriteria::create([

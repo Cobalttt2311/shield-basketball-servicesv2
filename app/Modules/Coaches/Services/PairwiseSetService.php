@@ -46,7 +46,9 @@ class PairwiseSetService implements IPairwiseSetService
         $groupId = $coach->group_id;
 
         // 1. Ambil kriteria & subkriteria aktif saat ini
-        $activeCriteria = Criteria::where('group_id', $groupId)->get();
+        $activeCriteria = Criteria::whereHas('criteriaSet', function ($q) use ($groupId) {
+            $q->where('group_id', $groupId);
+        })->get();
         $activeCriteriaNames = $activeCriteria->map(function ($c) {
             return strtolower(trim($c->name));
         })->sort()->values()->toArray();

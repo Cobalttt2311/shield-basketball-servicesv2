@@ -10,6 +10,8 @@ interface ICriteriaService
 
     public function getCriteriaByGroupId(int $groupId);
 
+    public function getCriteriaBySetId(int $setId);
+
     public function createCriteria(array $data);
 
     public function updateCriteria(int $id, array $data);

@@ -11,14 +11,25 @@ class CriteriaRepository implements ICriteriaRepository
     public function getByGroup(int $groupId)
     {
         return Criteria::with('subCriteria')
-            ->where('group_id', $groupId)
+            ->whereHas('criteriaSet', function ($q) use ($groupId) {
+                $q->where('group_id', $groupId);
+            })
             ->get();
     }
 
     public function getCriteriaByGroupId(int $groupId)
     {
         return Criteria::with('subCriteria')
-            ->where('group_id', $groupId)
+            ->whereHas('criteriaSet', function ($q) use ($groupId) {
+                $q->where('group_id', $groupId);
+            })
+            ->get();
+    }
+
+    public function getBySet(int $setId)
+    {
+        return Criteria::with('subCriteria')
+            ->where('criteria_set_id', $setId)
             ->get();
     }
 
@@ -97,10 +108,10 @@ class CriteriaRepository implements ICriteriaRepository
         return SubCriteria::with('criteria')->find($id);
     }
 
-    public function checkCriteriaExists(string $name, int $groupId): bool
+    public function checkCriteriaExists(string $name, int $setId): bool
     {
         return Criteria::where('name', $name)
-            ->where('group_id', $groupId)
+            ->where('criteria_set_id', $setId)
             ->exists();
     }
 

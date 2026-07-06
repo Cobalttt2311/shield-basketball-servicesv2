@@ -30,7 +30,9 @@ interface ICriteriaRepository
 
     public function findSubCriteriaWithCriteria(int $id);
 
-    public function checkCriteriaExists(string $name, int $groupId): bool;
+    public function getBySet(int $setId);
+
+    public function checkCriteriaExists(string $name, int $setId): bool;
 
     public function checkSubCriteriaExists(string $name, int $criteriaId): bool;
 }

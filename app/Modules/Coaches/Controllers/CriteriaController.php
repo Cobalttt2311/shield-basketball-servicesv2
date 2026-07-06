@@ -93,11 +93,42 @@ class CriteriaController extends Controller
         }
     }
 
+    public function getCriteriaBySetId($setId)
+    {
+        try {
+            $data = $this->service->getCriteriaBySetId((int) $setId);
+
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    SuccessMessages::CRITERIA_GET,
+                    $data
+                ))->toArray()
+            );
+        } catch (Throwable $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    $e->getMessage()
+                ))->toArray(),
+                500
+            );
+        }
+    }
+
     public function createCriteria(Request $request)
     {
         try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'criteria_set_id' => 'required|integer',
+            ]);
+
             $result = $this->service->createCriteria([
                 'name' => $request->name,
+                'criteria_set_id' => (int) $request->criteria_set_id,
             ]);
 
             return response()->json(
