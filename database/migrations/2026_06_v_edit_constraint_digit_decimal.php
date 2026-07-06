@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('evaluations', function (Blueprint $table) {
-            $table->string('status')->default('ACTIVE')->after('coach_id');
+        Schema::table('pairwise_sub_criteria', function (Blueprint $table) {
+            $table->decimal('value', 10, 3)->nullable()->change();
+        });
+
+        Schema::table('pairwise_criteria', function (Blueprint $table) {
+            $table->decimal('value', 10, 3)->nullable()->change();
         });
     }
 
@@ -21,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('evaluations', function (Blueprint $table) {
-            $table->dropColumn('status');
-        });
+       
     }
 };

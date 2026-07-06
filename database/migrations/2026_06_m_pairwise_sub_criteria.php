@@ -28,7 +28,7 @@ return new class extends Migration
                 ->constrained('sub_criteria')
                 ->cascadeOnDelete();
 
-            $table->decimal('value', 10, 4)
+            $table->decimal('value', 10, 3)
                 ->nullable();
 
             $table->timestamps();

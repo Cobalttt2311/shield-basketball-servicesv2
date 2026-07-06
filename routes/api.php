@@ -153,7 +153,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::prefix('pairwise-sets')->group(function () {
             Route::get('/', [PairwiseSetController::class, 'getCompatibleSets']);
             Route::middleware(['master.coach'])->post('/', [PairwiseSetController::class, 'createSet']);
-            Route::middleware(['master.coach'])->put('/{id}', [PairwiseSetController::class, 'updateSet']);
+            Route::middleware(['master.coach'])->patch('/{id}', [PairwiseSetController::class, 'updateSet']);
         });
 
         Route::post('evaluation-reports/finalize', [EvaluationReportController::class, 'finalizeReport']);

@@ -316,7 +316,7 @@ test('complete set-based pairwise flow works successfully', function () {
 
     // 2. Update set to associate with group
     $response = $this->withHeaders(['Authorization' => "Bearer $masterToken"])
-        ->putJson("/api/pairwise-sets/{$setId}", [
+        ->patchJson("/api/pairwise-sets/{$setId}", [
             'group_id' => $this->group->id,
         ]);
     $response->assertStatus(200);

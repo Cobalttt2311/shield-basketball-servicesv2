@@ -16,12 +16,12 @@ class DatabaseSeeder extends Seeder
             GroupSeeder::class,
             CoachSeeder::class,
             PlayerSeeder::class,
-            PositionSeeder::class,
+            // PositionSeeder::class,
             CriteriaSeeder::class,
             SubCriteriaSeeder::class,
             PairwiseSetSeeder::class,
-            PairwiseCriteriaSeeder::class,
-            PairwiseSubCriteriaSeeder::class,
+            // PairwiseCriteriaSeeder::class,
+            // PairwiseSubCriteriaSeeder::class,
             EvaluationScoreSeeder::class,
         ]);
     }
