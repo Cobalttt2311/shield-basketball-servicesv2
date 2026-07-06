@@ -39,7 +39,7 @@ class ManagementDataService implements IManagementDataService
             $coach->user_data = [
                 'id' => $coach->user->id,
                 'username' => $coach->user->username,
-                'default_password' => '*ShieldCoach'.$coach->user->id.'#',
+                'default_password' => '*ShieldCoach'.$coach->id.'#',
             ];
             $coach->makeHidden('user');
         }
