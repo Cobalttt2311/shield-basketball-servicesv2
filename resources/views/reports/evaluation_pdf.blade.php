@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>Rapot Pemain - {{ $data['player_name'] }}</title>
@@ -12,15 +13,18 @@
             margin: 0;
             padding: 10px;
         }
+
         .header {
             margin-bottom: 20px;
             border-bottom: 3px solid #dc2626;
             padding-bottom: 10px;
         }
+
         .header-table {
             width: 100%;
             border-collapse: collapse;
         }
+
         .header-title {
             font-size: 22px;
             font-weight: bold;
@@ -28,12 +32,14 @@
             margin: 0;
             text-transform: uppercase;
         }
+
         .header-subtitle {
             font-size: 11px;
             color: #64748b;
             margin-top: 3px;
             letter-spacing: 1px;
         }
+
         .card {
             background-color: #f8fafc;
             border: 1px solid #e2e8f0;
@@ -41,6 +47,7 @@
             padding: 12px 15px;
             margin-bottom: 15px;
         }
+
         .card-title {
             font-size: 14px;
             font-weight: bold;
@@ -51,31 +58,39 @@
             padding-bottom: 6px;
             text-transform: uppercase;
         }
+
         .info-table {
             width: 100%;
             border-collapse: collapse;
         }
+
         .info-table td {
             padding: 4px 0;
             vertical-align: top;
         }
+
         .info-label {
             font-weight: bold;
             color: #64748b;
             width: 40%;
         }
+
         .info-value {
             color: #0f172a;
         }
+
         .score-table {
             width: 100%;
             border-collapse: collapse;
         }
-        .score-table th, .score-table td {
+
+        .score-table th,
+        .score-table td {
             padding: 6px 10px;
             text-align: left;
             border-bottom: 1px solid #e2e8f0;
         }
+
         .score-table th {
             background-color: #f1f5f9;
             color: #475569;
@@ -83,11 +98,13 @@
             text-transform: uppercase;
             font-size: 11px;
         }
+
         .score-value {
             font-weight: bold;
             text-align: right;
             color: #0f172a;
         }
+
         .notes-content {
             font-style: italic;
             color: #334155;
@@ -97,6 +114,7 @@
             margin-top: 5px;
             min-height: 60px;
         }
+
         .position-badge {
             display: inline-block;
             padding: 4px 8px;
@@ -106,6 +124,7 @@
             border-radius: 4px;
             border: 1px solid #fca5a5;
         }
+
         .position-badge-final {
             display: inline-block;
             padding: 4px 8px;
@@ -115,14 +134,17 @@
             border-radius: 4px;
             border: 1px solid #93c5fd;
         }
+
         .layout-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 15px;
         }
+
         .layout-cell {
             vertical-align: top;
         }
+
         .footer {
             margin-top: 25px;
             text-align: center;
@@ -133,19 +155,22 @@
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <table class="header-table">
             <tr>
                 <td style="width: 60px; vertical-align: middle;">
-                    <img src="{{ public_path('img/logo/Logo SHIELD 2025.png') }}" style="height: 50px; width: auto;" alt="Logo Shield">
+                    <img src="{{ public_path('img/logo/Logo SHIELD 2025.png') }}" style="height: 50px; width: auto;"
+                        alt="Logo Shield">
                 </td>
                 <td style="vertical-align: middle; padding-left: 10px;">
                     <div class="header-title">Rapot Pemain</div>
                     <div class="header-subtitle">SHIELD BASKETBALL</div>
                 </td>
                 <td style="text-align: right; vertical-align: middle;">
-                    <span style="font-size: 10px; color: #64748b;">Tanggal Evaluasi: {{ \Carbon\Carbon::parse($data['evaluation_date'])->format('d-m-Y') }}</span>
+                    <span style="font-size: 10px; color: #64748b;">Tanggal Evaluasi:
+                        {{ \Carbon\Carbon::parse($data['evaluation_date'])->format('d-m-Y') }}</span>
                 </td>
             </tr>
         </table>
@@ -208,7 +233,8 @@
                     @foreach($subScores as $index => $score)
                         <tr>
                             @if($index === 0)
-                                <td rowspan="{{ count($subScores) }}" style="vertical-align: middle; font-weight: bold; background-color: #fafafa;">
+                                <td rowspan="{{ count($subScores) }}"
+                                    style="vertical-align: middle; font-weight: bold; background-color: #fafafa;">
                                     {{ $criteriaName }}
                                 </td>
                             @endif
@@ -218,7 +244,8 @@
                     @endforeach
                 @empty
                     <tr>
-                        <td colspan="3" style="text-align: center; color: #64748b; padding: 15px;">Tidak ada data nilai.</td>
+                        <td colspan="3" style="text-align: center; color: #64748b; padding: 15px;">Tidak ada data nilai.
+                        </td>
                     </tr>
                 @endforelse
             </tbody>
@@ -254,10 +281,6 @@
             </td>
         </tr>
     </table>
-
-    <div class="footer">
-        Dokumen ini dibuat secara otomatis oleh Sistem Evaluasi Shield Basketball.<br>
-        &copy; {{ date('Y') }} Shield Basketball. All Rights Reserved.
-    </div>
 </body>
+
 </html>
