@@ -74,6 +74,13 @@ class UserController extends Controller
         );
 
         if ($status === Password::RESET_LINK_SENT) {
+            if ($request->wantsJson() || $request->is('api/*')) {
+                $response = new BaseResponse(
+                    true,
+                    SuccessMessages::RESET_LINK_SENT
+                );
+                return response()->json($response->toArray(), 200);
+            }
             return view('auth.forgot-success');
         }
 
@@ -83,13 +90,15 @@ class UserController extends Controller
             default => ErrorMessages::AUTH_UNKNOWN_ERROR,
         };
 
-        return response()->json(
-            (new BaseResponse(false, $error, null, 'FORGOT_PASSWORD_FAILED'))->toArray(),
-            400
-        );
+        if ($request->wantsJson() || $request->is('api/*')) {
+            return response()->json(
+                (new BaseResponse(false, $error, null, 'FORGOT_PASSWORD_FAILED'))->toArray(),
+                400
+            );
+        }
 
         return view('auth.forgot-password', [
-            'error' => 'Email tidak ditemukan',
+            'error' => $error,
         ]);
     }
 
@@ -110,6 +119,13 @@ class UserController extends Controller
         );
 
         if ($status === Password::PASSWORD_RESET) {
+            if ($request->wantsJson() || $request->is('api/*')) {
+                $response = new BaseResponse(
+                    true,
+                    SuccessMessages::PASSWORD_RESET
+                );
+                return response()->json($response->toArray(), 200);
+            }
             return view('auth.reset-success');
         }
 
@@ -119,10 +135,17 @@ class UserController extends Controller
             default => ErrorMessages::AUTH_UNKNOWN_ERROR,
         };
 
+        if ($request->wantsJson() || $request->is('api/*')) {
+            return response()->json(
+                (new BaseResponse(false, $error, null, 'RESET_PASSWORD_FAILED'))->toArray(),
+                400
+            );
+        }
+
         return view('auth.reset-password', [
             'token' => $request->token,
             'email' => $request->email,
-            'error' => 'Token reset tidak valid',
+            'error' => $error,
         ]);
     }
 

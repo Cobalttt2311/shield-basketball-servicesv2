@@ -24,11 +24,12 @@
         .button {
             display: inline-block;
             padding: 14px 28px;
-            background: #2563eb;
+            background: #2a85ff;
             color: white !important;
             text-decoration: none;
             border-radius: 8px;
             margin-top: 20px;
+            font-weight: bold;
         }
 
         p {
@@ -44,11 +45,11 @@
     <h1>Reset Password</h1>
 
     <p>
-        Kami menerima permintaan untuk reset password akun Anda.
+        We received a request to reset your account password.
     </p>
 
     <p>
-        Klik tombol di bawah untuk membuat password baru.
+        Click the button below to create a new password.
     </p>
 
     <a href="{{ $frontendUrl }}" class="button">
@@ -56,11 +57,11 @@
     </a>
 
     <p>
-        Link ini berlaku selama 60 menit.
+        This link is valid for 60 minutes.
     </p>
 
     <p>
-        Jika Anda tidak meminta reset password, abaikan email ini.
+        If you did not request a password reset, please ignore this email.
     </p>
 </div>
 

@@ -1,29 +1,29 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Berhasil Diubah — Shield Basketball</title>
+    <title>Password Changed Successfully — Shield Basketball</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --orange: #F5520C;
-            --orange-dark: #C23D00;
-            --dark: #0D0D0D;
-            --card: #161616;
+            --primary: #2a85ff;
+            --primary-deep: #0069f6;
+            --success: #10b981;
+            --dark: #0a0a0a;
+            --card: #171717;
             --border: rgba(255,255,255,0.08);
-            --text: #E8E8E8;
-            --muted: #888;
-            --success: #22C55E;
+            --text: #fafafa;
+            --muted: #737373;
         }
 
         body {
             background-color: var(--dark);
             color: var(--text);
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Inter', sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -39,7 +39,7 @@
             right: -10%;
             width: 60vw;
             height: 60vw;
-            background: radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 65%);
+            background: radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 65%);
             pointer-events: none;
         }
 
@@ -61,7 +61,7 @@
             top: 0; left: 0; right: 0;
             height: 3px;
             border-radius: 20px 20px 0 0;
-            background: linear-gradient(90deg, var(--success), #16a34a);
+            background: linear-gradient(90deg, var(--success), #059669);
         }
 
         @keyframes fadeUp {
@@ -91,8 +91,8 @@
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            background: rgba(34,197,94,0.12);
-            border: 2px solid rgba(34,197,94,0.3);
+            background: rgba(16,185,129,0.12);
+            border: 2px solid rgba(16,185,129,0.3);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -105,18 +105,18 @@
             position: absolute;
             inset: 0;
             border-radius: 50%;
-            border: 2px solid rgba(34,197,94,0.4);
+            border: 2px solid rgba(16,185,129,0.4);
             animation: ripple 1.5s ease-out 0.8s infinite;
         }
 
         .icon-circle svg { width: 36px; height: 36px; color: var(--success); }
 
         .card-title {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 38px;
-            letter-spacing: 1.5px;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
             color: var(--text);
-            line-height: 1;
+            line-height: 1.2;
             margin-bottom: 12px;
         }
 
@@ -133,20 +133,20 @@
         .btn {
             display: block;
             width: 100%;
-            background: var(--orange);
+            background: var(--primary);
             color: white;
             border: none;
             border-radius: 10px;
             padding: 14px;
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 18px;
-            letter-spacing: 1.5px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 15px;
             cursor: pointer;
             text-decoration: none;
             transition: background 0.2s, transform 0.1s;
         }
 
-        .btn:hover { background: var(--orange-dark); }
+        .btn:hover { background: var(--primary-deep); }
         .btn:active { transform: scale(0.98); }
 
         .countdown {
@@ -155,7 +155,7 @@
             margin-top: 14px;
         }
 
-        .countdown span { color: var(--orange); font-weight: 600; }
+        .countdown span { color: var(--primary); font-weight: 600; }
     </style>
 </head>
 <body>
@@ -169,12 +169,12 @@
             </div>
         </div>
 
-        <h1 class="card-title">Password Diperbarui!</h1>
-        <p class="card-desc">Password kamu berhasil diubah. Silakan login menggunakan password baru.</p>
+        <h1 class="card-title">Password Updated!</h1>
+        <p class="card-desc">Your password has been changed successfully. Please log in using your new password.</p>
 
-        <a href="{{ url('/login') }}" class="btn" id="login-btn">Masuk Sekarang</a>
+        <a href="{{ url('http://localhost:3000/sign-in') }}" class="btn" id="login-btn">Log In Now</a>
 
-        <p class="countdown">Otomatis diarahkan dalam <span id="counter">5</span> detik...</p>
+        <p class="countdown">Redirecting automatically in <span id="counter">5</span> seconds...</p>
     </div>
 
     <script>

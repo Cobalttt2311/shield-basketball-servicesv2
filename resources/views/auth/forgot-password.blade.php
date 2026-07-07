@@ -1,30 +1,30 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lupa Password — Shield Basketball</title>
+    <title>Forgot Password — Shield Basketball</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --orange: #F5520C;
-            --orange-dark: #C23D00;
-            --dark: #0D0D0D;
-            --card: #161616;
+            --primary: #2a85ff;
+            --primary-deep: #0069f6;
+            --dark: #0a0a0a;
+            --card: #171717;
             --border: rgba(255,255,255,0.08);
-            --text: #E8E8E8;
-            --muted: #888;
-            --input-bg: #1F1F1F;
-            --error: #FF4D4D;
+            --text: #fafafa;
+            --muted: #737373;
+            --input-bg: #262626;
+            --error: #ff6a55;
         }
 
         body {
             background-color: var(--dark);
             color: var(--text);
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Inter', sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -41,7 +41,7 @@
             left: -10%;
             width: 60vw;
             height: 60vw;
-            background: radial-gradient(circle, rgba(245,82,12,0.12) 0%, transparent 65%);
+            background: radial-gradient(circle, rgba(42,133,255,0.12) 0%, transparent 65%);
             pointer-events: none;
         }
 
@@ -62,7 +62,7 @@
             top: 0; left: 0; right: 0;
             height: 3px;
             border-radius: 20px 20px 0 0;
-            background: linear-gradient(90deg, var(--orange), var(--orange-dark));
+            background: linear-gradient(90deg, var(--primary), var(--primary-deep));
         }
 
         @keyframes fadeUp {
@@ -80,7 +80,7 @@
         .brand-icon {
             width: 36px;
             height: 36px;
-            background: var(--orange);
+            background: var(--primary);
             border-radius: 8px;
             display: flex;
             align-items: center;
@@ -94,18 +94,18 @@
         }
 
         .brand-name {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 22px;
-            letter-spacing: 1px;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
             color: var(--text);
         }
 
         .card-title {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 36px;
-            letter-spacing: 1.5px;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
             color: var(--text);
-            line-height: 1;
+            line-height: 1.2;
             margin-bottom: 8px;
         }
 
@@ -117,8 +117,8 @@
         }
 
         .error-box {
-            background: rgba(255,77,77,0.1);
-            border: 1px solid rgba(255,77,77,0.3);
+            background: rgba(255,106,85,0.1);
+            border: 1px solid rgba(255,106,85,0.3);
             border-radius: 10px;
             padding: 12px 16px;
             font-size: 13px;
@@ -132,12 +132,12 @@
         .error-box svg { flex-shrink: 0; }
 
         .field {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         label {
             display: block;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             letter-spacing: 0.8px;
             text-transform: uppercase;
@@ -151,7 +151,7 @@
             border: 1px solid var(--border);
             border-radius: 10px;
             padding: 13px 16px;
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-size: 15px;
             color: var(--text);
             outline: none;
@@ -161,26 +161,26 @@
         input[type="email"]::placeholder { color: #555; }
 
         input[type="email"]:focus {
-            border-color: var(--orange);
-            box-shadow: 0 0 0 3px rgba(245,82,12,0.15);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(42,133,255,0.15);
         }
 
         .btn {
             width: 100%;
-            background: var(--orange);
+            background: var(--primary);
             color: white;
             border: none;
             border-radius: 10px;
             padding: 14px;
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 18px;
-            letter-spacing: 1.5px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 15px;
             cursor: pointer;
             transition: background 0.2s, transform 0.1s;
             margin-top: 4px;
         }
 
-        .btn:hover { background: var(--orange-dark); }
+        .btn:hover { background: var(--primary-deep); }
         .btn:active { transform: scale(0.98); }
 
         .back-link {
@@ -192,7 +192,7 @@
             text-decoration: none;
             transition: color 0.2s;
         }
-        .back-link:hover { color: var(--orange); }
+        .back-link:hover { color: var(--primary); }
     </style>
 </head>
 <body>
@@ -206,8 +206,8 @@
             <span class="brand-name">Shield Basketball</span>
         </div>
 
-        <h1 class="card-title">Lupa Password?</h1>
-        <p class="card-desc">Masukkan email akunmu dan kami akan mengirimkan link untuk mereset password.</p>
+        <h1 class="card-title">Forgot Password?</h1>
+        <p class="card-desc">Enter your email address and we'll send you a link to reset your password.</p>
 
         @if(isset($error))
         <div class="error-box">
@@ -221,13 +221,13 @@
         <form method="POST" action="{{ route('password.email') }}">
             @csrf
             <div class="field">
-                <label for="email">Alamat Email</label>
-                <input type="email" name="email" id="email" placeholder="contoh@email.com" required autocomplete="email">
+                <label for="email">Email Address</label>
+                <input type="email" name="email" id="email" placeholder="example@email.com" required autocomplete="email">
             </div>
-            <button type="submit" class="btn">Kirim Link Reset</button>
+            <button type="submit" class="btn">Send Reset Link</button>
         </form>
 
-        <a href="{{ url('http://localhost:3000/sign-in') }}" class="back-link">← Kembali ke halaman login</a>
+        <a href="{{ url('http://localhost:3000/sign-in') }}" class="back-link">← Back to login page</a>
     </div>
 </body>
 </html>
