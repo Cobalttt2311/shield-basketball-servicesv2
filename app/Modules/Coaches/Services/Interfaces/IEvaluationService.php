@@ -30,4 +30,6 @@ interface IEvaluationService
     public function deleteEvaluation(int $id);
 
     public function deleteEvaluationScore(int $id);
+
+    public function getEvaluationsByGroup(int $groupId);
 }

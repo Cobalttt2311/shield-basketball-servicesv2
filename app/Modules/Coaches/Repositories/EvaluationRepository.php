@@ -96,4 +96,11 @@ class EvaluationRepository implements IEvaluationRepository
     {
         Evaluation::where('coach_id', $coachId)->update(['status' => 'INACTIVE']);
     }
+
+    public function getEvaluationsByGroup(int $groupId)
+    {
+        return Evaluation::whereHas('coach', function ($q) use ($groupId) {
+            $q->where('group_id', $groupId);
+        })->with(['coach', 'scores'])->get();
+    }
 }

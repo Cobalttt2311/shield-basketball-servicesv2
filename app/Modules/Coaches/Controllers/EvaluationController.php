@@ -77,9 +77,14 @@ class EvaluationController extends Controller
     public function getAllEvaluations()
     {
         try {
+            $user = Auth::user();
+            $coach = ($user && $user->role === 'coach') ? $user->coach : null;
 
-            $result = $this->service
-                ->getAllEvaluations();
+            if ($coach) {
+                $result = $this->service->getEvaluationsByGroup($coach->group_id);
+            } else {
+                $result = $this->service->getAllEvaluations();
+            }
 
             return response()->json(
                 (new BaseResponse(
