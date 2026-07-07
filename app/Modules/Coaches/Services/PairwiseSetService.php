@@ -178,4 +178,20 @@ class PairwiseSetService implements IPairwiseSetService
             'group_id' => $set->group_id,
         ];
     }
+
+    public function getWeights(int $id): array
+    {
+        $criteriaWeights = \App\Modules\Coaches\Models\CriteriaWeight::with(['criteria', 'position'])
+            ->where('pairwise_set_id', $id)
+            ->get();
+
+        $subCriteriaWeights = \App\Modules\Coaches\Models\SubCriteriaWeight::with(['subCriteria.criteria', 'position'])
+            ->where('pairwise_set_id', $id)
+            ->get();
+
+        return [
+            'criteria_weights' => $criteriaWeights,
+            'sub_criteria_weights' => $subCriteriaWeights,
+        ];
+    }
 }

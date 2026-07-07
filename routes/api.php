@@ -161,6 +161,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::get('/', [PairwiseSetController::class, 'getCompatibleSets']);
             Route::middleware(['master.coach'])->post('/', [PairwiseSetController::class, 'createSet']);
             Route::middleware(['master.coach'])->patch('/{id}', [PairwiseSetController::class, 'updateSet']);
+            Route::get('/{id}/weights', [PairwiseSetController::class, 'getWeights']);
         });
 
         Route::post('evaluation-reports/finalize', [EvaluationReportController::class, 'finalizeReport']);

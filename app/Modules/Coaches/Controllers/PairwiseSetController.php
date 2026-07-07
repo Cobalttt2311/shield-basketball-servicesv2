@@ -133,4 +133,29 @@ class PairwiseSetController extends Controller
             );
         }
     }
+
+    public function getWeights($id)
+    {
+        try {
+            $data = $this->service->getWeights((int) $id);
+
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    'Weights retrieved successfully',
+                    $data
+                ))->toArray()
+            );
+        } catch (\Exception $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    'SERVER_ERROR'
+                ))->toArray(),
+                500
+            );
+        }
+    }
 }
