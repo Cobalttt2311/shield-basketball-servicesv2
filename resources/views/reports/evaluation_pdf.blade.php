@@ -161,7 +161,7 @@
         <table class="header-table">
             <tr>
                 <td style="width: 60px; vertical-align: middle;">
-                    <img src="{{ public_path('img/logo/Logo SHIELD 2025.png') }}" style="height: 50px; width: auto;"
+                    <img src="{{ public_path('img/logo/shieldmini.png') }}" style="height: 50px; width: auto;"
                         alt="Logo Shield">
                 </td>
                 <td style="vertical-align: middle; padding-left: 10px;">
