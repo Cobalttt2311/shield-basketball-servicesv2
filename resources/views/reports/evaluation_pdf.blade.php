@@ -197,12 +197,22 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($data['scores'] as $score)
-                    <tr>
-                        <td>{{ $score['criteria_name'] }}</td>
-                        <td>{{ $score['sub_criteria_name'] }}</td>
-                        <td class="score-value">{{ $score['score'] }}</td>
-                    </tr>
+                @php
+                    $groupedScores = collect($data['scores'])->groupBy('criteria_name');
+                @endphp
+
+                @forelse($groupedScores as $criteriaName => $subScores)
+                    @foreach($subScores as $index => $score)
+                        <tr>
+                            @if($index === 0)
+                                <td rowspan="{{ count($subScores) }}" style="vertical-align: middle; font-weight: bold; background-color: #fafafa;">
+                                    {{ $criteriaName }}
+                                </td>
+                            @endif
+                            <td>{{ $score['sub_criteria_name'] }}</td>
+                            <td class="score-value">{{ $score['score'] }}</td>
+                        </tr>
+                    @endforeach
                 @empty
                     <tr>
                         <td colspan="3" style="text-align: center; color: #64748b; padding: 15px;">Tidak ada data nilai.</td>

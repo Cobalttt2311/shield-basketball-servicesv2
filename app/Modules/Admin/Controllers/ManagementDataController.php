@@ -62,22 +62,27 @@ class ManagementDataController extends Controller
     public function storeCoach(Request $request)
     {
         try {
-            $data = $request->only([
-                'name',
-                'email',
-                'birth_date',
-                'group_id',
-                'position',
-                'license',
-                'phone_number',
-                'is_master',
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email',
+                'group_id' => 'required|integer|exists:groups,id',
+                'position' => 'required|string|max:255',
+                'phone_number' => 'required|string|max:255',
+                'birth_date' => 'nullable|date',
+                'license' => 'nullable|string|max:255',
+                'is_master' => 'nullable|boolean',
             ]);
 
-            $result = $this->service->createCoach($data);
+            $result = $this->service->createCoach($validated);
 
             return response()->json(
                 (new BaseResponse(true, SuccessMessages::COACH_CREATED, $result))->toArray(),
                 201
+            );
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(
+                (new BaseResponse(false, $e->getMessage(), null, $e->errors()))->toArray(),
+                422
             );
         } catch (\Throwable $e) {
             return response()->json(
@@ -180,23 +185,28 @@ class ManagementDataController extends Controller
     public function storePlayer(Request $request)
     {
         try {
-            $data = $request->only([
-                'name',
-                'email',
-                'birth_date',
-                'group_id',
-                'phone_number',
-                'height',
-                'weight',
-                'parent_name',
-                'parent_phone',
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email',
+                'group_id' => 'required|integer|exists:groups,id',
+                'phone_number' => 'required|string|max:255',
+                'birth_date' => 'nullable|date',
+                'height' => 'nullable|numeric',
+                'weight' => 'nullable|numeric',
+                'parent_name' => 'nullable|string|max:255',
+                'parent_phone' => 'nullable|string|max:255',
             ]);
 
-            $result = $this->service->createPlayer($data);
+            $result = $this->service->createPlayer($validated);
 
             return response()->json(
                 (new BaseResponse(true, SuccessMessages::PLAYER_CREATED, $result))->toArray(),
                 201
+            );
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(
+                (new BaseResponse(false, $e->getMessage(), null, $e->errors()))->toArray(),
+                422
             );
         } catch (\Throwable $e) {
             return response()->json(

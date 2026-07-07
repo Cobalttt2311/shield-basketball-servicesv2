@@ -13,6 +13,9 @@ class CriteriaSeeder extends Seeder
      */
     public function run(): void
     {
+        Criteria::query()->delete();
+        CriteriaSet::query()->delete();
+
         $set1 = CriteriaSet::create([
             'name' => 'Set Kriteria Default KU 10-12',
             'group_id' => 1,

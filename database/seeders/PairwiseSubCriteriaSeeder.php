@@ -454,3 +454,5 @@ class PairwiseSubCriteriaSeeder extends Seeder
         }
     }
 }
+    }
+}
