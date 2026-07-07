@@ -242,4 +242,9 @@ class EvaluationService implements IEvaluationService
         return $this->repo
             ->deleteScore($id);
     }
+
+    public function getEvaluationsByGroup(int $groupId)
+    {
+        return $this->repo->getEvaluationsByGroup($groupId);
+    }
 }

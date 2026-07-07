@@ -9,4 +9,6 @@ interface IPairwiseSetService
     public function createSet(array $data): array;
 
     public function updateSet(int $id, array $data): array;
+
+    public function getWeights(int $id): array;
 }

@@ -14,8 +14,15 @@ class PairwiseSetService implements IPairwiseSetService
 {
     public function getCompatibleSets(?int $evaluationId = null): array
     {
+        $user = \Illuminate\Support\Facades\Auth::user();
+        $coachGroupId = ($user && $user->role === 'coach' && $user->coach) ? $user->coach->group_id : null;
+
         if ($evaluationId === null) {
-            $sets = PairwiseSet::with('group')->get();
+            $query = PairwiseSet::with('group');
+            if ($coachGroupId !== null) {
+                $query->where('group_id', $coachGroupId);
+            }
+            $sets = $query->get();
             $result = [];
             foreach ($sets as $set) {
                 $isFilled = $set->pairwiseCriteria()->whereNotNull('value')->exists()
@@ -38,12 +45,13 @@ class PairwiseSetService implements IPairwiseSetService
             throw new \InvalidArgumentException(ErrorMessages::EVALUATION_NOT_FOUND);
         }
 
-        $coach = $evaluation->coach;
-        if (! $coach) {
+        // Always use the authenticated coach's own group to filter pairwise sets.
+        // This prevents a coach of one KU from seeing sets belonging to another KU,
+        // even if the evaluation_id passed in belongs to a different coach/group.
+        $groupId = $coachGroupId ?? ($evaluation->coach ? $evaluation->coach->group_id : null);
+        if ($groupId === null) {
             throw new \InvalidArgumentException(ErrorMessages::COACH_NOT_FOUND);
         }
-
-        $groupId = $coach->group_id;
 
         // 1. Ambil kriteria & subkriteria aktif saat ini
         $activeCriteria = Criteria::whereHas('criteriaSet', function ($q) use ($groupId) {
@@ -168,6 +176,22 @@ class PairwiseSetService implements IPairwiseSetService
             'id' => $set->id,
             'name' => $set->name,
             'group_id' => $set->group_id,
+        ];
+    }
+
+    public function getWeights(int $id): array
+    {
+        $criteriaWeights = \App\Modules\Coaches\Models\CriteriaWeight::with(['criteria', 'position'])
+            ->where('pairwise_set_id', $id)
+            ->get();
+
+        $subCriteriaWeights = \App\Modules\Coaches\Models\SubCriteriaWeight::with(['subCriteria.criteria', 'position'])
+            ->where('pairwise_set_id', $id)
+            ->get();
+
+        return [
+            'criteria_weights' => $criteriaWeights,
+            'sub_criteria_weights' => $subCriteriaWeights,
         ];
     }
 }
