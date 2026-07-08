@@ -57,7 +57,7 @@ class UserRepository implements IUserRepository
     {
         if ($user->role === 'coach') {
 
-            $coach = Coach::where('user_id', $user->id)
+            $coach = Coach::with('group')->where('user_id', $user->id)
                 ->first();
 
             return [
@@ -68,7 +68,7 @@ class UserRepository implements IUserRepository
 
         if ($user->role === 'player') {
 
-            $player = Player::where('user_id', $user->id)
+            $player = Player::with('group')->where('user_id', $user->id)
                 ->first();
 
             return [
