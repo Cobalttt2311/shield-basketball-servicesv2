@@ -139,15 +139,28 @@ class PairwiseSetService implements IPairwiseSetService
             }
         }
 
+        $criteriaSetId = $data['criteria_set_id'] ?? null;
+        if ($criteriaSetId) {
+            $criteriaSet = \App\Modules\Coaches\Models\CriteriaSet::find($criteriaSetId);
+            if (! $criteriaSet) {
+                throw new \InvalidArgumentException('Criteria set not found');
+            }
+            if ($criteriaSet->group_id !== (int) $groupId) {
+                throw new \InvalidArgumentException('Criteria set does not belong to the selected age group.');
+            }
+        }
+
         $set = PairwiseSet::create([
             'name' => $data['name'],
             'group_id' => $groupId,
+            'criteria_set_id' => $criteriaSetId,
         ]);
 
         return [
             'id' => $set->id,
             'name' => $set->name,
             'group_id' => $set->group_id,
+            'criteria_set_id' => $set->criteria_set_id,
         ];
     }
 
@@ -158,12 +171,25 @@ class PairwiseSetService implements IPairwiseSetService
             throw new \InvalidArgumentException('Pairwise set not found');
         }
 
+        $groupId = isset($data['group_id']) ? $data['group_id'] : $set->group_id;
         if (isset($data['group_id'])) {
             $groupExists = Group::where('id', $data['group_id'])->exists();
             if (! $groupExists) {
                 throw new \InvalidArgumentException(ErrorMessages::GROUP_NOT_FOUND);
             }
             $set->group_id = $data['group_id'];
+        }
+
+        if (isset($data['criteria_set_id'])) {
+            $criteriaSetId = $data['criteria_set_id'];
+            $criteriaSet = \App\Modules\Coaches\Models\CriteriaSet::find($criteriaSetId);
+            if (! $criteriaSet) {
+                throw new \InvalidArgumentException('Criteria set not found');
+            }
+            if ($criteriaSet->group_id !== (int) $groupId) {
+                throw new \InvalidArgumentException('Criteria set does not belong to the selected age group.');
+            }
+            $set->criteria_set_id = $criteriaSetId;
         }
 
         if (isset($data['name'])) {
@@ -176,6 +202,7 @@ class PairwiseSetService implements IPairwiseSetService
             'id' => $set->id,
             'name' => $set->name,
             'group_id' => $set->group_id,
+            'criteria_set_id' => $set->criteria_set_id,
         ];
     }
 

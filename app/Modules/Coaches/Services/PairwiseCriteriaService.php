@@ -322,7 +322,13 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
             throw new \InvalidArgumentException('Kelompok Umur (KU) belum dipilih untuk set pairwise ini.');
         }
 
-        $criteria = $this->pairwiseRepository->getCriteriaByGroup($groupId);
+        if ($set->criteria_set_id) {
+            $criteria = \App\Modules\Coaches\Models\Criteria::where('criteria_set_id', $set->criteria_set_id)
+                ->orderBy('id')
+                ->get();
+        } else {
+            $criteria = $this->pairwiseRepository->getCriteriaByGroup($groupId);
+        }
         $positions = Position::where('group_id', $groupId)->get();
 
         $data = [];
