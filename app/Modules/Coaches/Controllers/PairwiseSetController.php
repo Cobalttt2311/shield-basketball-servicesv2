@@ -58,10 +58,11 @@ class PairwiseSetController extends Controller
         try {
             $request->validate([
                 'name' => 'required|string|max:255',
-                'group_id' => 'nullable|integer',
+                'group_id' => 'required|integer',
+                'criteria_set_id' => 'required|integer',
             ]);
 
-            $data = $this->service->createSet($request->only(['name', 'group_id']));
+            $data = $this->service->createSet($request->only(['name', 'group_id', 'criteria_set_id']));
 
             return response()->json(
                 (new BaseResponse(
@@ -100,9 +101,10 @@ class PairwiseSetController extends Controller
             $request->validate([
                 'name' => 'nullable|string|max:255',
                 'group_id' => 'nullable|integer',
+                'criteria_set_id' => 'nullable|integer',
             ]);
 
-            $data = $this->service->updateSet((int) $id, $request->only(['name', 'group_id']));
+            $data = $this->service->updateSet((int) $id, $request->only(['name', 'group_id', 'criteria_set_id']));
 
             return response()->json(
                 (new BaseResponse(

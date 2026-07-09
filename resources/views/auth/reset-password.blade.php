@@ -1,30 +1,30 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Password — Shield Basketball</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --orange: #F5520C;
-            --orange-dark: #C23D00;
-            --dark: #0D0D0D;
-            --card: #161616;
+            --primary: #2a85ff;
+            --primary-deep: #0069f6;
+            --dark: #0a0a0a;
+            --card: #171717;
             --border: rgba(255,255,255,0.08);
-            --text: #E8E8E8;
-            --muted: #888;
-            --input-bg: #1F1F1F;
-            --error: #FF4D4D;
+            --text: #fafafa;
+            --muted: #737373;
+            --input-bg: #262626;
+            --error: #ff6a55;
         }
 
         body {
             background-color: var(--dark);
             color: var(--text);
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Inter', sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -40,7 +40,7 @@
             left: -10%;
             width: 60vw;
             height: 60vw;
-            background: radial-gradient(circle, rgba(245,82,12,0.12) 0%, transparent 65%);
+            background: radial-gradient(circle, rgba(42,133,255,0.12) 0%, transparent 65%);
             pointer-events: none;
         }
 
@@ -61,7 +61,7 @@
             top: 0; left: 0; right: 0;
             height: 3px;
             border-radius: 20px 20px 0 0;
-            background: linear-gradient(90deg, var(--orange), var(--orange-dark));
+            background: linear-gradient(90deg, var(--primary), var(--primary-deep));
         }
 
         @keyframes fadeUp {
@@ -79,7 +79,7 @@
         .brand-icon {
             width: 36px;
             height: 36px;
-            background: var(--orange);
+            background: var(--primary);
             border-radius: 8px;
             display: flex;
             align-items: center;
@@ -89,16 +89,16 @@
         .brand-icon svg { width: 20px; height: 20px; fill: white; }
 
         .brand-name {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 22px;
-            letter-spacing: 1px;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
         }
 
         .card-title {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 36px;
-            letter-spacing: 1.5px;
-            line-height: 1;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
             margin-bottom: 8px;
         }
 
@@ -110,8 +110,8 @@
         }
 
         .error-box {
-            background: rgba(255,77,77,0.1);
-            border: 1px solid rgba(255,77,77,0.3);
+            background: rgba(255,106,85,0.1);
+            border: 1px solid rgba(255,106,85,0.3);
             border-radius: 10px;
             padding: 12px 16px;
             font-size: 13px;
@@ -128,7 +128,7 @@
 
         label {
             display: block;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             letter-spacing: 0.8px;
             text-transform: uppercase;
@@ -136,14 +136,13 @@
             margin-bottom: 8px;
         }
 
-        /* Pakai class .pw-input supaya styling tidak hilang saat type berubah ke "text" */
         .pw-input {
             width: 100%;
             background: var(--input-bg);
             border: 1px solid var(--border);
             border-radius: 10px;
             padding: 13px 48px 13px 16px;
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-size: 15px;
             color: var(--text);
             outline: none;
@@ -153,8 +152,8 @@
         .pw-input::placeholder { color: #555; }
 
         .pw-input:focus {
-            border-color: var(--orange);
-            box-shadow: 0 0 0 3px rgba(245,82,12,0.15);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(42,133,255,0.15);
         }
 
         .toggle-pw {
@@ -171,7 +170,6 @@
         }
         .toggle-pw:hover { color: var(--text); }
 
-        /* Password strength */
         .strength-bar {
             display: flex;
             gap: 4px;
@@ -194,20 +192,20 @@
 
         .btn {
             width: 100%;
-            background: var(--orange);
+            background: var(--primary);
             color: white;
             border: none;
             border-radius: 10px;
             padding: 14px;
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 18px;
-            letter-spacing: 1.5px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 15px;
             cursor: pointer;
             transition: background 0.2s, transform 0.1s;
             margin-top: 8px;
         }
 
-        .btn:hover { background: var(--orange-dark); }
+        .btn:hover { background: var(--primary-deep); }
         .btn:active { transform: scale(0.98); }
     </style>
 </head>
@@ -221,7 +219,7 @@
         </div>
 
         <h1 class="card-title">Reset Password</h1>
-        <p class="card-desc">Buat password baru yang kuat untuk akunmu.</p>
+        <p class="card-desc">Create a strong new password for your account.</p>
 
         @if($errors->any())
         <div class="error-box">
@@ -241,9 +239,9 @@
             <input type="hidden" name="email" value="{{ $email }}">
 
             <div class="field">
-                <label for="password">Password Baru</label>
-                <input type="password" name="password" id="password" class="pw-input" placeholder="Minimal 8 karakter" required autocomplete="new-password" oninput="checkStrength(this.value)">
-                <button type="button" class="toggle-pw" onclick="togglePw('password', this)" title="Tampilkan password">
+                <label for="password">New Password</label>
+                <input type="password" name="password" id="password" class="pw-input" placeholder="At least 8 characters" required autocomplete="new-password" oninput="checkStrength(this.value)">
+                <button type="button" class="toggle-pw" onclick="togglePw('password', this)" title="Show password">
                     <!-- eye-open -->
                     <svg class="icon-eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
@@ -260,9 +258,9 @@
             </div>
 
             <div class="field">
-                <label for="password_confirmation">Konfirmasi Password</label>
-                <input type="password" name="password_confirmation" id="password_confirmation" class="pw-input" placeholder="Ulangi password baru" required autocomplete="new-password">
-                <button type="button" class="toggle-pw" onclick="togglePw('password_confirmation', this)" title="Tampilkan password">
+                <label for="password_confirmation">Confirm Password</label>
+                <input type="password" name="password_confirmation" id="password_confirmation" class="pw-input" placeholder="Repeat new password" required autocomplete="new-password">
+                <button type="button" class="toggle-pw" onclick="togglePw('password_confirmation', this)" title="Show password">
                     <!-- eye-open -->
                     <svg class="icon-eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
@@ -274,7 +272,7 @@
                 </button>
             </div>
 
-            <button type="submit" class="btn">Simpan Password Baru</button>
+            <button type="submit" class="btn">Save New Password</button>
         </form>
     </div>
 
@@ -298,14 +296,14 @@
             if (/[0-9]/.test(val)) score++;
             if (/[^A-Za-z0-9]/.test(val)) score++;
 
-            const colors = ['#FF4D4D', '#F5A623', '#F5D020', '#22C55E'];
-            const labels = ['', 'Lemah', 'Cukup', 'Kuat', 'Sangat Kuat'];
+            const colors = ['#ff6a55', '#f59e0b', '#ffd400', '#10b981'];
+            const labels = ['', 'Weak', 'Medium', 'Strong', 'Very Strong'];
 
             bars.forEach((b, i) => {
                 b.style.background = i < score ? colors[score - 1] : 'rgba(255,255,255,0.08)';
             });
             label.textContent = val.length ? labels[score] : '';
-            label.style.color = score > 0 ? colors[score - 1] : '#888';
+            label.style.color = score > 0 ? colors[score - 1] : '#737373';
         }
     </script>
 </body>

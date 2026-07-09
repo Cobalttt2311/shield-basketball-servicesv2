@@ -41,15 +41,6 @@ Route::middleware(['auth:api', 'role:coach', 'master.coach'])->group(function ()
         Route::get('/', [PairwiseSubCriteriaController::class, 'getPairwise']);
         Route::post('/calculate-weights', [PairwiseSubCriteriaController::class, 'calculateWeights']);
     });
-
-    Route::prefix('positions')->group(function () {
-        Route::get('/', [PositionController::class, 'index']);
-        Route::get('/group/{groupId}', [PositionController::class, 'getByGroup']);
-        Route::get('/{id}', [PositionController::class, 'show']);
-        Route::post('/', [PositionController::class, 'store']);
-        Route::patch('/{id}', [PositionController::class, 'update']);
-        Route::delete('/{id}', [PositionController::class, 'destroy']);
-    });
 });
 
 Route::get('/alternative-weight/{evaluationId}/{subCriteriaId}', [PlayerScoreMappingController::class, 'calculate']);
@@ -162,6 +153,17 @@ Route::middleware(['auth:api'])->group(function () {
             Route::middleware(['master.coach'])->post('/', [PairwiseSetController::class, 'createSet']);
             Route::middleware(['master.coach'])->patch('/{id}', [PairwiseSetController::class, 'updateSet']);
             Route::get('/{id}/weights', [PairwiseSetController::class, 'getWeights']);
+        });
+
+        Route::prefix('positions')->group(function () {
+            Route::get('/', [PositionController::class, 'index']);
+            Route::get('/group/{groupId}', [PositionController::class, 'getByGroup']);
+            Route::get('/{id}', [PositionController::class, 'show']);
+            Route::middleware(['master.coach'])->group(function () {
+                Route::post('/', [PositionController::class, 'store']);
+                Route::patch('/{id}', [PositionController::class, 'update']);
+                Route::delete('/{id}', [PositionController::class, 'destroy']);
+            });
         });
 
         Route::post('evaluation-reports/finalize', [EvaluationReportController::class, 'finalizeReport']);

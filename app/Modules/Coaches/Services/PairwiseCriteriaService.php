@@ -322,7 +322,13 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
             throw new \InvalidArgumentException('Kelompok Umur (KU) belum dipilih untuk set pairwise ini.');
         }
 
-        $criteria = $this->pairwiseRepository->getCriteriaByGroup($groupId);
+        if ($set->criteria_set_id) {
+            $criteria = \App\Modules\Coaches\Models\Criteria::where('criteria_set_id', $set->criteria_set_id)
+                ->orderBy('id')
+                ->get();
+        } else {
+            $criteria = $this->pairwiseRepository->getCriteriaByGroup($groupId);
+        }
         $positions = Position::where('group_id', $groupId)->get();
 
         $data = [];
@@ -451,20 +457,33 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
             ];
         }
 
-        // 2. Lakukan kalkulasi untuk setiap posisi
+        // 2. Lakukan kalkulasi konsistensi untuk setiap posisi
         $positions = Position::where('group_id', $groupId)->get();
         $results = [];
+        $allConsistent = true;
 
         foreach ($positions as $position) {
-            $this->saveWeights($groupId, $position->id, $pairwiseSetId);
             $consistencyData = $this->calculateConsistencyRatio($groupId, $position->id, $pairwiseSetId);
             $crVal = $consistencyData['cr'] ?? 0.0;
+            $isConsistent = $crVal < 0.1;
+            if (! $isConsistent) {
+                $allConsistent = false;
+            }
             $results[] = [
                 'position_id' => $position->id,
                 'position_name' => $position->name,
-                'is_consistent' => $crVal < 0.1,
+                'is_consistent' => $isConsistent,
                 'consistency_ratio' => round($crVal, 4),
             ];
+        }
+
+        // Simpan bobot hanya jika semua posisi memiliki perbandingan yang konsisten (CR < 0.1)
+        if ($allConsistent) {
+            foreach ($positions as $position) {
+                $this->saveWeights($groupId, $position->id, $pairwiseSetId);
+            }
+        } else {
+            \App\Modules\Coaches\Models\CriteriaWeight::where('pairwise_set_id', $pairwiseSetId)->delete();
         }
 
         return [

@@ -15,11 +15,17 @@ class PairwiseSet extends Model
     protected $fillable = [
         'name',
         'group_id',
+        'criteria_set_id',
     ];
 
     public function group()
     {
         return $this->belongsTo(Group::class, 'group_id');
+    }
+
+    public function criteriaSet()
+    {
+        return $this->belongsTo(CriteriaSet::class, 'criteria_set_id');
     }
 
     public function pairwiseCriteria()

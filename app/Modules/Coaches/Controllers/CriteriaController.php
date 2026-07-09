@@ -141,6 +141,10 @@ class CriteriaController extends Controller
                 201
             );
         } catch (Throwable $e) {
+            $status = 500;
+            if ($e->getMessage() === 'Criteria already exists') {
+                $status = 400;
+            }
             return response()->json(
                 (new BaseResponse(
                     false,
@@ -148,7 +152,7 @@ class CriteriaController extends Controller
                     null,
                     $e->getMessage()
                 ))->toArray(),
-                500
+                $status
             );
         }
     }
@@ -221,6 +225,10 @@ class CriteriaController extends Controller
                 201
             );
         } catch (Throwable $e) {
+            $status = 500;
+            if ($e->getMessage() === 'Sub criteria already exists') {
+                $status = 400;
+            }
             return response()->json(
                 (new BaseResponse(
                     false,
@@ -228,7 +236,7 @@ class CriteriaController extends Controller
                     null,
                     $e->getMessage()
                 ))->toArray(),
-                500
+                $status
             );
         }
     }

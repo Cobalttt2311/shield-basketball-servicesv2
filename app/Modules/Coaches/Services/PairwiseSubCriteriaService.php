@@ -482,20 +482,39 @@ class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
             ];
         }
 
-        // 2. Lakukan kalkulasi untuk setiap posisi
+        // 2. Lakukan kalkulasi konsistensi untuk setiap posisi
         $positions = Position::where('group_id', $groupId)->get();
         $results = [];
+        $allConsistent = true;
 
         foreach ($positions as $position) {
-            $this->saveWeights($position->id, $criteriaId, $pairwiseSetId);
             $consistencyData = $this->calculateConsistencyRatio($position->id, $criteriaId, $pairwiseSetId);
             $crVal = $consistencyData['cr'] ?? 0.0;
+            $isConsistent = $crVal < 0.1;
+            if (! $isConsistent) {
+                $allConsistent = false;
+            }
             $results[] = [
                 'position_id' => $position->id,
                 'position_name' => $position->name,
-                'is_consistent' => $crVal < 0.1,
+                'is_consistent' => $isConsistent,
                 'consistency_ratio' => round($crVal, 4),
             ];
+        }
+
+        // Simpan bobot subkriteria hanya jika semua posisi memiliki perbandingan yang konsisten (CR < 0.1)
+        if ($allConsistent) {
+            foreach ($positions as $position) {
+                $this->saveWeights($position->id, $criteriaId, $pairwiseSetId);
+            }
+        } else {
+            \App\Modules\Coaches\Models\SubCriteriaWeight::where('pairwise_set_id', $pairwiseSetId)
+                ->whereIn('sub_criteria_id', function ($query) use ($criteriaId) {
+                    $query->select('id')
+                        ->from('sub_criterias')
+                        ->where('criteria_id', $criteriaId);
+                })
+                ->delete();
         }
 
         return [

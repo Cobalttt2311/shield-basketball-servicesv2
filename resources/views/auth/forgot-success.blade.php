@@ -1,29 +1,28 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Terkirim — Shield Basketball</title>
+    <title>Email Sent — Shield Basketball</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --orange: #F5520C;
-            --orange-dark: #C23D00;
-            --dark: #0D0D0D;
-            --card: #161616;
+            --primary: #2a85ff;
+            --success: #10b981;
+            --dark: #0a0a0a;
+            --card: #171717;
             --border: rgba(255,255,255,0.08);
-            --text: #E8E8E8;
-            --muted: #888;
-            --success: #22C55E;
+            --text: #fafafa;
+            --muted: #737373;
         }
 
         body {
             background-color: var(--dark);
             color: var(--text);
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Inter', sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -39,7 +38,7 @@
             left: -10%;
             width: 60vw;
             height: 60vw;
-            background: radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 65%);
+            background: radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 65%);
             pointer-events: none;
         }
 
@@ -61,7 +60,7 @@
             top: 0; left: 0; right: 0;
             height: 3px;
             border-radius: 20px 20px 0 0;
-            background: linear-gradient(90deg, var(--success), #16a34a);
+            background: linear-gradient(90deg, var(--success), #059669);
         }
 
         @keyframes fadeUp {
@@ -79,8 +78,8 @@
             width: 72px;
             height: 72px;
             border-radius: 50%;
-            background: rgba(34,197,94,0.12);
-            border: 2px solid rgba(34,197,94,0.3);
+            background: rgba(16,185,129,0.12);
+            border: 2px solid rgba(16,185,129,0.3);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -95,11 +94,11 @@
         }
 
         .card-title {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 36px;
-            letter-spacing: 1.5px;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
             color: var(--text);
-            line-height: 1;
+            line-height: 1.2;
             margin-bottom: 12px;
         }
 
@@ -114,7 +113,7 @@
         }
 
         .hint-box {
-            background: rgba(255,255,255,0.04);
+            background: rgba(255,255,255,0.02);
             border: 1px solid var(--border);
             border-radius: 10px;
             padding: 14px 16px;
@@ -135,9 +134,9 @@
             border: 1px solid var(--border);
             border-radius: 10px;
             padding: 13px;
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             transition: border-color 0.2s, background 0.2s;
@@ -157,15 +156,15 @@
             </svg>
         </div>
 
-        <h1 class="card-title">Email Terkirim!</h1>
-        <p class="card-desc">Link reset password telah dikirim ke email kamu. Silakan cek inbox atau folder spam.</p>
+        <h1 class="card-title">Email Sent!</h1>
+        <p class="card-desc">A password reset link has been sent to your email. Please check your inbox or spam folder.</p>
 
         <div class="hint-box">
-            <strong>Tidak menerima email?</strong><br>
-            Pastikan email yang kamu masukkan benar, tunggu beberapa menit, dan cek folder <em>Spam</em> atau <em>Junk</em>.
+            <strong>Didn't receive the email?</strong><br>
+            Make sure you entered the correct email, wait a few minutes, and check your Spam or Junk folder.
         </div>
 
-        <a href="{{ url('http://localhost:3000/sign-in') }}" class="btn-outline">← Kembali ke Login</a>
+        <a href="{{ url('http://localhost:3000/sign-in') }}" class="btn-outline">← Back to Login</a>
     </div>
 </body>
 </html>
