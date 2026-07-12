@@ -19,9 +19,6 @@ class PairwiseSetService implements IPairwiseSetService
 
         if ($evaluationId === null) {
             $query = PairwiseSet::with('group');
-            if ($coachGroupId !== null) {
-                $query->where('group_id', $coachGroupId);
-            }
             $sets = $query->get();
             $result = [];
             foreach ($sets as $set) {
