@@ -132,6 +132,7 @@ test('master coach can create pairwise set successfully', function () {
         ->postJson('/api/pairwise-sets', [
             'name' => 'Set Master',
             'group_id' => $this->group->id,
+            'criteria_set_id' => $this->criteriaSet->id,
         ]);
     $response->assertStatus(201)
         ->assertJson([
@@ -140,12 +141,14 @@ test('master coach can create pairwise set successfully', function () {
             'data' => [
                 'name' => 'Set Master',
                 'group_id' => $this->group->id,
+                'criteria_set_id' => $this->criteriaSet->id,
             ],
         ]);
 
     $this->assertDatabaseHas('pairwise_sets', [
         'name' => 'Set Master',
         'group_id' => $this->group->id,
+        'criteria_set_id' => $this->criteriaSet->id,
     ]);
 });
 
@@ -305,10 +308,12 @@ test('complete set-based pairwise flow works successfully', function () {
         'name' => 'Dribbling',
     ]);
 
-    // 1. Create set with only name
+    // 1. Create set with full parameters
     $response = $this->withHeaders(['Authorization' => "Bearer $masterToken"])
         ->postJson('/api/pairwise-sets', [
             'name' => 'Set Dinamis Baru',
+            'group_id' => $this->group->id,
+            'criteria_set_id' => $this->criteriaSet->id,
         ]);
     $response->assertStatus(201);
     $setId = $response->json('data.id');
@@ -317,19 +322,8 @@ test('complete set-based pairwise flow works successfully', function () {
     $this->assertDatabaseHas('pairwise_sets', [
         'id' => $setId,
         'name' => 'Set Dinamis Baru',
-        'group_id' => null,
-    ]);
-
-    // 2. Update set to associate with group
-    $response = $this->withHeaders(['Authorization' => "Bearer $masterToken"])
-        ->patchJson("/api/pairwise-sets/{$setId}", [
-            'group_id' => $this->group->id,
-        ]);
-    $response->assertStatus(200);
-
-    $this->assertDatabaseHas('pairwise_sets', [
-        'id' => $setId,
         'group_id' => $this->group->id,
+        'criteria_set_id' => $this->criteriaSet->id,
     ]);
 
     // 3. Generate pairwise criteria
