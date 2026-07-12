@@ -2,91 +2,87 @@
 
 namespace Database\Seeders;
 
-use App\Modules\Admin\Models\Coach;
+use App\Modules\Admin\Services\Interfaces\IManagementDataService;
 use App\Modules\User\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class CoachSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
-        User::insert([
-            [
-                'name' => 'Akmal',
-                'username' => 'Akmal',
-                'email' => 'akmal@gmail.com',
-                'password' => Hash::make('*ShieldCoach1#'),
-                'role' => 'coach',
-            ],
-            [
-                'name' => 'Ahmad',
-                'username' => 'Ahmad',
-                'email' => 'ahmad@gmail.com',
-                'password' => Hash::make('*ShieldCoach2#'),
-                'role' => 'coach',
-            ],
-            [
-                'name' => 'Dani',
-                'username' => 'Dani',
-                'email' => 'dani@gmail.com',
-                'password' => Hash::make('*ShieldCoach3#'),
-                'role' => 'coach',
-            ],
-            [
-                'name' => 'Nalen',
-                'username' => 'Nalen',
-                'email' => 'nalen@gmail.com',
-                'password' => Hash::make('*ShieldCoach4#'),
-                'role' => 'coach',
-            ],
-        ]);
+        // Delete existing coaches' users to avoid duplicate key issues
+        User::where('role', 'coach')->delete();
 
-        Coach::insert([
+        $managementDataService = app(IManagementDataService::class);
+
+        $coaches = [
             [
-                'name' => 'Akmal',
-                'user_id' => 2,
-                'birth_date' => '1990-05-10',
-                'group_id' => 1,
-                'position' => 'Head Coach  ',
-                'license' => 'B License',
-                'phone_number' => '08123456789',
-                'email' => 'akmal@gmail.com',
+                'name' => 'Hendra Tanuwijaya',
+                'email' => 'hendra.tanuwijaya@gmail.com',
+                'phone_number' => '628562000101',
+                'birth_date' => '1980-01-01',
+                'license' => 'Lisensi B Tahun 2026',
+                'position' => 'Master Coach',
+                'group_id' => 2, // KU 13-18
                 'is_master' => true,
             ],
             [
-                'name' => 'Ahmad',
-                'user_id' => 3,
-                'birth_date' => '1985-12-15',
-                'group_id' => 1,
-                'position' => 'Assistant Coach',
-                'license' => 'C License',
-                'phone_number' => '08123456780',
-                'email' => 'ahmad@gmail.com',
+                'name' => 'Siti Nurendah Masyiroh',
+                'email' => 'siti.nurendah@gmail.com',
+                'phone_number' => '085642186488',
+                'birth_date' => '1983-09-26',
+                'license' => 'Lisensi B Tahun 2026',
+                'position' => 'Master Coach',
+                'group_id' => 1, // KU 8-12
+                'is_master' => true,
+            ],
+            [
+                'name' => 'Sophia Ekaristi Darma',
+                'email' => 'sophia.ekaristi@gmail.com',
+                'phone_number' => '6289688738911',
+                'birth_date' => '1997-07-29',
+                'license' => 'Lisensi C Tahun 2026',
+                'position' => 'Pelatih Kepala',
+                'group_id' => 1, // KU 8-12
                 'is_master' => false,
             ],
             [
-                'name' => 'Dani',
-                'user_id' => 4,
-                'birth_date' => '1992-08-20',
-                'group_id' => 2,
-                'position' => 'Head Coach',
-                'license' => 'C License',
-                'phone_number' => '08123456781',
-                'email' => 'dani@gmail.com',
+                'name' => 'Samuel Senjaya Hirawan',
+                'email' => 'samuel.senjaya@gmail.com',
+                'phone_number' => '628562252913',
+                'birth_date' => '1994-05-14',
+                'license' => 'Lisensi C Tahun 2025',
+                'position' => 'Pelatih Kepala',
+                'group_id' => 2, // KU 13-18
                 'is_master' => false,
             ],
             [
-                'name' => 'Nalen',
-                'user_id' => 5,
-                'birth_date' => '1988-03-25',
-                'group_id' => 2,
-                'position' => 'Assistant Coach',
-                'license' => 'C License',
-                'phone_number' => '08123456782',
-                'email' => 'nalen@gmail.com',
+                'name' => 'Revel',
+                'email' => 'revel@gmail.com',
+                'phone_number' => '62895606072093',
+                'birth_date' => '1995-03-20',
+                'license' => 'Tidak Berlisensi',
+                'position' => 'Assisten Pelatih',
+                'group_id' => 1, // KU 8-12
                 'is_master' => false,
             ],
-        ]);
+            [
+                'name' => 'Felice Elena',
+                'email' => 'felice.elena@gmail.com',
+                'phone_number' => '6281573060971',
+                'birth_date' => '1996-08-10',
+                'license' => 'Tidak Berlisensi',
+                'position' => 'Assisten Pelatih',
+                'group_id' => 2, // KU 13-18
+                'is_master' => false,
+            ],
+        ];
+
+        foreach ($coaches as $coachData) {
+            $managementDataService->createCoach($coachData);
+        }
     }
 }
