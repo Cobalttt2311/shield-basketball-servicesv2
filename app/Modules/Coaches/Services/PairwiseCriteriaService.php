@@ -477,14 +477,13 @@ class PairwiseCriteriaService implements IPairwiseCriteriaService
             ];
         }
 
-        // Simpan bobot hanya jika semua posisi memiliki perbandingan yang konsisten (CR < 0.1)
-        if ($allConsistent) {
-            foreach ($positions as $position) {
-                $this->saveWeights($groupId, $position->id, $pairwiseSetId);
-            }
-        } else {
-            \App\Modules\Coaches\Models\CriteriaWeight::where('pairwise_set_id', $pairwiseSetId)->delete();
+        // Simpan bobot ke database terlepas dari apakah perbandingan konsisten atau tidak
+        foreach ($positions as $position) {
+            $this->saveWeights($groupId, $position->id, $pairwiseSetId);
         }
+
+        // Update status konsistensi pada set
+        $set->update(['is_consistent' => $allConsistent]);
 
         return [
             'success' => true,

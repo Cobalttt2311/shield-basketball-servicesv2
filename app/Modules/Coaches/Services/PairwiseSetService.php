@@ -34,6 +34,7 @@ class PairwiseSetService implements IPairwiseSetService
                     'criteria_set_id' => $set->criteria_set_id,
                     'group_name' => $set->group ? $set->group->age_group : null,
                     'status' => $isFilled ? 'edit' : 'input',
+                    'is_consistent' => (bool) $set->is_consistent,
                     'created_at' => $set->created_at ? $set->created_at->toDateString() : null,
                 ];
             }
@@ -87,6 +88,7 @@ class PairwiseSetService implements IPairwiseSetService
                     'name' => $set->name,
                     'group_id' => $set->group_id,
                     'is_new' => true,
+                    'is_consistent' => (bool) $set->is_consistent,
                 ];
 
                 continue;
@@ -123,6 +125,7 @@ class PairwiseSetService implements IPairwiseSetService
                     'name' => $set->name,
                     'group_id' => $set->group_id,
                     'is_new' => false,
+                    'is_consistent' => (bool) $set->is_consistent,
                 ];
             }
         }

@@ -502,20 +502,13 @@ class PairwiseSubCriteriaService implements IPairwiseSubCriteriaService
             ];
         }
 
-        // Simpan bobot subkriteria hanya jika semua posisi memiliki perbandingan yang konsisten (CR < 0.1)
-        if ($allConsistent) {
-            foreach ($positions as $position) {
-                $this->saveWeights($position->id, $criteriaId, $pairwiseSetId);
-            }
-        } else {
-            \App\Modules\Coaches\Models\SubCriteriaWeight::where('pairwise_set_id', $pairwiseSetId)
-                ->whereIn('sub_criteria_id', function ($query) use ($criteriaId) {
-                    $query->select('id')
-                        ->from('sub_criterias')
-                        ->where('criteria_id', $criteriaId);
-                })
-                ->delete();
+        // Simpan bobot subkriteria ke database terlepas dari apakah perbandingan konsisten atau tidak
+        foreach ($positions as $position) {
+            $this->saveWeights($position->id, $criteriaId, $pairwiseSetId);
         }
+
+        // Update status konsistensi pada set
+        $set->update(['is_consistent' => $allConsistent]);
 
         return [
             'success' => true,
