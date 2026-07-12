@@ -66,41 +66,30 @@ class AhpCalculationService implements IAhpCalculationService
     public function calculateEigenVector(
         array $matrix
     ): array {
-
         $size = count($matrix);
-
         $gm = [];
-
         for ($i = 0; $i < $size; $i++) {
-
             $product = 1;
-
             for ($j = 0; $j < $size; $j++) {
 
                 $product *= $matrix[$i][$j];
             }
-
             $gm[$i] =
                 pow(
                     $product,
                     1 / $size
                 );
         }
-
         $total =
             array_sum($gm);
-
         $weights = [];
-
         foreach ($gm as $value) {
-
             $weights[] =
                 round(
                     $value / $total,
                     8
                 );
         }
-
         return $weights;
     }
 

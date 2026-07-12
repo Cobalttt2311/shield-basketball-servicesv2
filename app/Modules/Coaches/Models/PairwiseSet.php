@@ -16,6 +16,7 @@ class PairwiseSet extends Model
         'name',
         'group_id',
         'criteria_set_id',
+        'is_consistent',
     ];
 
     public function group()
