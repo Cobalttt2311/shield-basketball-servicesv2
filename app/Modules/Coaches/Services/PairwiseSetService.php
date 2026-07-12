@@ -31,6 +31,7 @@ class PairwiseSetService implements IPairwiseSetService
                     'id' => $set->id,
                     'name' => $set->name,
                     'group_id' => $set->group_id,
+                    'criteria_set_id' => $set->criteria_set_id,
                     'group_name' => $set->group ? $set->group->age_group : null,
                     'status' => $isFilled ? 'edit' : 'input',
                     'is_consistent' => (bool) $set->is_consistent,
