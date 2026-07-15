@@ -29,10 +29,13 @@ class ResetPasswordNotification extends Notification
             'email' => $notifiable->email,
         ]);
 
+        $logoUrl = config('app.frontend_url', 'http://localhost:3000').'/img/logo/logo-light-full.png';
+
         return (new MailMessage)
             ->subject('Reset Password')
             ->view('emails.reset-password', [
                 'frontendUrl' => $resetUrl,
+                'logoUrl' => $logoUrl,
             ]);
     }
 }

@@ -2,14 +2,14 @@
 
 namespace App\Modules\User\Controllers;
 
+use App\Modules\Admin\Services\Interfaces\IManagementDataService;
+use App\Modules\User\Services\Interfaces\IUserService;
 use App\Utils\Messages\ErrorMessages\ErrorMessages;
 use App\Utils\Messages\SuccessMessages\SuccessMessages;
 use App\Utils\Requests\ForgotPasswordRequest;
 use App\Utils\Requests\LoginRequest;
+use App\Utils\Requests\ResetPasswordRequest;
 use App\Utils\Responses\BaseResponse;
-use App\Utils\Requests\ResetPasswordRequest;  
-use App\Modules\User\Services\Interfaces\IUserService;
-use App\Modules\Admin\Services\Interfaces\IManagementDataService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Password;
@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Password;
 class UserController extends Controller
 {
     protected IUserService $userService;
+
     protected IManagementDataService $managementDataService;
 
     public function __construct(IUserService $userService, IManagementDataService $managementDataService)
@@ -79,8 +80,10 @@ class UserController extends Controller
                     true,
                     SuccessMessages::RESET_LINK_SENT
                 );
+
                 return response()->json($response->toArray(), 200);
             }
+
             return view('auth.forgot-success');
         }
 
@@ -124,8 +127,10 @@ class UserController extends Controller
                     true,
                     SuccessMessages::PASSWORD_RESET
                 );
+
                 return response()->json($response->toArray(), 200);
             }
+
             return view('auth.reset-success');
         }
 
@@ -174,20 +179,32 @@ class UserController extends Controller
 
     public function updateProfile(Request $request)
     {
-        $profile = $this->userService->updateProfile(
-            $request->user(),
-            $request->all()
-        );
+        try {
+            $profile = $this->userService->updateProfile(
+                $request->user(),
+                $request->all()
+            );
 
-        return response()->json(
-            new BaseResponse(
-                true,
-                'Profile updated successfully',
-                $profile
-            )
-        );
-        
+            return response()->json(
+                new BaseResponse(
+                    true,
+                    'Profile updated successfully',
+                    $profile
+                )
+            );
+        } catch (\Throwable $e) {
+            return response()->json(
+                new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    'UPDATE_PROFILE_FAILED'
+                ),
+                400
+            );
+        }
     }
+
     public function updatePassword(Request $request)
     {
         $result = $this->userService->updatePassword(
@@ -196,7 +213,7 @@ class UserController extends Controller
             $request->password
         );
 
-        if (!$result) {
+        if (! $result) {
             return response()->json(
                 new BaseResponse(
                     false,
