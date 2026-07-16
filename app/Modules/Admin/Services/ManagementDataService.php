@@ -84,7 +84,27 @@ class ManagementDataService implements IManagementDataService
 
     public function updateCoach(int $id, array $data)
     {
-        return $this->repo->updateCoach($id, $data);
+        return DB::transaction(function () use ($id, $data) {
+            $coach = $this->repo->findCoachById($id);
+            if (! $coach) {
+                return null;
+            }
+
+            if ($coach->user) {
+                $userUpdate = [];
+                if (isset($data['name'])) {
+                    $userUpdate['name'] = $data['name'];
+                }
+                if (isset($data['email'])) {
+                    $userUpdate['email'] = $data['email'];
+                }
+                if (! empty($userUpdate)) {
+                    $coach->user->update($userUpdate);
+                }
+            }
+
+            return $this->repo->updateCoach($id, $data);
+        });
     }
 
     public function deleteCoach(int $id)
@@ -167,7 +187,27 @@ class ManagementDataService implements IManagementDataService
 
     public function updatePlayer(int $id, array $data)
     {
-        return $this->repo->updatePlayer($id, $data);
+        return DB::transaction(function () use ($id, $data) {
+            $player = $this->repo->findPlayerById($id);
+            if (! $player) {
+                return null;
+            }
+
+            if ($player->user) {
+                $userUpdate = [];
+                if (isset($data['name'])) {
+                    $userUpdate['name'] = $data['name'];
+                }
+                if (isset($data['email'])) {
+                    $userUpdate['email'] = $data['email'];
+                }
+                if (! empty($userUpdate)) {
+                    $player->user->update($userUpdate);
+                }
+            }
+
+            return $this->repo->updatePlayer($id, $data);
+        });
     }
 
     public function deletePlayer(int $id)

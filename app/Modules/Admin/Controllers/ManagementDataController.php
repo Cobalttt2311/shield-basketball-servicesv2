@@ -2,12 +2,15 @@
 
 namespace App\Modules\Admin\Controllers;
 
+use App\Modules\Admin\Models\Coach;
+use App\Modules\Admin\Models\Player;
 use App\Modules\Admin\Services\Interfaces\IManagementDataService;
 use App\Utils\Messages\ErrorMessages\ErrorMessages;
 use App\Utils\Messages\SuccessMessages\SuccessMessages;
 use App\Utils\Responses\BaseResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Validation\ValidationException;
 
 class ManagementDataController extends Controller
 {
@@ -79,7 +82,7 @@ class ManagementDataController extends Controller
                 (new BaseResponse(true, SuccessMessages::COACH_CREATED, $result))->toArray(),
                 201
             );
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return response()->json(
                 (new BaseResponse(false, $e->getMessage(), null, $e->errors()))->toArray(),
                 422
@@ -95,21 +98,29 @@ class ManagementDataController extends Controller
     public function updateCoach(Request $request, $id)
     {
         try {
-            $data = $request->only([
-                'name',
-                'birth_date',
-                'group_id',
-                'position',
-                'license',
-                'phone_number',
-                'email',
-                'is_master',
+            $coach = Coach::findOrFail($id);
+            $userId = $coach->user_id;
+
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email,'.$userId.',id|unique:coaches,email,'.$id.',id',
+                'group_id' => 'required|integer|exists:groups,id',
+                'position' => 'required|string|max:255',
+                'phone_number' => 'required|string|max:255',
+                'birth_date' => 'nullable|date',
+                'license' => 'nullable|string|max:255',
+                'is_master' => 'nullable|boolean',
             ]);
 
-            $result = $this->service->updateCoach($id, $data);
+            $result = $this->service->updateCoach($id, $validated);
 
             return response()->json(
                 (new BaseResponse(true, SuccessMessages::COACH_UPDATED, $result))->toArray()
+            );
+        } catch (ValidationException $e) {
+            return response()->json(
+                (new BaseResponse(false, $e->validator->errors()->first(), null, $e->errors()))->toArray(),
+                422
             );
         } catch (\Throwable $e) {
             return response()->json(
@@ -203,7 +214,7 @@ class ManagementDataController extends Controller
                 (new BaseResponse(true, SuccessMessages::PLAYER_CREATED, $result))->toArray(),
                 201
             );
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return response()->json(
                 (new BaseResponse(false, $e->getMessage(), null, $e->errors()))->toArray(),
                 422
@@ -219,22 +230,30 @@ class ManagementDataController extends Controller
     public function updatePlayer(Request $request, $id)
     {
         try {
-            $data = $request->only([
-                'name',
-                'birth_date',
-                'group_id',
-                'phone_number',
-                'email',
-                'height',
-                'weight',
-                'parent_name',
-                'parent_phone',
+            $player = Player::findOrFail($id);
+            $userId = $player->user_id;
+
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email,'.$userId.',id|unique:players,email,'.$id.',id',
+                'group_id' => 'required|integer|exists:groups,id',
+                'phone_number' => 'required|string|max:255',
+                'birth_date' => 'nullable|date',
+                'height' => 'nullable|numeric',
+                'weight' => 'nullable|numeric',
+                'parent_name' => 'nullable|string|max:255',
+                'parent_phone' => 'nullable|string|max:255',
             ]);
 
-            $result = $this->service->updatePlayer($id, $data);
+            $result = $this->service->updatePlayer($id, $validated);
 
             return response()->json(
                 (new BaseResponse(true, SuccessMessages::PLAYER_UPDATED, $result))->toArray()
+            );
+        } catch (ValidationException $e) {
+            return response()->json(
+                (new BaseResponse(false, $e->validator->errors()->first(), null, $e->errors()))->toArray(),
+                422
             );
         } catch (\Throwable $e) {
             return response()->json(
