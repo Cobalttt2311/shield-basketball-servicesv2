@@ -172,7 +172,7 @@
         <h1 class="card-title">Password Updated!</h1>
         <p class="card-desc">Your password has been changed successfully. Please log in using your new password.</p>
 
-        <a href="{{ url('http://localhost:3000/sign-in') }}" class="btn" id="login-btn">Log In Now</a>
+        <a href="{{ url('http://http://52.64.55.223/sign-in') }}" class="btn" id="login-btn">Log In Now</a>
 
         <p class="countdown">Redirecting automatically in <span id="counter">5</span> seconds...</p>
     </div>
@@ -185,7 +185,7 @@
             counter.textContent = sec;
             if (sec <= 0) {
                 clearInterval(timer);
-                window.location.href = "{{ url('http://localhost:3000/sign-in') }}";
+                window.location.href = "{{ url('http://http://52.64.55.223/sign-in') }}";
             }
         }, 1000);
     </script>

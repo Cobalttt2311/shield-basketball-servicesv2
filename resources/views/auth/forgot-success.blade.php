@@ -164,7 +164,7 @@
             Make sure you entered the correct email, wait a few minutes, and check your Spam or Junk folder.
         </div>
 
-        <a href="{{ url('http://localhost:3000/sign-in') }}" class="btn-outline">← Back to Login</a>
+        <a href="{{ url('http://http://52.64.55.223/sign-in') }}" class="btn-outline">← Back to Login</a>
     </div>
 </body>
 </html>

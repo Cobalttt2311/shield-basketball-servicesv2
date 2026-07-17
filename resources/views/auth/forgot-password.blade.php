@@ -227,7 +227,7 @@
             <button type="submit" class="btn">Send Reset Link</button>
         </form>
 
-        <a href="{{ url('http://localhost:3000/sign-in') }}" class="back-link">← Back to login page</a>
+        <a href="{{ url('http://http://52.64.55.223/sign-in') }}" class="back-link">← Back to login page</a>
     </div>
 </body>
 </html>
