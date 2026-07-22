@@ -131,10 +131,6 @@ class SubCriteriaSeeder extends Seeder
                 'criteria_id' => $c5,
                 'name' => 'Post Move',
             ],
-            [
-                'criteria_id' => $c5,
-                'name' => 'Positioning',
-            ],
 
             // Fisikk
             [
