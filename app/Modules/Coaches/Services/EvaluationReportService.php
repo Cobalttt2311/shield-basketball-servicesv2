@@ -102,10 +102,12 @@ class EvaluationReportService implements IEvaluationReportService
             $player = $report->player;
             $coaches = Coach::where('group_id', $player->group_id)->get();
             $headCoach = $coaches->first(function ($c) {
-                return strtolower(trim($c->position)) === 'head coach';
+                $pos = strtolower(trim($c->position));
+                return $pos === 'head coach' || $pos === 'pelatih kepala';
             });
             $assistantCoach = $coaches->first(function ($c) {
-                return strtolower(trim($c->position)) === 'assistant coach';
+                $pos = strtolower(trim($c->position));
+                return $pos === 'assistant coach' || $pos === 'assisten pelatih' || $pos === 'asisten pelatih';
             });
 
             return [
@@ -157,10 +159,12 @@ class EvaluationReportService implements IEvaluationReportService
             // Fetch Coaches for the player's group
             $coaches = Coach::where('group_id', $player->group_id)->get();
             $headCoach = $coaches->first(function ($c) {
-                return strtolower(trim($c->position)) === 'head coach';
+                $pos = strtolower(trim($c->position));
+                return $pos === 'head coach' || $pos === 'pelatih kepala';
             });
             $assistantCoach = $coaches->first(function ($c) {
-                return strtolower(trim($c->position)) === 'assistant coach';
+                $pos = strtolower(trim($c->position));
+                return $pos === 'assistant coach' || $pos === 'assisten pelatih' || $pos === 'asisten pelatih';
             });
 
             // Fetch dynamic position recommendations
@@ -211,10 +215,12 @@ class EvaluationReportService implements IEvaluationReportService
         $player = $report->player;
         $coaches = Coach::where('group_id', $player->group_id)->get();
         $headCoach = $coaches->first(function ($c) {
-            return strtolower(trim($c->position)) === 'head coach';
+            $pos = strtolower(trim($c->position));
+            return $pos === 'head coach' || $pos === 'pelatih kepala';
         });
         $assistantCoach = $coaches->first(function ($c) {
-            return strtolower(trim($c->position)) === 'assistant coach';
+            $pos = strtolower(trim($c->position));
+            return $pos === 'assistant coach' || $pos === 'assisten pelatih' || $pos === 'asisten pelatih';
         });
 
         return [
