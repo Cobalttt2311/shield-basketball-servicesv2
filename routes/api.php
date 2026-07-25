@@ -2,6 +2,7 @@
 
 use App\Modules\Admin\Controllers\GroupController;
 use App\Modules\Admin\Controllers\ManagementDataController;
+use App\Modules\Attendance\Controllers\TrainingAttendanceController;
 use App\Modules\Coaches\Controllers\CriteriaController;
 use App\Modules\Coaches\Controllers\EvaluationController;
 use App\Modules\Coaches\Controllers\EvaluationReportController;
@@ -68,6 +69,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::get('evaluation-reports/my-report/{evaluationId}', [EvaluationReportController::class, 'getPlayerReport']);
             Route::get('evaluation-reports/my-report/{evaluationId}/download', [EvaluationReportController::class, 'downloadPlayerReportPdf']);
             Route::get('evaluation-reports/my-reports', [EvaluationReportController::class, 'getMyReportsList']);
+            Route::get('attendance/summary', [TrainingAttendanceController::class, 'getPlayerAttendanceSummary']);
         });
     });
 
@@ -107,6 +109,15 @@ Route::middleware(['auth:api'])->group(function () {
             Route::get('/players', [ManagementDataController::class, 'getPlayerByGroupCoach']);
             Route::put('/profile', [UserController::class, 'updateProfile']);
             Route::post('/change-password', [UserController::class, 'updatePassword']);
+        });
+
+        Route::prefix('trainings')->group(function () {
+            Route::get('/', [TrainingAttendanceController::class, 'getTrainingsForCoach']);
+            Route::post('/', [TrainingAttendanceController::class, 'createTrainingForCoach']);
+            Route::put('/{id}', [TrainingAttendanceController::class, 'updateTrainingForCoach']);
+            Route::delete('/{id}', [TrainingAttendanceController::class, 'deleteTrainingForCoach']);
+            Route::get('/{id}/attendance', [TrainingAttendanceController::class, 'getPlayerAttendanceList']);
+            Route::post('/{id}/attendance', [TrainingAttendanceController::class, 'recordPlayerAttendance']);
         });
 
         Route::prefix('criteria')->group(function () {

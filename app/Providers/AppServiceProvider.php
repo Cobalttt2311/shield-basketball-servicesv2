@@ -10,6 +10,10 @@ use App\Modules\Admin\Services\GroupService;
 use App\Modules\Admin\Services\Interfaces\IGroupService;
 use App\Modules\Admin\Services\Interfaces\IManagementDataService;
 use App\Modules\Admin\Services\ManagementDataService;
+use App\Modules\Attendance\Repositories\Interfaces\ITrainingAttendanceRepository;
+use App\Modules\Attendance\Repositories\TrainingAttendanceRepository;
+use App\Modules\Attendance\Services\Interfaces\ITrainingAttendanceService;
+use App\Modules\Attendance\Services\TrainingAttendanceService;
 use App\Modules\Coaches\Repositories\CriteriaRepository;
 use App\Modules\Coaches\Repositories\CriteriaWeightRepository;
 use App\Modules\Coaches\Repositories\EvaluationReportRepository;
@@ -46,15 +50,15 @@ use App\Modules\Coaches\Services\PairwiseSetService;
 use App\Modules\Coaches\Services\PairwiseSubCriteriaService;
 use App\Modules\Coaches\Services\PlayerScoreMappingService;
 use App\Modules\Coaches\Services\PositionService;
+use App\Modules\Upload\Repositories\Interfaces\IUploadRepository;
+use App\Modules\Upload\Repositories\UploadRepository;
+use App\Modules\Upload\Services\Interfaces\IUploadService;
+use App\Modules\Upload\Services\UploadService;
 use App\Modules\User\Repositories\Interfaces\IUserRepository;
 use App\Modules\User\Repositories\UserRepository;
 use App\Modules\User\Services\Interfaces\IUserService;
 use App\Modules\User\Services\UserService;
 use Illuminate\Support\ServiceProvider;
-use App\Modules\Upload\Repositories\Interfaces\IUploadRepository;
-use App\Modules\Upload\Repositories\UploadRepository;
-use App\Modules\Upload\Services\Interfaces\IUploadService;
-use App\Modules\Upload\Services\UploadService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -100,6 +104,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IEvaluationReportService::class, EvaluationReportService::class);
         $this->app->bind(IUploadRepository::class, UploadRepository::class);
         $this->app->bind(IUploadService::class, UploadService::class);
+
+        $this->app->bind(ITrainingAttendanceRepository::class, TrainingAttendanceRepository::class);
+        $this->app->bind(ITrainingAttendanceService::class, TrainingAttendanceService::class);
     }
 
     /**

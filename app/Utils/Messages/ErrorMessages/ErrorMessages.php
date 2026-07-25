@@ -55,4 +55,8 @@ class ErrorMessages
     const FORBIDDEN_HEAD_COACH = 'Forbidden - only Head Coach can perform this action';
 
     const REPORT_NOT_FOUND = 'Evaluation report not found';
+
+    const TRAINING_NOT_FOUND = 'Training session not found';
+
+    const TRAINING_FORBIDDEN_GROUP = 'You cannot access training from another group';
 }

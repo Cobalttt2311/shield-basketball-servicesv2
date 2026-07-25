@@ -73,5 +73,18 @@ class SuccessMessages
     const REPORT_FINALIZED = 'Evaluation report finalized successfully';
 
     const REPORT_GET = 'Evaluation report retrieved successfully';
-}
 
+    const TRAINING_GET = 'Training sessions retrieved successfully';
+
+    const TRAINING_CREATED = 'Training session created successfully';
+
+    const TRAINING_UPDATED = 'Training session updated successfully';
+
+    const TRAINING_DELETED = 'Training session deleted successfully';
+
+    const TRAINING_ATTENDANCE_GET = 'Player attendance list retrieved successfully';
+
+    const TRAINING_ATTENDANCE_SAVED = 'Attendance recorded successfully';
+
+    const PLAYER_ATTENDANCE_SUMMARY_GET = 'Attendance summary retrieved successfully';
+}
