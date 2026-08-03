@@ -209,6 +209,11 @@ class PairwiseSetService implements IPairwiseSetService
 
     public function getWeights(int $id): array
     {
+        $set = PairwiseSet::find($id);
+        if (! $set) {
+            throw new \InvalidArgumentException('Pairwise set not found');
+        }
+
         $criteriaWeights = \App\Modules\Coaches\Models\CriteriaWeight::with(['criteria', 'position'])
             ->where('pairwise_set_id', $id)
             ->get();
@@ -217,9 +222,44 @@ class PairwiseSetService implements IPairwiseSetService
             ->where('pairwise_set_id', $id)
             ->get();
 
+        $groupId = $set->group_id;
+        $positions = \App\Modules\Admin\Models\Position::where('group_id', $groupId)->get();
+
+        $criteriaService = app(\App\Modules\Coaches\Services\Interfaces\IPairwiseCriteriaService::class);
+        $subCriteriaService = app(\App\Modules\Coaches\Services\Interfaces\IPairwiseSubCriteriaService::class);
+
+        $criteriaCRs = [];
+        foreach ($positions as $position) {
+            try {
+                $res = $criteriaService->calculateConsistencyRatio($groupId, $position->id, $id);
+                $criteriaCRs[$position->id] = round($res['cr'] ?? 0.0, 4);
+            } catch (\Throwable $e) {
+                $criteriaCRs[$position->id] = null;
+            }
+        }
+
+        $criterias = \App\Modules\Coaches\Models\Criteria::whereHas('criteriaSet', function ($q) use ($groupId) {
+            $q->where('group_id', $groupId);
+        })->get();
+
+        $subCriteriaCRs = [];
+        foreach ($positions as $position) {
+            $subCriteriaCRs[$position->id] = [];
+            foreach ($criterias as $criteria) {
+                try {
+                    $res = $subCriteriaService->calculateConsistencyRatio($position->id, $criteria->id, $id);
+                    $subCriteriaCRs[$position->id][$criteria->id] = round($res['cr'] ?? 0.0, 4);
+                } catch (\Throwable $e) {
+                    $subCriteriaCRs[$position->id][$criteria->id] = null;
+                }
+            }
+        }
+
         return [
             'criteria_weights' => $criteriaWeights,
             'sub_criteria_weights' => $subCriteriaWeights,
+            'criteria_crs' => $criteriaCRs,
+            'sub_criteria_crs' => $subCriteriaCRs,
         ];
     }
 }

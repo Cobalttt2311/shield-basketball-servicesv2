@@ -179,7 +179,7 @@ class AhpCalculationService implements IAhpCalculationService
 
             'cr' => round($cr, 6),
 
-            'is_consistent' => $cr < 0.1,
+            'is_consistent' => $cr < 0.1,   
         ];
     }
 }
