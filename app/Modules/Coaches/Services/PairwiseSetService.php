@@ -223,7 +223,7 @@ class PairwiseSetService implements IPairwiseSetService
             ->get();
 
         $groupId = $set->group_id;
-        $positions = \App\Modules\Admin\Models\Position::where('group_id', $groupId)->get();
+        $positions = \App\Modules\Coaches\Models\Position::where('group_id', $groupId)->get();
 
         $criteriaService = app(\App\Modules\Coaches\Services\Interfaces\IPairwiseCriteriaService::class);
         $subCriteriaService = app(\App\Modules\Coaches\Services\Interfaces\IPairwiseSubCriteriaService::class);
