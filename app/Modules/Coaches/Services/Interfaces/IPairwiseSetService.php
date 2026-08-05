@@ -11,4 +11,6 @@ interface IPairwiseSetService
     public function updateSet(int $id, array $data): array;
 
     public function getWeights(int $id): array;
+
+    public function calculateCRH(int $id): array;
 }

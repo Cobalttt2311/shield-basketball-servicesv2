@@ -160,4 +160,29 @@ class PairwiseSetController extends Controller
             );
         }
     }
+
+    public function calculateCRH($id)
+    {
+        try {
+            $data = $this->service->calculateCRH((int) $id);
+
+            return response()->json(
+                (new BaseResponse(
+                    true,
+                    'Consistency Ratio of Hierarchy (CRH) calculated successfully',
+                    $data
+                ))->toArray()
+            );
+        } catch (\Exception $e) {
+            return response()->json(
+                (new BaseResponse(
+                    false,
+                    $e->getMessage(),
+                    null,
+                    'SERVER_ERROR'
+                ))->toArray(),
+                500
+            );
+        }
+    }
 }

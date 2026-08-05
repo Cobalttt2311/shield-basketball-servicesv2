@@ -153,6 +153,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::middleware(['master.coach'])->post('/', [PairwiseSetController::class, 'createSet']);
             Route::middleware(['master.coach'])->patch('/{id}', [PairwiseSetController::class, 'updateSet']);
             Route::get('/{id}/weights', [PairwiseSetController::class, 'getWeights']);
+            Route::get('/{id}/crh', [PairwiseSetController::class, 'calculateCRH']);
         });
 
         Route::prefix('positions')->group(function () {
