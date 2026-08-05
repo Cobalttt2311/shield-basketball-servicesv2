@@ -228,31 +228,82 @@ class PairwiseSetService implements IPairwiseSetService
         $criteriaService = app(\App\Modules\Coaches\Services\Interfaces\IPairwiseCriteriaService::class);
         $subCriteriaService = app(\App\Modules\Coaches\Services\Interfaces\IPairwiseSubCriteriaService::class);
 
+        $riTable = [
+            1 => 0.0,
+            2 => 0.0,
+            3 => 0.58,
+            4 => 0.90,
+            5 => 1.12,
+            6 => 1.24,
+            7 => 1.32,
+            8 => 1.41,
+            9 => 1.45,
+            10 => 1.49,
+        ];
+
         $criteriaCRs = [];
+        $criteriaCIs = [];
         foreach ($positions as $position) {
             try {
                 $res = $criteriaService->calculateConsistencyRatio($groupId, $position->id, $id);
                 $criteriaCRs[$position->id] = round($res['cr'] ?? 0.0, 4);
+                $criteriaCIs[$position->id] = $res['ci'] ?? 0.0;
             } catch (\Throwable $e) {
                 $criteriaCRs[$position->id] = null;
+                $criteriaCIs[$position->id] = 0.0;
             }
         }
 
         $criterias = \App\Modules\Coaches\Models\Criteria::whereHas('criteriaSet', function ($q) use ($groupId) {
             $q->where('group_id', $groupId);
         })->get();
+        $nCriteria = count($criterias);
+        $riCriteria = $riTable[$nCriteria] ?? 1.49;
 
         $subCriteriaCRs = [];
+        $subCriteriaCIs = [];
         foreach ($positions as $position) {
             $subCriteriaCRs[$position->id] = [];
+            $subCriteriaCIs[$position->id] = [];
             foreach ($criterias as $criteria) {
                 try {
                     $res = $subCriteriaService->calculateConsistencyRatio($position->id, $criteria->id, $id);
                     $subCriteriaCRs[$position->id][$criteria->id] = round($res['cr'] ?? 0.0, 4);
+                    $subCriteriaCIs[$position->id][$criteria->id] = $res['ci'] ?? 0.0;
                 } catch (\Throwable $e) {
                     $subCriteriaCRs[$position->id][$criteria->id] = null;
+                    $subCriteriaCIs[$position->id][$criteria->id] = 0.0;
                 }
             }
+        }
+
+        // Hitung CRH (Consistency Ratio of Hierarchy) untuk masing-masing posisi
+        $crhByPosition = [];
+        foreach ($positions as $position) {
+            $ciCriteria = $criteriaCIs[$position->id] ?? 0.0;
+            
+            $weightedCISum = 0.0;
+            $weightedRISum = 0.0;
+
+            foreach ($criterias as $criteria) {
+                $cw = $criteriaWeights->first(function ($item) use ($position, $criteria) {
+                    return (int) $item->position_id === (int) $position->id && (int) $item->criteria_id === (int) $criteria->id;
+                });
+                $w_j = $cw ? (float) $cw->weight : 0.0;
+
+                $ciSub = $subCriteriaCIs[$position->id][$criteria->id] ?? 0.0;
+                $weightedCISum += $w_j * $ciSub;
+
+                $subCount = \App\Modules\Coaches\Models\SubCriteria::where('criteria_id', $criteria->id)->count();
+                $riSub = $riTable[$subCount] ?? 1.49;
+                $weightedRISum += $w_j * $riSub;
+            }
+
+            $cih = $ciCriteria + $weightedCISum;
+            $rih = $riCriteria + $weightedRISum;
+
+            $crhVal = $rih > 0 ? ($cih / $rih) : 0.0;
+            $crhByPosition[$position->id] = round($crhVal, 4);
         }
 
         return [
@@ -260,6 +311,7 @@ class PairwiseSetService implements IPairwiseSetService
             'sub_criteria_weights' => $subCriteriaWeights,
             'criteria_crs' => $criteriaCRs,
             'sub_criteria_crs' => $subCriteriaCRs,
+            'crh_by_position' => $crhByPosition,
         ];
     }
 }
